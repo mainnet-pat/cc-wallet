@@ -1,10 +1,12 @@
+import { cachedFetch } from "./utils/utils";
+
 async function queryChainGraph(queryReq:string, chaingraphUrl:string){
     const jsonObj = {
         "operationName": null,
         "variables": {},
         "query": queryReq
     };
-    const response = await fetch(chaingraphUrl, {
+    const response = await cachedFetch(chaingraphUrl, {
         method: "POST",
         mode: "cors", // no-cors, *cors, same-origin
         cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached

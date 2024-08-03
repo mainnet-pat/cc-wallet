@@ -6,7 +6,7 @@ import { IndexedDBProvider } from "@mainnet-cash/indexeddb-storage"
 import type { TokenList, bcmrIndexerResponse, bcmrTokenMetadata } from "../interfaces/interfaces"
 import { useSettingsStore } from './settingsStore'
 import { queryAuthHeadTxid } from "../queryChainGraph"
-import { getAllNftTokenBalances, getFungibleTokenBalances } from "src/utils/utils"
+import { cachedFetch, getAllNftTokenBalances, getFungibleTokenBalances } from "src/utils/utils"
 import { TransactionHistoryItem } from "mainnet-js/dist/module/history/interface"
 const settingsStore = useSettingsStore()
 
@@ -64,11 +64,11 @@ export const useStore = defineStore('store', () => {
         const uniqueCommitments = new Set(listCommitments);
         for(const nftCommitment of uniqueCommitments) {
           const nftEndpoint = nftCommitment ? nftCommitment : "empty"
-          const metadataPromise = fetch(`${bcmrIndexer.value}/tokens/${item.tokenId}/${nftEndpoint}/`);
+          const metadataPromise = cachedFetch(`${bcmrIndexer.value}/tokens/${item.tokenId}/${nftEndpoint}/`);
           metadataPromises.push(metadataPromise);
         }
       } else {
-        const metadataPromise = fetch(`${bcmrIndexer.value}/tokens/${item.tokenId}/`);
+        const metadataPromise = cachedFetch(`${bcmrIndexer.value}/tokens/${item.tokenId}/`);
         metadataPromises.push(metadataPromise);
       }
     }

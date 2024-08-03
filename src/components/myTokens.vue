@@ -13,6 +13,7 @@
       return;
     }
     bcmrRefreshKey.value++;
+    console.trace(1)
   });
 </script>
 

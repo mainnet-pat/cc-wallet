@@ -50,6 +50,7 @@
   const mainnetWalletExists = await Wallet.namedExists(nameWallet);
   const testnetWalletExists = await TestNetWallet.namedExists(nameWallet);
   const walletExists = mainnetWalletExists || testnetWalletExists;
+  console.log(walletExists)
   if(walletExists){
     // initialise wallet on configured network
     const readNetwork = localStorage.getItem('network');
