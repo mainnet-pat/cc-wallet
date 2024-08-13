@@ -63,7 +63,7 @@
   }
 
   async function setWallet(newWallet: TestNetWallet){
-    changeView(1);
+    changeView(2);
     if(newWallet.network == 'mainnet'){
       const connectionMainnet = new Connection("mainnet", `wss://${settingsStore.electrumServerMainnet}:50004`)
       newWallet.provider = connectionMainnet.networkProvider as ElectrumNetworkProvider 
@@ -251,10 +251,10 @@
 
 <template>
   <header>
-    <img :src="settingsStore.darkMode? 'images/cashonize-logo-dark.png' : 'images/cashonize-logo.png'" alt="Cashonize: a Bitcoin Cash Wallet" style="height: 85px;" >
+    <img :src="settingsStore.darkMode? 'images/olando-wallet-logo.png' : 'images/olando-wallet-logo.png'" alt="CC-Wallet: a Bitcoin Cash Community Currency Wallet" style="height: 65px;" >
     <nav v-if="displayView" style="display: flex; justify-content: center;" class="tabs">
-      <div @click="changeView(1)" v-bind:style="displayView == 1 ? {color: 'var(--color-primary'} : ''">BchWallet</div>
-      <div @click="changeView(2)" v-bind:style="displayView == 2 ? {color: 'var(--color-primary'} : ''">MyTokens</div>
+      <div @click="changeView(2)" v-bind:style="displayView == 2 ? {color: 'var(--color-primary'} : ''">Olando</div>
+      <div @click="changeView(1)" v-bind:style="displayView == 1 ? {color: 'var(--color-primary'} : ''">BCH</div>
       <div v-if="!isMobile && settingsStore.tokenCreation" @click="changeView(3)" v-bind:style="displayView == 3 ? {color: 'var(--color-primary'} : ''">CreateTokens</div>
       <div v-if="settingsStore.walletConnect" @click="changeView(4)" v-bind:style="displayView == 4 ? {color: 'var(--color-primary'} : ''">{{isMobile?  "Connect" : "WalletConnect"}}</div>
       <div @click="changeView(5)" v-bind:style="displayView == 5 ? {color: 'var(--color-primary'} : ''">History</div>
