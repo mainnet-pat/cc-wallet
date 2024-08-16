@@ -133,7 +133,7 @@
       const previousTokenList = store.tokenList;
       const listNewTokens:TokenList = []
       // Check if transaction not initiated by user
-      const userInputs = tx.vin.filter(vinElem => vinElem.address == store.wallet?.address);
+      const userInputs = tx.vin.filter(vinElem => vinElem.address == store.wallet?.address && vinElem.tokenData);
       for(const tokenOutput of tokenOutputs){
         if(!userInputs.length){
           const tokenType = tokenOutput?.tokenData?.nft ? "NFT" : "tokens"

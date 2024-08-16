@@ -5,6 +5,7 @@
   // @ts-ignore
   import { createIcon } from '@download/blockies';
   import alertDialog from 'src/components/alertDialog.vue'
+  import swapDialog from './swapDialog.vue';
   import { CurrencySymbols, type TokenDataFT, type bcmrTokenMetadata } from "src/interfaces/interfaces"
   import { queryTotalSupplyFT, queryReservedSupply } from "src/queryChainGraph"
   import { useStore } from 'src/stores/store'
@@ -35,6 +36,7 @@
   const tokenMetaData = ref(undefined as (bcmrTokenMetadata | undefined));
   const totalSupplyFT = ref(undefined as bigint | undefined);
   const reservedSupply = ref(undefined as bigint | undefined);
+  const showSwapDialog = ref(false);
   const showQrCodeDialog = ref(false);
 
   tokenMetaData.value = store.bcmrRegistries?.[tokenData.value.tokenId];
@@ -55,10 +57,12 @@
   })
 
   const tokenPrice = ref(0);
-  setTimeout(async () => {
+  const updateTokenPrice = async () => {
     const priceInSat = await store.fetchCurrentTokenPrice(tokenData.value.tokenId);
     tokenPrice.value = await convert(Number(tokenData.value.amount) * priceInSat, "sat", settingsStore.currency);
-  }, 1);
+  };
+  setTimeout(updateTokenPrice, 1);
+  watch(tokenData, updateTokenPrice);
 
   onMounted(() => {
     const icon = createIcon({
@@ -350,6 +354,10 @@
             <img id="authIcon" class="icon" :src="settingsStore.darkMode? 'images/shieldLightGrey.svg' : 'images/shield.svg'">
             <span>auth transfer</span>
           </span>
+          <span v-if="tokenPrice" @click="showSwapDialog = true" style="white-space: nowrap;" id="swapButton">
+            <img id="swapIcon" class="icon" :src="settingsStore.darkMode? 'images/cauldron-dark.svg' : 'images/cauldron.svg'" style="width: 16px; height: 16px; margin-right: 5px;">
+            <span>swap</span>
+          </span>
           <span @click="store.toggleFavorite(tokenData.tokenId)" style="float:right">
             {{ settingsStore.featuredTokens.includes(tokenData.tokenId) ? "★" : "☆" }} favorite </span>
         </div>
@@ -440,6 +448,10 @@
         </div>
       </div>
     </fieldset>
+
+    <div v-if="tokenPrice && showSwapDialog">
+      <swapDialog :token-balance="tokenData.amount" :token-id="tokenData.tokenId" :token-metadata="tokenMetaData" @close-dialog="() => showSwapDialog = false"/>
+    </div>
   </div>
   <div v-if="showQrCodeDialog">
     <QrCodeScanDialog @hide="() => showQrCodeDialog = false" @decode="qrDecode" :filter="qrFilter"/>

@@ -69,6 +69,8 @@ module.exports = {
 
   // add your custom rules here
   rules: {
+    "@typescript-eslint/no-inferrable-types": "off",
+
     // to get app working initially
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/no-explicit-any" : "off",

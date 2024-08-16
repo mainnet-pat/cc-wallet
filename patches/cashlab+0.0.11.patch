@@ -1,0 +1,13 @@
+diff --git a/node_modules/cashlab/build/cauldron/exchange-lab.js b/node_modules/cashlab/build/cauldron/exchange-lab.js
+index e333bac..0027038 100644
+--- a/node_modules/cashlab/build/cauldron/exchange-lab.js
++++ b/node_modules/cashlab/build/cauldron/exchange-lab.js
+@@ -1,7 +1,7 @@
+ import { NATIVE_BCH_TOKEN_ID } from '../common/constants.js';
+ import { convertTokenIdToUint8Array, bigIntMax, bigIntArraySortPolyfill, convertFractionDenominator, } from '../common/util.js';
+ import { ExceptionRegistry, Exception, InvalidProgramState, ValueError, NotFoundError, InsufficientFunds } from '../common/exceptions.js';
+-import cauldron_libauth_template_data from './cauldron-libauth-template.json' assert { type: "json" };
++import cauldron_libauth_template_data from './cauldron-libauth-template.json';
+ import * as libauth from '@bitauth/libauth';
+ import { writeTradeTx } from './write-trade-tx.js';
+ import { writeChainedTradeTx } from './write-chained-trade-tx.js';

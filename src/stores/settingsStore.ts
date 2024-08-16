@@ -7,7 +7,9 @@ const defaultExplorerChipnet = "https://chipnet.chaingraph.cash/tx";
 const defaultElectrumMainnet = "electrum.imaginary.cash"
 const defaultChaingraph = "https://gql.chaingraph.pat.mn/v1/graphql";
 const dafaultIpfsGateway = "https://ipfs.io/ipfs/";
-const defaultFeaturedTokens: string[] = [];
+const defaultFeaturedTokens = [
+  "177a6a68427bf7afde71e5d6441ce53aafcf84c5339c92c2064861529351d766"
+];
 
 export const useSettingsStore = defineStore('settingsStore', () => {
   // Global settings
@@ -19,8 +21,8 @@ export const useSettingsStore = defineStore('settingsStore', () => {
   const ipfsGateway = ref(dafaultIpfsGateway);
   const darkMode  = ref(false);
   const tokenBurn = ref(false);
-  const walletConnect = ref(true);
-  const tokenCreation = ref(true);
+  const walletConnect = ref(false);
+  const tokenCreation = ref(false);
   const currency = ref("usd" as ("usd" | "eur"));
   const historyUseCurrency = ref(false);
   const featuredTokens = ref([] as string[]);
