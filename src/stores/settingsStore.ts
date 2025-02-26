@@ -8,7 +8,7 @@ const defaultElectrumMainnet = "electrum.imaginary.cash"
 const defaultChaingraph = "https://gql.chaingraph.pat.mn/v1/graphql";
 const dafaultIpfsGateway = "https://ipfs.io/ipfs/";
 const defaultFeaturedTokens = [
-  "177a6a68427bf7afde71e5d6441ce53aafcf84c5339c92c2064861529351d766"
+  "7fa887fd4eac0F5478b95392c4984721fbe3060223c30b342d43cc06817f07f6"
 ];
 
 export const useSettingsStore = defineStore('settingsStore', () => {
