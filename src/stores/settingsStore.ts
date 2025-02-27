@@ -19,7 +19,7 @@ export const useSettingsStore = defineStore('settingsStore', () => {
   const electrumServerMainnet = ref(defaultElectrumMainnet);
   const chaingraph = ref(defaultChaingraph);
   const ipfsGateway = ref(dafaultIpfsGateway);
-  const darkMode  = ref(false);
+  const darkMode  = ref(true);
   const tokenBurn = ref(false);
   const walletConnect = ref(false);
   const tokenCreation = ref(false);
@@ -50,7 +50,7 @@ export const useSettingsStore = defineStore('settingsStore', () => {
   if(readUnit && (readUnit=="bch" || readUnit=="sat")) bchUnit.value = readUnit;
 
   const readDarkMode = localStorage.getItem("darkMode");
-  if(readDarkMode == "true"){
+  if(readDarkMode !== "false"){
     document.body.classList.add("dark");
     darkMode.value = true;
   }
