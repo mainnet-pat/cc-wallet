@@ -2,11 +2,12 @@
 @import 'chota';
 
 :root {
-  --color-primary: #1d71b8;
+  --color-primary: #2aa9e1;
   --toggle-height: 1.7rem;
 }
 
 #app {
+  width: 100%;
   width: 100%;
   margin: 0 auto;
   padding: 2rem;

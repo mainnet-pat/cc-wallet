@@ -251,7 +251,7 @@
 
 <template>
   <header>
-    <img :src="settingsStore.darkMode? 'images/olando-wallet-logo.png' : 'images/olando-wallet-logo.png'" alt="CC-Wallet: a Bitcoin Cash Community Currency Wallet" style="height: 65px;" >
+    <img :src="settingsStore.darkMode? 'images/olando-wallet-logo.png' : 'images/olando-wallet-logo.png'" alt="CC-Wallet: a Bitcoin Cash Community Currency Wallet" style="height: 100px;" >
     <nav v-if="displayView" style="display: flex; justify-content: center;" class="tabs">
       <div @click="changeView(2)" v-bind:style="displayView == 2 ? {color: 'var(--color-primary'} : ''">Olando</div>
       <div @click="changeView(1)" v-bind:style="displayView == 1 ? {color: 'var(--color-primary'} : ''">BCH</div>
