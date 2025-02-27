@@ -371,7 +371,6 @@
             Token web link: 
             <a :href="tokenMetaData.uris.web" target="_blank">{{ tokenMetaData.uris.web }}</a>
           </div>
-          <!--
           <div>
             Max supply: 
             <span v-if="totalSupplyFT">
@@ -394,7 +393,6 @@
               }}
             </span><span v-else>...</span>
           </div>
-          -->
         </div>
 
         <div v-if="displaySendTokens" style="margin-top: 10px;">
