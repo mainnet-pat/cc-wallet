@@ -3,7 +3,7 @@ import { TestNetWallet, TokenI, UtxoI, Wallet } from "mainnet-js";
 import { binsAreEqual, hexToBin, privateKeyToP2pkhLockingBytecode } from "@bitauth/libauth";
 
 import { bigIntArraySortPolyfill, BurnTokenException, PayoutAmountRuleType, PayoutRule, SpendableCoinType } from "cashlab/build/common/index.js";
-import { ExchangeLab, PoolV0, PoolV0Parameters, TradeResult, TradeTxResult } from "cashlab/build/cauldron/index.js";
+import { ExchangeLab, GenerateChainedTradeTxResult, PoolTrade, PoolV0, PoolV0Parameters, TradeResult, TradeTxResult } from "cashlab/build/cauldron/index.js";
 
 export type RostrumCauldronContractSubscribeResponse = {
   type: string,
@@ -58,7 +58,6 @@ export const proposeTrade = async ({
     demandTokenId,
     demandAmount,
     supplyAmount,
-    noCache = false,
     activePools = undefined,
   }: {
     txFeePerByte?: bigint,
@@ -174,7 +173,6 @@ export const fundProposedTrade = async ({
     supplyTokenId: TokenId, demandTokenId: TokenId,
     supply: bigint, demand: bigint
   }> = [];
-  const rates: Array<{ tokenId: TokenId, rate: Fraction }> = [];
   for (const entry of tradeProposal.entries) {
     let tradeSumEntry = tradeSumList.find((a) => a.supplyTokenId === entry.supply_token_id && a.demandTokenId === entry.demand_token_id);
     if (tradeSumEntry === undefined) {
@@ -217,7 +215,7 @@ export const fundProposedTrade = async ({
   // The current impl uses mainnet-js, And mainnet's wallets mainly use p2pkh addresses
   // to lock the coins, Having that, The following uses pkh & its cashaddr from the wallet
   // to construct the locking_bytecode & then retrieves the utxos associated with the addr
-  const walletPrivateKey = wallet.privateKey!;
+  const walletPrivateKey = wallet.privateKey as Uint8Array;
   const utxoList: UtxoI[] = await wallet.getAddressUtxos(wallet.cashaddr);
   const inputCoins: SpendableCoin[] = [];
   const walletLockingBytecode = privateKeyToP2pkhLockingBytecode({ privateKey: walletPrivateKey, throwErrors: true })
@@ -323,7 +321,7 @@ export const fundProposedTrade = async ({
         type: SpendableCoinType.P2PKH,
         key: walletPrivateKey,
       },
-      // @ts-ignore
+      // eslint-disable-next-line
       shouldBurn: mkPrepareShouldBurnCall((tokenId: TokenId, amount: bigint, valueInBch: bigint): void => {
         if (tokenId !== NATIVE_BCH_TOKEN_ID && burnDustTokens && valueInBch < DEFAULT_DUST_TOKEN_MIN_IN_BCH) {
           throw new BurnTokenException();
@@ -334,7 +332,7 @@ export const fundProposedTrade = async ({
 
   let selectedInputCoins: SpendableCoin[] = [];
   const writeTxController = {
-    // @ts-ignore
+    // eslint-disable-next-line
     async generateMiddleware (result: GenerateChainedTradeTxResult, groupedEntries: Array<{ supply_token_id: TokenId, demand_token_id: TokenId, list: PoolTrade[] }>, input_coins: SpendableCoin[]): Promise<GenerateChainedTradeTxResult> {
       selectedInputCoins = [ ...selectedInputCoins, ...result.input_coins ];
       return result;
