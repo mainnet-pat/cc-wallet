@@ -106,7 +106,7 @@
     console.time('fetchAuthUtxos');
     await store.fetchAuthUtxos();
     console.timeEnd('fetchAuthUtxos');
-    changeView(2);
+    changeView(1);
   }
 
   async function setUpWalletSubscriptions(){
