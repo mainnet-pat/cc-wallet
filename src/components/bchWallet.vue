@@ -156,56 +156,28 @@
 
 <template>
   <fieldset style="margin-top: 20px; padding-top: 2rem; max-width: 75rem; margin: auto 10px;">
-    <div v-if="store.network == 'mainnet'" style="font-size: 1.2em">
-      {{ CurrencyShortNames[settingsStore.currency] }} balance:  
-      <span style="color: var(--color-primary)">
-        {{ store.balance && store.balance[settingsStore.currency] != undefined ?  (store.balance[settingsStore.currency]).toFixed(2) + ` ${CurrencySymbols[settingsStore.currency]}`: "" }}
-      </span>
-    </div>
-    <span>
+    <div style="text-align: center;">
       BCH balance:  
       <span style="color: var(--color-primary)">
         {{ store.balance && store.balance[settingsStore.bchUnit] != undefined 
           ? numberFormatter.format(store.balance[settingsStore.bchUnit] as number) + displayUnitLong : "" }}
+        ({{ store.balance && store.balance[settingsStore.currency] != undefined ?  (store.balance[settingsStore.currency]).toFixed(2) + ` ${CurrencySymbols[settingsStore.currency]}`: "" }})
       </span>
-    </span>
-    <span v-if="nrTokenCategories">
-      <span v-if="!isMobile">
-        , Tokens: 
-        <span style="color: var(--color-primary)">
-          {{ nrTokenCategories + " different categories"}}
-        </span>
-      </span>
-      <div v-else style="margin-bottom: 10px;">
-        Tokens: 
-        <span style="color: var(--color-primary)">
-          {{ nrTokenCategories + " different categories"}}
-        </span>
-      </div>
-    </span>
-    <div style="word-break: break-all;">
-      BCH address: 
+    </div>
+    <div style="word-break: break-all; text-align: center;">
+      BCH receiving address:
+    </div>
+    <qr-code id="qrCode" :contents="displayeBchQr? store.wallet?.address : store.wallet?.tokenaddr" 
+      style="cursor: pointer; display: block; width: 230px; height: 230px; margin: 5px auto 0 auto; background-color: #fff;">
+      <img :src="displayeBchQr? 'images/bch-icon.png':'images/tokenicon.png'" slot="icon" /> <!-- eslint-disable-line -->
+    </qr-code>
+    <div style="word-break: break-all; text-align: center; font-size: small">
       <span @click="() => copyToClipboard(store.wallet?.address)" style="cursor:pointer;">
         <span class="depositAddr">{{ store.wallet?.address ?? "" }} </span>
         <img class="copyIcon" src="images/copyGrey.svg">
       </span>
     </div>
-    <div style="word-break: break-all;">
-      Token address:
-      <span @click="() => copyToClipboard(store.wallet?.tokenaddr)" style="cursor:pointer;">
-        <span class="depositAddr">{{ store.wallet?.tokenaddr ?? "" }}</span>
-        <img class="copyIcon" src="images/copyGrey.svg"> 
-      </span>
-    </div>
-    <qr-code id="qrCode" :contents="displayeBchQr? store.wallet?.address : store.wallet?.tokenaddr" 
-      style="display: block; width: 230px; height: 230px; margin: 5px auto 0 auto; background-color: #fff;">
-      <img :src="displayeBchQr? 'images/bch-icon.png':'images/tokenicon.png'" slot="icon" /> <!-- eslint-disable-line -->
-    </qr-code>
-    <div style="text-align: center;">
-      <div id="switchAddress" class="icon" @click="switchAddressTypeQr()"
-        style="font-size: 20px;font-weight: 700;width: fit-content; margin: auto; margin-top: -5px; cursor: pointer;">⇄
-      </div>
-    </div>
+
     <div style="margin-top: 5px;">
       Send BCH:
       <div style="display: flex; gap: 0.5rem;">

@@ -24,11 +24,15 @@
   <div style="word-break: break-all; text-align: center;">
     Token receiving address:
   </div>
-  <qr-code id="qrCode" :contents="store.wallet?.tokenaddr" 
-    style="display: block; width: 230px; height: 230px; margin: 5px auto 0 auto; background-color: #fff;">
-    <img src="images/tokenicon.png" slot="icon" /> <!-- eslint-disable-line -->
+  <qr-code
+    @click="() => copyToClipboard(store.wallet?.tokenaddr)" 
+    id="qrCode" 
+    :contents="store.wallet?.tokenaddr" 
+    style="cursor:pointer; display: block; width: 230px; height: 230px; margin: 5px auto 0 auto; background-color: #fff;"
+  >
+    <img src="images/olando-small.png" slot="icon" /> <!-- eslint-disable-line -->
   </qr-code>
-  <div style="word-break: break-all; text-align: center;">
+  <div style="word-break: break-all; text-align: center; font-size: small">
     <span @click="() => copyToClipboard(store.wallet?.tokenaddr)" style="cursor:pointer;">
       <span class="depositAddr">{{ store.wallet?.tokenaddr ?? "" }}</span>
       <img class="copyIcon" src="images/copyGrey.svg"> 

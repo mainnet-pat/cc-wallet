@@ -329,7 +329,7 @@
             <div id="childNftCommitment" style="word-break: break-all;" class="hide"></div>
           </div>
           <div v-if="tokenData?.amount !== undefined" style="display: flex; flex-direction: column;">
-            <div class="tokenAmount" id="tokenAmount">Amount: 
+            <div class="tokenAmount" style="color: var(--color-primary);" id="tokenAmount">
               {{ numberFormatter.format(toAmountDecimals(tokenData?.amount)) }} {{ tokenMetaData?.token?.symbol }}
             </div>
             <div v-if="tokenPrice !== 0" class="tokenAmount" id="tokenAmount">Value: 
@@ -398,7 +398,7 @@
         </div>
 
         <div v-if="displaySendTokens" style="margin-top: 10px;">
-          Send these tokens to
+          Send {{ tokenMetaData?.token?.symbol }} to
           <div class="inputGroup">
             <div class="addressInputFtSend">
               <div style="display: flex;">
