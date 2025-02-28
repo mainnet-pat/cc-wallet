@@ -158,7 +158,7 @@
   <fieldset style="margin-top: 20px; padding-top: 2rem; max-width: 75rem; margin: auto 10px;">
     <div style="text-align: center;">
       BCH balance:  
-      <span style="color: var(--color-primary)">
+      <span style="color: var(--color-bch)">
         {{ store.balance && store.balance[settingsStore.bchUnit] != undefined 
           ? numberFormatter.format(store.balance[settingsStore.bchUnit] as number) + displayUnitLong : "" }}
         ({{ store.balance && store.balance[settingsStore.currency] != undefined ?  (store.balance[settingsStore.currency]).toFixed(2) + ` ${CurrencySymbols[settingsStore.currency]}`: "" }})
@@ -167,9 +167,9 @@
     <div style="word-break: break-all; text-align: center;">
       BCH receiving address:
     </div>
-    <qr-code id="qrCode" :contents="displayeBchQr? store.wallet?.address : store.wallet?.tokenaddr" 
+    <qr-code id="qrCode" :contents="store.wallet?.address" 
       style="cursor: pointer; display: block; width: 230px; height: 230px; margin: 5px auto 0 auto; background-color: #fff;">
-      <img :src="displayeBchQr? 'images/bch-icon.png':'images/tokenicon.png'" slot="icon" /> <!-- eslint-disable-line -->
+      <img src="images/bch-icon.png" slot="icon" /> <!-- eslint-disable-line -->
     </qr-code>
     <div style="word-break: break-all; text-align: center; font-size: small">
       <span @click="() => copyToClipboard(store.wallet?.address)" style="cursor:pointer;">
@@ -199,7 +199,7 @@
       </span>
       <div v-if="(store.maxAmountToSend?.[settingsStore.bchUnit] ?? 0) < (bchSendAmount ?? 0)" style="color: red;" id="warningNoBCH">Not enough BCH in wallet to send</div>
     </div>
-    <input @click="sendBch()" type="button" class="primaryButton" id="send" value="Send" style="margin-top: 8px;">
+    <input @click="sendBch()" type="button" class="primaryButton" id="send" value="Send" style="margin-top: 8px; background-color:var(--color-bch)">
   </fieldset>
   <div v-if="showQrCodeDialog">
     <QrCodeDialog @hide="() => showQrCodeDialog = false" @decode="qrDecode" :filter="qrFilter"/>
