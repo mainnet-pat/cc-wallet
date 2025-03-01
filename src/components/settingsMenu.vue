@@ -105,7 +105,7 @@
     }
   }
   function confirmDeleteWallet(){
-    const text = "You are about to delete your Cashonize wallet info from this browser.\nAre you sure you want to delete?";
+    const text = "You are about to delete your Olando wallet info from this browser.\nAre you sure you want to delete?";
     if (confirm(text)){
       indexedDB.deleteDatabase("bitcoincash");
       indexedDB.deleteDatabase("bchtest");
@@ -117,7 +117,7 @@
 <template>
   <fieldset class="item">
     <legend>Settings</legend>
-    <div v-if="!isBrowser" style="margin-bottom: 15px;">Version Cashonize App: {{ appVersion }}</div>
+    <div v-if="!isBrowser" style="margin-bottom: 15px;">Version Olando App: {{ appVersion }}</div>
 
     <div style="margin-bottom: 15px; cursor: pointer;" @click="() => displayeAdvanced = !displayeAdvanced">
       {{!displayeAdvanced? '↳ Advanced settings' : '↲ All settings'}}

@@ -63,6 +63,7 @@
   }
 
   async function setWallet(newWallet: TestNetWallet){
+    changeView(1);
     if(newWallet.network == 'mainnet'){
       const connectionMainnet = new Connection("mainnet", `wss://${settingsStore.electrumServerMainnet}:50004`)
       newWallet.provider = connectionMainnet.networkProvider as ElectrumNetworkProvider 
@@ -106,7 +107,6 @@
     console.time('fetchAuthUtxos');
     await store.fetchAuthUtxos();
     console.timeEnd('fetchAuthUtxos');
-    changeView(1);
   }
 
   async function setUpWalletSubscriptions(){
