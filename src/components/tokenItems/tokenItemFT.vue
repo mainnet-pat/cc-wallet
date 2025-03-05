@@ -321,7 +321,7 @@
               TokenId: 
               <span>
                 <span class="tokenId" @click="copyToClipboard(tokenData.tokenId)" style="cursor: pointer;">
-                  {{ !isMobile ? `${tokenData.tokenId.slice(0, 20)}...${tokenData.tokenId.slice(-10)}` :  `${tokenData.tokenId.slice(0, 10)}...${tokenData.tokenId.slice(-10)}`}}
+                  {{ !isMobile ? `${tokenData.tokenId.slice(0, 8)}...${tokenData.tokenId.slice(-8)}` :  `${tokenData.tokenId.slice(0, 10)}...${tokenData.tokenId.slice(-10)}`}}
                 </span>
                 <img class="copyIcon" src="images/copyGrey.svg">
               </span>
