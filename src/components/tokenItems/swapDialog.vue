@@ -1,9 +1,10 @@
 <script setup lang="ts">
-  import { ref, watch, computed, onBeforeUnmount } from 'vue';
+  import { ref, watch, toRefs, computed, onBeforeUnmount } from 'vue';
   import { useStore } from 'src/stores/store';
   import { useSettingsStore } from 'src/stores/settingsStore'
   import { bcmrTokenMetadata } from 'src/interfaces/interfaces';
   import { ActivePoolEntry, ActivePoolsResult, broadcastTrade, fundProposedTrade, NATIVE_BCH_TOKEN_ID, proposeTrade, RostrumCauldronContractSubscribeResponse, TradeProposal } from 'src/utils/cauldron';
+  import { TradeResult } from 'cashlab/build/cauldron';
 
   import { ElectrumClient } from "electrum-cash";
 
@@ -152,7 +153,7 @@
       statusMessage.value = "Swapping...";
       const tradeTxList = await fundProposedTrade({wallet: store.wallet as any, tradeProposal: tradeProposal.value});
 
-      await broadcastTrade(store.wallet as any, tradeTxList);
+      const txIds = await broadcastTrade(store.wallet as any, tradeTxList);
       statusMessage.value = "Swapped!";
     } catch (e: any) {
       statusMessage.value = e.message;
@@ -179,7 +180,7 @@
     };
   }
 
-  const electrumClient = new ElectrumClient("Cashonize", "1.4.3", "rostrum.cauldron.quest", 50004, "wss");
+  const electrumClient = new ElectrumClient("OlandoWallet", "1.4.3", "rostrum.cauldron.quest", 50004, "wss");
   electrumClient.connect().then(async () => {
     await electrumClient.subscribe(callback as any, "cauldron.contract.subscribe", 2, props.tokenId);
   });

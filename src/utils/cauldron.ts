@@ -1,4 +1,4 @@
-import { SpendableCoin } from "cashlab";
+import { Fraction, SpendableCoin } from "cashlab";
 import { TestNetWallet, TokenI, UtxoI, Wallet } from "mainnet-js";
 import { binsAreEqual, hexToBin, privateKeyToP2pkhLockingBytecode } from "@bitauth/libauth";
 
@@ -173,7 +173,6 @@ export const fundProposedTrade = async ({
     supplyTokenId: TokenId, demandTokenId: TokenId,
     supply: bigint, demand: bigint
   }> = [];
-
   for (const entry of tradeProposal.entries) {
     let tradeSumEntry = tradeSumList.find((a) => a.supplyTokenId === entry.supply_token_id && a.demandTokenId === entry.demand_token_id);
     if (tradeSumEntry === undefined) {

@@ -321,7 +321,7 @@
               TokenId: 
               <span>
                 <span class="tokenId" @click="copyToClipboard(tokenData.tokenId)" style="cursor: pointer;">
-                  {{ !isMobile ? `${tokenData.tokenId.slice(0, 20)}...${tokenData.tokenId.slice(-10)}` :  `${tokenData.tokenId.slice(0, 10)}...${tokenData.tokenId.slice(-10)}`}}
+                  {{ !isMobile ? `${tokenData.tokenId.slice(0, 8)}...${tokenData.tokenId.slice(-8)}` :  `${tokenData.tokenId.slice(0, 10)}...${tokenData.tokenId.slice(-10)}`}}
                 </span>
                 <img class="copyIcon" src="images/copyGrey.svg">
               </span>
@@ -329,7 +329,7 @@
             <div id="childNftCommitment" style="word-break: break-all;" class="hide"></div>
           </div>
           <div v-if="tokenData?.amount !== undefined" style="display: flex; flex-direction: column;">
-            <div class="tokenAmount" id="tokenAmount">Amount: 
+            <div class="tokenAmount" style="color: var(--color-primary);" id="tokenAmount">
               {{ numberFormatter.format(toAmountDecimals(tokenData?.amount)) }} {{ tokenMetaData?.token?.symbol }}
             </div>
             <div v-if="tokenPrice !== 0" class="tokenAmount" id="tokenAmount">Value: 
@@ -371,6 +371,7 @@
             Token web link: 
             <a :href="tokenMetaData.uris.web" target="_blank">{{ tokenMetaData.uris.web }}</a>
           </div>
+          <!--
           <div>
             Max supply: 
             <span v-if="totalSupplyFT">
@@ -393,10 +394,11 @@
               }}
             </span><span v-else>...</span>
           </div>
+          -->
         </div>
 
         <div v-if="displaySendTokens" style="margin-top: 10px;">
-          Send these tokens to
+          Send {{ tokenMetaData?.token?.symbol }} to
           <div class="inputGroup">
             <div class="addressInputFtSend">
               <div style="display: flex;">

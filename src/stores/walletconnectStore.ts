@@ -18,10 +18,10 @@ export const useWalletconnectStore = defineStore('walletconnectStore', () => {
     const newweb3wallet = await Web3Wallet.init({
       core,
       metadata: {
-        name: 'Cashonize',
-        description: 'Cashonize BitcoinCash Web Wallet',
-        url: 'cashonize.com/',
-        icons: ['https://cashonize.com/images/favicon.ico'],
+        name: 'OlandoWallet',
+        description: 'Olando BCH Community Wallet',
+        url: 'olando.cash/',
+        icons: ['https://olando.cash/favicon.ico'],
       }
     })
 
