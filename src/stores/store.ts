@@ -303,14 +303,13 @@ export const useStore = defineStore('store', () => {
   function updateTokenList() {
     if(!wallet.value || !walletUtxos.value) return // should never happen
     const tokenUtxos = getTokenUtxos(walletUtxos.value);
-    const fungibleTokensResult = getFungibleTokenBalances(tokenUtxos);
+    const fungibleTokensResult = getFungibleTokenBalances(tokenUtxos, settingsStore.featuredTokens);
     const nftsResult = getAllNftTokenBalances(tokenUtxos);
     if(!fungibleTokensResult || !nftsResult) return // should never happen
     const arrayTokens:TokenList = [];
     for (const tokenId of Object.keys(fungibleTokensResult)) {
       const fungibleTokenAmount = fungibleTokensResult[tokenId]
-      if(!fungibleTokenAmount) continue // should never happen
-      arrayTokens.push({ tokenId, amount: fungibleTokenAmount });
+      arrayTokens.push({ tokenId, amount: fungibleTokenAmount ?? 0n });
     }
     for (const tokenId of Object.keys(nftsResult)) {
       const utxosNftTokenid = tokenUtxos.filter((val) =>val.token?.tokenId === tokenId);
@@ -425,6 +424,10 @@ export const useStore = defineStore('store', () => {
   }
 
   function tokenIconUrl(tokenId: string) {
+    if (tokenId === "BCH") {
+      return 'images/bch-icon.png';
+    }
+
     const tokenIconUri = bcmrRegistries.value?.[tokenId]?.uris?.icon;
     if (!tokenIconUri) return undefined;
 

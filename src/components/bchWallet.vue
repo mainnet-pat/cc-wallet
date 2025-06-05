@@ -5,7 +5,7 @@
   import { defineCustomElements } from '@bitjson/qr-code';
   import alertDialog from 'src/components/alertDialog.vue'
   import { CurrencySymbols, CurrencyShortNames } from 'src/interfaces/interfaces'
-  import { copyToClipboard, formatFiatAmount } from 'src/utils/utils';
+  import { copyToClipboard } from 'src/utils/utils';
   import { useWindowSize } from '@vueuse/core'
   import { useStore } from '../stores/store'
   import { useSettingsStore } from '../stores/settingsStore'
@@ -41,7 +41,7 @@
   const displayCurrencyBalance = computed(() => {
     const balance = store.balance?.[settingsStore.currency];
     if (balance === undefined) return '';
-    return formatFiatAmount(balance, settingsStore.currency);
+    return balance.toFixed(2) + ` ${CurrencySymbols[settingsStore.currency]}`;
   });
 
   defineCustomElements(window);

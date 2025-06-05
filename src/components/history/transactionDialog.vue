@@ -16,6 +16,7 @@
 
   const props = defineProps<{
     historyItem: TransactionHistoryItem,
+    tokenPrices: Record<string, number>,
   }>();
 
   const emit = defineEmits(['hide']);
@@ -40,7 +41,7 @@
   });
 
   const ourAddress = store.wallet?.cashaddr ?? "";
-  const feeIncurrency = await convert(props.historyItem.fee, "sat", settingsStore.currency) || "< 0.00";
+  const feeIncurrency = await convert(props.historyItem.fee, "sat", settingsStore.currency) || "0.00";
   const currencySymbol = CurrencySymbols[settingsStore.currency];
 
   const loadTokenMetadata = async (tokenId: string, commitment: string | undefined) => {
@@ -66,6 +67,15 @@
     tokenMetadata.value = store.bcmrRegistries[tokenId].nfts?.[commitment];
     selectedTokenCommitment.value = commitment;
   }
+
+  const values = {} as Record<string, number>;
+  for (const inOutput of [...props.historyItem.inputs, ...props.historyItem.outputs]) {
+    if (inOutput.token?.amount) {
+      const priceInSat = props.tokenPrices[`${inOutput.token.tokenId}-${props.historyItem.timestamp ?? 0}`] ?? 0;
+      values[`${inOutput.token.tokenId}-${props.historyItem.timestamp ?? 0}-${inOutput.token.amount}`] = await convert(priceInSat * Number(inOutput.token.amount), "sat", settingsStore.currency);
+    }
+  }
+  const currencyValues = ref(values);
 </script>
 
 <template>
@@ -115,7 +125,7 @@
           </div>
           <div>
             Fee: 
-              <span>{{ feeIncurrency }}{{ currencySymbol }} or {{ historyItem.fee }} sat ( {{ (historyItem.fee / historyItem.size).toFixed(1) }} sat/byte )</span>
+              <span>{{ currencySymbol }}{{ feeIncurrency }} or {{ historyItem.fee }} sat ( {{ (historyItem.fee / historyItem.size).toFixed(1) }} sat/byte )</span>
           </div>
         </div>
 
@@ -134,6 +144,7 @@
                   style="margin-left: 0.5rem; width: 20px; height: 20px; border-radius: 50%; vertical-align: sub;"
                   :src="store.tokenIconUrl(input.token.tokenId) ?? ''"
                 >
+                <span v-if="input.token.amount"> ({{ (currencyValues[`${input.token.tokenId}-${props.historyItem.timestamp ?? 0}-${input.token.amount}`] === 0 ? `${CurrencySymbols[settingsStore.currency]}0.00` : `${currencySymbol}${currencyValues[`${input.token.tokenId}-${props.historyItem.timestamp ?? 0}-${input.token.amount}`]}`) }})</span>
               </span>
             </div>
           </div>
@@ -154,6 +165,7 @@
                   style="margin-left: 0.5rem; width: 20px; height: 20px; border-radius: 50%; vertical-align: sub;"
                   :src="store.tokenIconUrl(output.token.tokenId) ?? ''"
                 >
+                <span v-if="output.token.amount"> ({{ (currencyValues[`${output.token.tokenId}-${props.historyItem.timestamp ?? 0}-${output.token.amount}`] === 0 ? `${CurrencySymbols[settingsStore.currency]}0.00` : `${currencySymbol}${currencyValues[`${output.token.tokenId}-${props.historyItem.timestamp ?? 0}-${output.token.amount}`]}`) }})</span>
               </span>
             </div>
           </div>

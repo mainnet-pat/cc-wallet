@@ -30,6 +30,7 @@
   const displaySeedphrase = ref(false);
   // user options
   const selectedDarkMode = ref(settingsStore.darkMode);
+  const selectedWalletConnect = ref(settingsStore.walletConnect);
   const showFiatValueHistory = ref(settingsStore.showFiatValueHistory);
   const selectedShowSwap = ref(settingsStore.showCauldronSwap);
   const selectedTokenBurn = ref(settingsStore.tokenBurn);
@@ -150,6 +151,10 @@
     darkmodeTransition()
     selectedDarkMode.value ? document.body.classList.add("dark") : document.body.classList.remove("dark")
   }
+  function changeWalletConnect(){
+    settingsStore.walletConnect = selectedWalletConnect.value;
+    localStorage.setItem("walletConnect", selectedWalletConnect.value? "true" : "false");
+  }
   // work-around to not apply transitions for qr code scanning
   function darkmodeTransition() {
       document.body.classList.add('transition-enabled');
@@ -239,6 +244,10 @@
     <div v-else-if="displaySettingsMenu == 2">
       <div style="margin-bottom:15px;">
         Dark mode <Toggle v-model="selectedDarkMode" @change="changeDarkMode()" style="vertical-align: middle; display: inline-block;"/>
+      </div>
+
+      <div style="margin-top: 15px;">Enable WalletConnect
+        <Toggle v-model="selectedWalletConnect" @change="changeWalletConnect()" style="vertical-align: middle; display: inline-block;"/>
       </div>
 
       <div style="margin-top:15px">

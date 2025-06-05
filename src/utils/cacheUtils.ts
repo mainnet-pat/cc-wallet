@@ -38,9 +38,9 @@ interface LocalStorageCacheResponse {
   timestamp: number
 }
 
-export async function cachedFetch(input: string): Promise<Response> {
+export async function cachedFetch(input: string, duration?: number): Promise<Response> {
   const now = Date.now();
-  const cacheDuration = 7 * 24 * 60 * 60 * 1000; // 7 days
+  const cacheDuration = duration ?? 7 * 24 * 60 * 60 * 1000; // 7 days
 
   const key = 'cachedFetch-' + binToHex(sha256.hash(utf8ToBin(input.toString())));
 
