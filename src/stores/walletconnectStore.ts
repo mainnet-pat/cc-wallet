@@ -49,10 +49,10 @@ export const useWalletconnectStore = async (wallet: Ref<Wallet | TestNetWallet>,
         // @ts-ignore: it complains about not having a 'relayUrl' property but it is not needed
         core,
         metadata: {
-          name: 'Cashonize',
-          description: 'Cashonize, a Bitcoin Cash Wallet',
-          url: 'https://cashonize.com',
-          icons: ['https://cashonize.com/images/favicon.ico'],
+          name: 'OlandoWallet',
+          description: 'Olando BCH Community Wallet',
+          url: 'https://olando.cash/',
+          icons: ['https://olando.cash/favicon.ico'],
         }
       })
 

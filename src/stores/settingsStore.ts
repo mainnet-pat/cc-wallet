@@ -27,7 +27,7 @@ export const useSettingsStore = defineStore('settingsStore', () => {
   const electrumServerChipnet = ref(defaultElectrumChipnet);
   const chaingraph = ref(defaultChaingraph);
   const ipfsGateway = ref(dafaultIpfsGateway);
-  const darkMode  = ref(false);
+  const darkMode  = ref(true);
   const showFiatValueHistory = ref(true);
   const tokenBurn = ref(false);
   const walletConnect = ref(false);
@@ -57,7 +57,7 @@ export const useSettingsStore = defineStore('settingsStore', () => {
   if(readQrScan) qrScan.value = readQrScan == "true";
 
   const readDarkMode = localStorage.getItem("darkMode");
-  if(readDarkMode == "true"){
+  if(readDarkMode !== "false"){
     document.body.classList.add("dark");
     darkMode.value = true;
   }

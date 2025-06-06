@@ -184,7 +184,7 @@
     };
   }
 
-  const electrumClient = new ElectrumClient("Cashonize", "1.4.3", "rostrum.cauldron.quest", 50004, "wss");
+  const electrumClient = new ElectrumClient("OlandoWallet", "1.4.3", "rostrum.cauldron.quest", 50004, "wss");
   electrumClient.connect().then(async () => {
     await electrumClient.subscribe(callback, "cauldron.contract.subscribe", 2, props.tokenId);
   });

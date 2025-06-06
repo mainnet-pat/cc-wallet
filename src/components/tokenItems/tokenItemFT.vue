@@ -333,14 +333,14 @@
               TokenId: 
               <span @click="copyToClipboard(tokenData.tokenId)">
                 <span class="tokenId" style="cursor: pointer;">
-                  {{ !isMobile ? `${tokenData.tokenId.slice(0, 20)}...${tokenData.tokenId.slice(-8)}` :  `${tokenData.tokenId.slice(0, 10)}...${tokenData.tokenId.slice(-8)}`}}
+                  {{ !isMobile ? `${tokenData.tokenId.slice(0, 8)}...${tokenData.tokenId.slice(-8)}` :  `${tokenData.tokenId.slice(0, 10)}...${tokenData.tokenId.slice(-8)}`}}
                 </span>
                 <img class="copyIcon" src="images/copyGrey.svg">
               </span>
             </div>
             <div style="word-break: break-all;" class="hide"></div>
           </div>
-          <div class="tokenAmount">Amount: 
+          <div class="tokenAmount" style="color: var(--color-primary);">Amount: 
             {{ numberFormatter.format(toAmountDecimals(tokenData?.amount)) }} {{ tokenMetaData?.token?.symbol }}
           </div>
           <div v-if="tokenPrice !== 0" class="tokenAmount" id="tokenAmount">Value: 
@@ -382,6 +382,7 @@
             Token web link: 
             <a :href="tokenMetaData.uris.web" target="_blank">{{ tokenMetaData.uris.web }}</a>
           </div>
+          <!-- 
           <div>
             Max supply: 
             <span v-if="totalSupplyFT">
@@ -404,6 +405,7 @@
               }}
             </span><span v-else>...</span>
           </div>
+           -->
           <div>
             <a style="color: var(--font-color); cursor: pointer;" :href="'https://tokenexplorer.cash/?tokenId=' + tokenData.tokenId" target="_blank">
               See details on TokenExplorer <img :src="settingsStore.darkMode? 'images/external-link-grey.svg' : 'images/external-link.svg'" style="vertical-align: sub;"/>
@@ -412,7 +414,7 @@
         </div>
 
         <div v-if="displaySendTokens" style="margin-top: 10px;">
-          Send these tokens to
+          Send {{ tokenMetaData?.token?.symbol }} to
           <div class="inputGroup">
             <div class="addressInputFtSend">
               <span style="width: 100%; position: relative;">

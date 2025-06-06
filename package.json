@@ -1,8 +1,8 @@
 {
   "name": "cashonize-wallet",
   "version": "0.3.9",
-  "description": "Cashonize is a Bitcoin Cash (BCH) Wallet which supports CashTokens, WalletConnect and CashConnect.",
-  "productName": "Cashonize",
+  "description": "Olando-Wallet is a Bitcoin Cash (BCH) Wallet which supports The Olando Community Currency.",
+  "productName": "Olando-Wallet",
   "author": "",
   "repository": {
     "type": "git",

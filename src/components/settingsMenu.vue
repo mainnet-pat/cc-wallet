@@ -183,7 +183,7 @@
     displaySeedphrase.value = !displaySeedphrase.value;
   }
   function confirmDeleteWallet(){
-    const text = `You are about to delete your Cashonize wallet info from this ${platformString}.\nAre you sure you want to delete it?`;
+    const text = `You are about to delete your Olando wallet info from this ${platformString}.\nAre you sure you want to delete it?`;
     if (confirm(text)){
       indexedDB.deleteDatabase("bitcoincash");
       indexedDB.deleteDatabase("bchtest");
@@ -210,7 +210,7 @@
   <fieldset class="item">
     <legend>Settings</legend>
     <div v-if="!isBrowser" style="margin-bottom: 15px;">
-      Version Cashonize App: {{ appVersion }}
+      Version Olando App: {{ appVersion }}
       <span v-if="isDesktop && latestGithubRelease && latestGithubRelease == 'v'+appVersion">(latest)</span>
       <span v-if="isDesktop && latestGithubRelease && latestGithubRelease !== 'v'+appVersion">
         (latest release is 

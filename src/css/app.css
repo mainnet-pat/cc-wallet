@@ -2,7 +2,8 @@
 @import 'chota';
 
 :root {
-  --color-primary: #0ac18f;
+  --color-primary: #2aa9e1;
+  --color-bch: #0ac18e;
   --toggle-height: 1.7rem;
 }
 
