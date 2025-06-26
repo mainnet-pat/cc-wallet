@@ -93,8 +93,8 @@
     try {
       const sigTemplate = new SignatureTemplate(store.wallet!.privateKey!, HashType.SIGHASH_ALL, SignatureAlgorithm.ECDSA);
       dissolvePartialTxHex.value = await dissolveIssuanceFund({
-        aliceAddress: address,
-        alicePriv: privKey,
+        address: address,
+        privKey: privKey,
         provider: provider,
         councilMultisigContract,
         adminMultisigContract,
@@ -170,8 +170,8 @@
       try {
       const sigTemplate = new SignatureTemplate(store.wallet!.privateKey!, HashType.SIGHASH_ALL, SignatureAlgorithm.ECDSA);
       dissolvePartialTxHex.value = await migrate({
-        aliceAddress: address,
-        alicePriv: privKey,
+        address: address,
+        privKey: privKey,
         provider: provider,
         councilMultisigContract,
         adminMultisigContract,
@@ -236,8 +236,8 @@
     console.log(investAmountValue);
     try {
       const tokensBought = await investInIssuanceFund({
-        aliceAddress: address,
-        alicePriv: privKey,
+        address: address,
+        privKey: privKey,
         provider: provider,
         investAmountBch: investAmountValue,
         adminMultisigContract: adminMultisigContract,
@@ -305,8 +305,8 @@
 
     try {
       await donate({
-        aliceAddress: address,
-        alicePriv: privKey,
+        address: address,
+        privKey: privKey,
         provider: provider,
         donationTokenAmount: BigInt(olaAmount * 10**2), // OLA has 2 decimals
         adminMultisigContract: adminMultisigContract,
