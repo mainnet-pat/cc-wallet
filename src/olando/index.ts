@@ -6,9 +6,11 @@ import Multisig_2of3Artifact from "olando/artifacts/Multisig_2of3.artifact";
 export const olandoCategory = "c1b511d524edbe14b419cbe092a6756f6255b288eee08b196af9c45c9baae61e";
 
 export const adminPubkeys = [
+  // "02b319ee4a546a4524f45856c213112adbb336844f7c880fb8e1314df433533e28",
+  // "02b319ee4a546a4524f45856c213112adbb336844f7c880fb8e1314df433533e28",
+  "0361758d50d17f38d46fa76123d5827997ab1532eb822575bb8c70e8b28cbf8467",
   "02b319ee4a546a4524f45856c213112adbb336844f7c880fb8e1314df433533e28",
-  "03633edb35f6552ecc3138c01c7219ddb278e1ae17304b60b2fd2aa8a1f20d0aaf",
-  "02b319ee4a546a4524f45856c213112adbb336844f7c880fb8e1314df433533e28",
+  "021227e4fa946a0a6c01f842fe477463ffe2d5c1f380a7f30053ac5a50c3597dc2",
 ]
 
 export const getAdminMultisig2of3Contract = (provider: ElectrumNetworkProvider, pubkeys: Uint8Array[]) => {

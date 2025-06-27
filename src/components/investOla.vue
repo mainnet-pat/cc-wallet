@@ -1,8 +1,7 @@
 
 <script setup lang="ts">
-  import { decodeCashAddress } from '@bitauth/libauth'
+  import { decodeCashAddress, binToHex } from '@bitauth/libauth'
   import { ElectrumNetworkProvider, HashType, Network, SignatureAlgorithm, SignatureTemplate } from 'cashscript'
-  import { binToHex } from 'mainnet-js'
   import { deployContractFromAuthGuard, dissolveIssuanceFund, investInIssuanceFund, getIssuanceContract, addMultisigSignature, donate, migrate } from 'olando'
   import { Notify } from 'quasar'
   import { adminPubkeys, getAdminMultisig2of3Contract, getCouncilMultisig2of3Contract, olandoCategory } from 'src/olando'
@@ -13,6 +12,7 @@
   const investAmountBch = ref("0");
   const investButtonDisabled = ref(false);
   const investStatusMessage = ref(" ");
+  const estimatedTokensBought = ref(0n);
 
   const donateAmountOla = ref("0");
   const donateButtonDisabled = ref(false);
@@ -75,16 +75,28 @@
   checkContractDeployed();
 
   const deployContract = async () => {
-    await deployContractFromAuthGuard({
-      provider: provider,
-      adminContract: adminMultisigContract,
-      councilContract: councilMultisigContract,
-      deployerAddress: address,
-      deployerPriv: privKey,
-      olandoCategory: olandoCategory,
-    });
+    disabled.value = true;
+    try {
+      await deployContractFromAuthGuard({
+        provider: provider,
+        adminContract: adminMultisigContract,
+        councilContract: councilMultisigContract,
+        deployerAddress: address,
+        deployerPriv: privKey,
+        olandoCategory: olandoCategory,
+      });
 
-    checkContractDeployed();
+      checkContractDeployed();
+    } catch (e) {
+      const errorMessage = `Failed to deploy contract: ${caughtErrorToString(e).split("\n")[0]}`;
+      Notify.create({
+        message: errorMessage,
+        icon: 'warning',
+        color: "red"
+      });
+      console.error(e);
+    }
+    disabled.value = false;
   };
 
   const initiateDissolveContract = async () => {
@@ -126,7 +138,7 @@
         privateKey: privKey,
         send: true,
       });
-      // console.log("Signed transaction hex:", signedTxHex);
+      console.log("Signed transaction hex:", signedTxHex);
       showSignRawTxHex.value = false;
       rawTxHex.value = undefined;
       checkContractDeployed();
@@ -222,8 +234,10 @@
     disabled.value = false;
   };
 
-  const invest = async () => {
-    disabled.value = true;
+  const invest = async (send: boolean) => {
+    if (send) {
+      disabled.value = true;
+    }
 
     const investAmountValue = Number(parseFloat(investAmountBch.value).toFixed(8));
     if (investAmountValue <= 0) {
@@ -232,7 +246,6 @@
       return;
     }
 
-    console.log(investAmountValue);
     try {
       const tokensBought = await investInIssuanceFund({
         address: address,
@@ -244,12 +257,16 @@
         olandoCategory: olandoCategory,
         // @ts-ignore
         wallet: store.wallet,
+        send: send,
       });
 
-      Notify.create({
-        message: `Successfuly bought ${Number(tokensBought) / 10**2} OLA. The same amount was also sent to the Community Council Fund`,
-        color: "positive",
-      });
+      if (send) {
+        Notify.create({
+          message: `Successfuly bought ${Number(tokensBought) / 10**2} OLA. The same amount was also sent to the Community Council Fund`,
+          color: "positive",
+        });
+      }
+      estimatedTokensBought.value = tokensBought;
     } catch (e) {
       const errorMessage = `Failed to create invest transaction: ${caughtErrorToString(e).split("\n")[0]}`;
       investStatusMessage.value = errorMessage;
@@ -268,6 +285,8 @@
 
   async function investAmountChange(event: Event) {
     try {
+      invest(false);
+
       investButtonDisabled.value = true;
       investStatusMessage.value = ` `;
 
@@ -348,7 +367,6 @@
       const maxAmount = Number(max) / 10**decimals;
 
       const donateAmountValue = Number((event.target as HTMLInputElement).value);
-      console.log(donateAmountValue)
 
       if (donateAmountValue <= 0) {
         donateStatusMessage.value = `Donation amount too low`;
@@ -385,8 +403,9 @@
           <input :disabled="disabled" @click="() => investMaxClick()" type="button" class="primaryButton" value="max" style="padding:12px;">
         </div>
         <div style="display: flex; flex-direction: column; align-items: center;">
-          <input @click="invest()" type="button" class="primaryButton" value="Invest" :disabled="investButtonDisabled || disabled">
-          {{ investStatusMessage }}
+          <span style="margin-bottom: 1rem;">Estimated OLA received {{ estimatedTokensBought > 0n ? Number(estimatedTokensBought) / 10**2 : '' }}</span>
+          <input @click="invest(true)" type="button" class="primaryButton" value="Invest" :disabled="investButtonDisabled || disabled">
+          <span style="margin-top: 1rem; background-color: indianred;">{{ investStatusMessage }}</span>
         </div>
       </div>
       <hr />
@@ -398,7 +417,7 @@
         </div>
         <div style="display: flex; flex-direction: column; align-items: center;">
           <input @click="donateToFund()" type="button" class="primaryButton" value="Donate" :disabled="donateButtonDisabled || disabled">
-          {{ donateStatusMessage }}
+          <span style="margin-top: 1rem; background-color: indianred;">{{ donateStatusMessage }}</span>
         </div>
       </div>
     </div>
@@ -430,7 +449,7 @@
         </fieldset>
       </div>
       <div v-else-if="contractDeployed === false" style="display: flex; flex-direction: column;">
-        <input @click="deployContract()" type="button" class="primaryButton" value="Deploy Contract" style="margin-top: 8px;">
+        <input :disabled="disabled" @click="deployContract()" type="button" class="primaryButton" value="Deploy Contract" style="margin-top: 8px;">
       </div>
       <div v-else style="text-align: center;">Loading...</div>
     </fieldset>
@@ -459,7 +478,7 @@
     <q-card style="min-width: 350px; background-color: rgba(71, 71, 71, 0.9);">
       <q-card-section>
         <div class="text-h6" style="font-size: large;">Transaction Hex</div>
-        <div class="text-h6" style="font-size: small; margin-top: 0.5rem;;">Send this multisig transaction to other signers to add their signatures and complete the transaction.</div>
+        <div class="text-h6" style="font-size: small; margin-top: 0.5rem;">Send this multisig transaction to other signers to add their signatures and complete the transaction.</div>
       </q-card-section>
 
       <q-card-section class="q-pt-none">
@@ -470,6 +489,17 @@
         <input :disabled="disabled" @click="copyToClipboard(rawTxHex)" type="button" class="primaryButton" value="Copy" style="">
         <input :disabled="disabled" type="button" class="primaryButton" value="Close" style="margin-left: 1rem;" v-close-popup @click="rawTxHex = undefined">
       </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+  <!-- loading -->
+  <q-dialog backdrop-filter="blur(0px)" transition-duration="0" v-model="disabled" :persistent="true">
+    <q-card style="height: 120px; min-width: 240px; background-color: rgba(71, 71, 71, 0.9); display: flex; flex-direction: column; justify-content: center; align-items: center;">
+      <q-spinner
+        color="primary"
+        size="3em"
+      />
+      <div style="font-size: large; font-weight: bold; margin-top: 1rem;">Please Wait</div>
     </q-card>
   </q-dialog>
 </template>
