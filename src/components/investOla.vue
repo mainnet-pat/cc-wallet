@@ -23,7 +23,6 @@
   const dissolveExpanded = ref(false);
   const migrateExpanded = ref(false);
   const contractDeployed = ref<boolean | undefined>(undefined);
-  const dissolvePartialTxHex = ref<string | undefined>(undefined);
   const showSignRawTxHex = ref(false);
   const showRawTxHex = ref<boolean>(false);
   const rawTxHex = ref<string | undefined>();
@@ -92,7 +91,7 @@
     disabled.value = true;
     try {
       const sigTemplate = new SignatureTemplate(store.wallet!.privateKey!, HashType.SIGHASH_ALL, SignatureAlgorithm.ECDSA);
-      dissolvePartialTxHex.value = await dissolveIssuanceFund({
+      rawTxHex.value = await dissolveIssuanceFund({
         address: address,
         privKey: privKey,
         provider: provider,
@@ -104,7 +103,6 @@
       });
       // console.log("Partial transaction hex:", dissolvePartialTxHex.value);
       showRawTxHex.value = true;
-      rawTxHex.value = dissolvePartialTxHex.value;
     } catch (e) {
       const errorMessage = `Failed to initiate contract dissolution: ${caughtErrorToString(e).split("\n")[0]}`;
       Notify.create({
@@ -124,12 +122,13 @@
         provider: provider,
         adminMultisigContract: adminMultisigContract,
         multisigInputIndex: 2,
-        partiallySignedTxHex: dissolvePartialTxHex.value!,
+        partiallySignedTxHex: rawTxHex.value!,
         privateKey: privKey,
         send: true,
       });
       // console.log("Signed transaction hex:", signedTxHex);
       showSignRawTxHex.value = false;
+      rawTxHex.value = undefined;
       checkContractDeployed();
     } catch (e) {
       const errorMessage = `Failed to add signature and send transaction: ${caughtErrorToString(e).split("\n")[0]}`;
@@ -169,7 +168,7 @@
 
       try {
       const sigTemplate = new SignatureTemplate(store.wallet!.privateKey!, HashType.SIGHASH_ALL, SignatureAlgorithm.ECDSA);
-      dissolvePartialTxHex.value = await migrate({
+      rawTxHex.value = await migrate({
         address: address,
         privKey: privKey,
         provider: provider,
@@ -183,7 +182,6 @@
       });
       // console.log("Partial transaction hex:", dissolvePartialTxHex.value);
       showRawTxHex.value = true;
-      rawTxHex.value = dissolvePartialTxHex.value;
     } catch (e) {
       const errorMessage = `Failed to initiate contract migration: ${caughtErrorToString(e).split("\n")[0]}`;
       Notify.create({
@@ -203,12 +201,13 @@
         provider: provider,
         adminMultisigContract: adminMultisigContract,
         multisigInputIndex: 1,
-        partiallySignedTxHex: dissolvePartialTxHex.value!,
+        partiallySignedTxHex: rawTxHex.value!,
         privateKey: privKey,
         send: true,
       });
       // console.log("Signed transaction hex:", signedTxHex);
       showSignRawTxHex.value = false;
+      rawTxHex.value = undefined;
       checkContractDeployed();
     } catch (e) {
       const errorMessage = `Failed to add signature and send transaction: ${caughtErrorToString(e).split("\n")[0]}`;
