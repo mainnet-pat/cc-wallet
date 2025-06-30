@@ -1,13 +1,16 @@
 
 <script setup lang="ts">
   import { decodeCashAddress, binToHex } from '@bitauth/libauth'
-  import { ElectrumNetworkProvider, HashType, Network, SignatureAlgorithm, SignatureTemplate } from 'cashscript'
-  import { deployContractFromAuthGuard, dissolveIssuanceFund, investInIssuanceFund, getIssuanceContract, addMultisigSignature, donate, migrate } from 'olando'
+  import { ElectrumNetworkProvider, HashType, Network, SignatureAlgorithm, SignatureTemplate, type Utxo } from 'cashscript'
+  import { deployContractFromAuthGuard, dissolveIssuanceFund, investInIssuanceFund, getIssuanceContract, addMultisigSignature, donate, migrate, MaxTokenSupply } from 'olando'
   import { Notify } from 'quasar'
-  import { adminPubkeys, getAdminMultisig2of3Contract, getCouncilMultisig2of3Contract, olandoCategory } from 'src/olando'
+  import { adminPubkeys, getAdminMultisig2of3Contract, getCouncilMultisig2of3Contract, olandoCategory, type RostrumUtxo, getContractState } from 'src/olando'
   import { useStore } from 'src/stores/store'
+  import { type ActivePoolsResult, type RostrumCauldronContractSubscribeResponse, type ActivePoolEntry } from 'src/utils/cauldron'
+  import { ElectrumClient, type RequestResponse, type SubscribeCallback } from "electrum-cash";
   import { caughtErrorToString } from 'src/utils/errorHandling'
-  import { ref } from 'vue'
+  import { onBeforeUnmount, ref, watchEffect } from 'vue'
+
   const store = useStore()
   const investAmountBch = ref("0");
   const investButtonDisabled = ref(false);
@@ -22,6 +25,8 @@
 
   const dissolveExpanded = ref(false);
   const migrateExpanded = ref(false);
+  const issuanceContractUtxo = ref<Utxo | undefined>(undefined);
+  const issuanceContractStats = ref<Awaited<ReturnType<typeof getContractState>> | undefined>(undefined);
   const contractDeployed = ref<boolean | undefined>(undefined);
   const showSignRawTxHex = ref(false);
   const showRawTxHex = ref<boolean>(false);
@@ -60,20 +65,6 @@
     })
   }
 
-  const checkContractDeployed = async () => {
-    try {
-      const utxos = await issuanceContract.getUtxos();
-      contractDeployed.value = utxos.length > 0;
-    } catch (e) {
-      Notify.create({
-        message: `Failed to check if contract is deployed: ${caughtErrorToString(e)}`,
-        icon: 'warning',
-        color: "red"
-      });
-    }
-  };
-  checkContractDeployed();
-
   const deployContract = async () => {
     disabled.value = true;
     try {
@@ -85,8 +76,6 @@
         deployerPriv: privKey,
         olandoCategory: olandoCategory,
       });
-
-      checkContractDeployed();
     } catch (e) {
       const errorMessage = `Failed to deploy contract: ${caughtErrorToString(e).split("\n")[0]}`;
       Notify.create({
@@ -141,7 +130,6 @@
       console.log("Signed transaction hex:", signedTxHex);
       showSignRawTxHex.value = false;
       rawTxHex.value = undefined;
-      checkContractDeployed();
     } catch (e) {
       const errorMessage = `Failed to add signature and send transaction: ${caughtErrorToString(e).split("\n")[0]}`;
       Notify.create({
@@ -220,7 +208,6 @@
       // console.log("Signed transaction hex:", signedTxHex);
       showSignRawTxHex.value = false;
       rawTxHex.value = undefined;
-      checkContractDeployed();
     } catch (e) {
       const errorMessage = `Failed to add signature and send transaction: ${caughtErrorToString(e).split("\n")[0]}`;
       Notify.create({
@@ -285,8 +272,6 @@
 
   async function investAmountChange(event: Event) {
     try {
-      invest(false);
-
       investButtonDisabled.value = true;
       investStatusMessage.value = ` `;
 
@@ -299,7 +284,8 @@
       }
 
       if (investAmountValue > balance - 50000) {
-        investMaxClick();
+        investStatusMessage.value = `Investment amount exceeds available balance`;
+        return;
       }
 
       investButtonDisabled.value = false;
@@ -375,8 +361,12 @@
       }
 
       if (donateAmountValue > maxAmount) {
-        donateAmountOla.value = String(maxAmount);
-        donateAmountChange({ target: { value: String(maxAmount) } } as unknown as Event);
+        donateStatusMessage.value = `Donation amount exceeds available OLA balance`;
+        return;
+      }
+
+      if (BigInt(Math.floor(donateAmountValue * 10**2)) + issuanceContractStats.value!.currentSupply > MaxTokenSupply) {
+        donateStatusMessage.value = `Donation amount exceeds maximum OLA supply allowed to be held by the contract`;
         return;
       }
 
@@ -387,6 +377,82 @@
       donateButtonDisabled.value = true;
     }
   };
+
+  // rostrum handling
+  const pools = ref(undefined as undefined | ActivePoolsResult);
+
+  const poolsCallback: SubscribeCallback = (response: Error | RequestResponse) => {
+    if (response instanceof Error) {
+      console.error(response.message);
+      return;
+    }
+
+    const rostrumResponse = response as RostrumCauldronContractSubscribeResponse;
+    pools.value = {
+      active: rostrumResponse.utxos.map(utxo => ({
+        owner_p2pkh_addr: "",
+        owner_pkh: utxo.pkh,
+        sats: utxo.sats,
+        token_id: utxo.token_id,
+        tokens: utxo.token_amount,
+        tx_pos: utxo.new_utxo_n,
+        txid: utxo.new_utxo_txid,
+      }) as ActivePoolEntry)
+
+      // limit to 10 most liquid pools
+      .sort((a, b) => b.sats - a.sats).filter((_, index) => index < 10)
+    };
+  }
+
+  const subscribeCallback: SubscribeCallback = async (response: Error | RequestResponse) => {
+    const rawUtxos = await electrumClient.request("blockchain.address.listunspent", issuanceContract.address, "include_tokens") as (RostrumUtxo)[];
+    const utxos = rawUtxos.map((utxo) => ({
+      txid: utxo.tx_hash,
+      vout: utxo.tx_pos,
+      satoshis: BigInt(utxo.value),
+      token: utxo.has_token ? {
+        amount: BigInt(utxo.token_amount ?? 0),
+        category: utxo.token_id,
+        nft: {
+          capability: "mutable",
+          commitment: utxo.commitment,
+        }
+      } : undefined,
+    } as Utxo)).filter(utxo => utxo.token?.category === olandoCategory);
+
+    if (utxos.length > 0) {
+      issuanceContractUtxo.value = utxos[0] as Utxo;
+      contractDeployed.value = true;
+    } else {
+      issuanceContractUtxo.value = undefined;
+      contractDeployed.value = false;
+    }
+  }
+
+  const electrumClient = new ElectrumClient("OlandoWallet", "1.4.3", "rostrum.cauldron.quest", 50004, "wss");
+  electrumClient.connect().then(async () => {
+    await electrumClient.subscribe(poolsCallback, "cauldron.contract.subscribe", 2, olandoCategory);
+    await electrumClient.subscribe(subscribeCallback, "blockchain.address.subscribe", issuanceContract.address);
+  });
+
+  onBeforeUnmount(async () => {
+    await electrumClient.unsubscribe(poolsCallback, "cauldron.contract.subscribe", 2, olandoCategory);
+    await electrumClient.unsubscribe(subscribeCallback, "blockchain.address.subscribe", issuanceContract.address);
+    await electrumClient.disconnect(true, false);
+  });
+
+  watchEffect(async () => {
+    if (!issuanceContractUtxo.value || !pools.value || pools.value.active.length === 0) {
+      return;
+    }
+
+    issuanceContractStats.value = await getContractState({
+      issuanceContractUtxo: issuanceContractUtxo.value,
+      investAmountBch: Number(investAmountBch.value),
+      pools: pools.value,
+    });
+  });
+
 </script>
 
 <template>
@@ -403,9 +469,9 @@
           <input :disabled="disabled" @click="() => investMaxClick()" type="button" class="primaryButton" value="max" style="padding:12px;">
         </div>
         <div style="display: flex; flex-direction: column; align-items: center;">
-          <span style="margin-bottom: 1rem;">Estimated OLA received {{ estimatedTokensBought > 0n ? Number(estimatedTokensBought) / 10**2 : '' }}</span>
+          <span style="margin-bottom: 1rem;">{{ issuanceContractStats?.issue ?? 0n > 0n ? `Estimated OLA received ${Number(issuanceContractStats!.issue) / 10**2}` : '' }}</span>
           <input @click="invest(true)" type="button" class="primaryButton" value="Invest" :disabled="investButtonDisabled || disabled">
-          <span style="margin-top: 1rem; background-color: indianred;">{{ investStatusMessage }}</span>
+          <span style="margin-top: 1rem; background-color: indianred; padding-left: 0.5rem; padding-right: 0.5rem;">{{ investStatusMessage }}</span>
         </div>
       </div>
       <hr />
@@ -417,7 +483,7 @@
         </div>
         <div style="display: flex; flex-direction: column; align-items: center;">
           <input @click="donateToFund()" type="button" class="primaryButton" value="Donate" :disabled="donateButtonDisabled || disabled">
-          <span style="margin-top: 1rem; background-color: indianred;">{{ donateStatusMessage }}</span>
+          <span style="margin-top: 1rem; background-color: indianred; padding-left: 0.5rem; padding-right: 0.5rem;">{{ donateStatusMessage }}</span>
         </div>
       </div>
     </div>
