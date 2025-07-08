@@ -39,7 +39,7 @@ export const adminPubkeys = [
   "0361758d50d17f38d46fa76123d5827997ab1532eb822575bb8c70e8b28cbf8467",
   "02b319ee4a546a4524f45856c213112adbb336844f7c880fb8e1314df433533e28",
   "021227e4fa946a0a6c01f842fe477463ffe2d5c1f380a7f30053ac5a50c3597dc2",
-]
+].sort().reverse(); // sort pubkeys to match the ElectronCash order
 
 export const getAdminMultisig2of3Contract = (provider: ElectrumNetworkProvider, pubkeys: Uint8Array[]) => {
   const artifact = replaceArtifactPlaceholders(Multisig_2of3Artifact, {
@@ -130,6 +130,7 @@ export const getContractState = async ({
     currentSupply: issuanceContractUtxo.token!.amount,
     issued: issued,
     issue: issue,
+    cauldronTradeAdjustedTokenAmount: cauldronTradeAdjustedTokenAmount,
     exceeds: issue > currentEmissionCap - issued,
     maxBchInvestmentSat: maxBchInvestmentSat,
   };

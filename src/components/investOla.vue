@@ -469,7 +469,7 @@
           <input :disabled="disabled" @click="() => investMaxClick()" type="button" class="primaryButton" value="max" style="padding:12px;">
         </div>
         <div style="display: flex; flex-direction: column; align-items: center;">
-          <span style="margin-bottom: 1rem;">{{ issuanceContractStats?.issue ?? 0n > 0n ? `Estimated OLA received ${Number(issuanceContractStats!.issue) / 10**2}` : '' }}</span>
+          <span style="margin-bottom: 1rem;">{{ issuanceContractStats?.cauldronTradeAdjustedTokenAmount ?? 0n > 0n ? `Estimated OLA received ${Number(issuanceContractStats!.cauldronTradeAdjustedTokenAmount) / 10**2}` : '' }}</span>
           <input @click="invest(true)" type="button" class="primaryButton" value="Invest" :disabled="investButtonDisabled || disabled">
           <span style="margin-top: 1rem; background-color: indianred; padding-left: 0.5rem; padding-right: 0.5rem;">{{ investStatusMessage }}</span>
         </div>
