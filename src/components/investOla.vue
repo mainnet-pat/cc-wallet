@@ -37,7 +37,7 @@
   const privKey = store.wallet!.privateKey!
   const address = store.wallet!.address!
 
-  const isAdmin = false;//adminPubkeys.includes(binToHex(pubkey));
+  const isAdmin = adminPubkeys.includes(binToHex(pubkey));
 
   const provider = new ElectrumNetworkProvider(Network.MAINNET, {
     manualConnectionManagement: false,
