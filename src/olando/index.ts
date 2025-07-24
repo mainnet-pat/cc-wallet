@@ -32,11 +32,14 @@ export interface RostrumUtxo {
 }
 
 export const olandoCategory = "d4c0b80d9ea541b8671b266c4b02abd4379b490378ffdd96bbcc18990032faf7";
+export const olandoName = "IncredibleTestToken"
+export const olandoSymbol = "ITT2"
+export const olandoDecimals = 2
 
 export const adminPubkeys = [
   "02b574c8c162bfbc60741e54e9c534afe2b299bd368f284f0d4191650b5b0ce812", // olando_master
-  "03633edb35f6552ecc3138c01c7219ddb278e1ae17304b60b2fd2aa8a1f20d0aaf", // olando_twp_user
-  "02850d0e2caebe80ca036555fe602ebd6725267fee9f8f04bf252882a72b89d2ed", // olando_twp_multi_1
+  "03633edb35f6552ecc3138c01c7219ddb278e1ae17304b60b2fd2aa8a1f20d0aaf", // olando_twp_user (seed "strategy")
+  "02850d0e2caebe80ca036555fe602ebd6725267fee9f8f04bf252882a72b89d2ed", // olando_twp_multi_1 (seed "remain")
 ].sort().reverse(); // sort pubkeys to match the ElectronCash order
 
 export const getAdminMultisig2of3Contract = (provider: ElectrumNetworkProvider, pubkeys: Uint8Array[]) => {

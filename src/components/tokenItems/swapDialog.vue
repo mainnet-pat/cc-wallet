@@ -205,7 +205,7 @@
 
         <q-card-section>
           <div style="display: flex; justify-content: center;padding-left:20px;padding-right:20px;">
-            <div class="text-h4">Swap {{ tokenMetadata?.name || `${tokenId.slice(0, 8)}...${tokenId.slice(64-8)}` }} on Cauldron</div>
+            <div class="text-h4">Swap {{ tokenMetadata?.name || `${tokenId.slice(0, 8)}...${tokenId.slice(64-8)}` }}</div>
           </div>
         </q-card-section>
 
@@ -218,7 +218,7 @@
               <img :src="assetAIcon as any" style="border-radius: 50%; width: 32px; height: 32px; margin-left: 16px;" />
             </div>
             <div style="display: flex; width: 100%; justify-content: center;">
-               <div @click="swapAssets" class="flip" style="font-weight: bolder; font-size: 24px; width: 36px; text-align: center; cursor: pointer;">↓</div>
+               <div @click="swapAssets" class="flip" style="font-weight: bolder; font-size: 48px; width: 72px; text-align: center; cursor: pointer;">↓</div>
             </div>
             <div style="display: flex; align-items: center;">
               <input v-model="amountB" @input="(event: Event) => amountBChange(event)" @focus="onFocus" style="width: 100%;" placeholder="Amount" />

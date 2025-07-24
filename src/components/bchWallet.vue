@@ -201,11 +201,13 @@
         ({{ store.balance && store.balance[settingsStore.currency] != undefined ?  (store.balance[settingsStore.currency] ?? 0).toFixed(2) + ` ${CurrencySymbols[settingsStore.currency]}`: "" }})
       </span>
 
-    <qr-code :contents="store.wallet?.address" @click="copyToClipboard(addressQrcode)" class="qr-code">
+    <qr-code :contents="store.wallet?.address" @click="copyToClipboard(addressQrcode)" class="qr-code"
+      style="cursor:pointer; display: block; width: 230px; height: 230px; margin: 5px auto 5px auto; background-color: #fff;"
+    >
       <img src="images/bch-icon.png" slot="icon" /> <!-- eslint-disable-line -->
     </qr-code>
 
-    <div style="word-break: break-all; text-align: center; font-size: small">
+    <div style="word-break: break-all; text-align: center; font-size: 8pt">
       <span @click="() => copyToClipboard(store.wallet?.address)" style="cursor:pointer;">
         <span class="depositAddr">{{ store.wallet?.address ?? "" }} </span>
         <img class="copyIcon" src="images/copyGrey.svg">

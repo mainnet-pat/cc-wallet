@@ -1,10 +1,9 @@
-
 <script setup lang="ts">
   import { decodeCashAddress, binToHex } from '@bitauth/libauth'
   import { ElectrumNetworkProvider, HashType, Network, SignatureAlgorithm, SignatureTemplate, type Utxo } from 'cashscript'
   import { deployContractFromAuthGuard, dissolveIssuanceFund, investInIssuanceFund, getIssuanceContract, addMultisigSignature, donate, migrate, MaxTokenSupply } from 'olando'
   import { Notify } from 'quasar'
-  import { adminPubkeys, getAdminMultisig2of3Contract, getCouncilMultisig2of3Contract, olandoCategory, type RostrumUtxo, getContractState } from 'src/olando'
+  import { adminPubkeys, getAdminMultisig2of3Contract, getCouncilMultisig2of3Contract, olandoCategory, olandoName, olandoSymbol, olandoDecimals, type RostrumUtxo, getContractState } from 'src/olando'
   import { useStore } from 'src/stores/store'
   import { type ActivePoolsResult, type RostrumCauldronContractSubscribeResponse, type ActivePoolEntry } from 'src/utils/cauldron'
   import { ElectrumClient, type RequestResponse, type SubscribeCallback } from "electrum-cash";
@@ -12,7 +11,7 @@
   import { onBeforeUnmount, ref, watchEffect } from 'vue'
 
   const store = useStore()
-  const investAmountBch = ref("0");
+  const investAmountBch = ref(""); //ref("0");
   const investButtonDisabled = ref(false);
   const investStatusMessage = ref(" ");
   const estimatedTokensBought = ref(0n);
@@ -38,7 +37,7 @@
   const privKey = store.wallet!.privateKey!
   const address = store.wallet!.address!
 
-  const isAdmin = adminPubkeys.includes(binToHex(pubkey));
+  const isAdmin = false;//adminPubkeys.includes(binToHex(pubkey));
 
   const provider = new ElectrumNetworkProvider(Network.MAINNET, {
     manualConnectionManagement: false,
@@ -249,7 +248,7 @@
 
       if (send) {
         Notify.create({
-          message: `Successfuly bought ${Number(tokensBought) / 10**2} OLA. The same amount was also sent to the Community Council Fund`,
+          message: `Successfuly bought ${Number(tokensBought) / 10**2} ${olandoSymbol}. The same amount was also sent to the Community Council Fund`,
           color: "positive",
         });
       }
@@ -279,12 +278,12 @@
 
       const investAmountValue = Math.floor(Number((event.target as HTMLInputElement).value) * 10 ** 8);
       if (investAmountValue < 0.001 * 10 ** 8) {
-        investStatusMessage.value = `Investment amount too low`;
+        investStatusMessage.value = `Buy amount too low`;
         return;
       }
 
       if (investAmountValue > balance - 50000) {
-        investStatusMessage.value = `Investment amount exceeds available balance`;
+        investStatusMessage.value = `Buy amount exceeds available BCH balance`;
         return;
       }
 
@@ -312,7 +311,7 @@
         address: address,
         privKey: privKey,
         provider: provider,
-        donationTokenAmount: BigInt(olaAmount * 10**2), // OLA has 2 decimals
+        donationTokenAmount: BigInt(olaAmount * 10**olandoDecimals), 
         adminMultisigContract: adminMultisigContract,
         councilMultisigContract: councilMultisigContract,
         olandoCategory: olandoCategory,
@@ -321,7 +320,7 @@
       });
 
       Notify.create({
-        message: `Donation of ${olaAmount} OLA sent to the Community Council Fund`,
+        message: `Donation of ${olaAmount} ${olandoSymbol} sent to the Community Council Fund`,
         color: "positive",
       });
     } catch (e) {
@@ -361,12 +360,12 @@
       }
 
       if (donateAmountValue > maxAmount) {
-        donateStatusMessage.value = `Donation amount exceeds available OLA balance`;
+        donateStatusMessage.value = `Donation amount exceeds available ${olandoSymbol} balance`;
         return;
       }
 
       if (BigInt(Math.floor(donateAmountValue * 10**2)) + issuanceContractStats.value!.currentSupply > MaxTokenSupply) {
-        donateStatusMessage.value = `Donation amount exceeds maximum OLA supply allowed to be held by the contract`;
+        donateStatusMessage.value = `Donation amount exceeds maximum ${olandoSymbol} supply allowed to be held by the contract`;
         return;
       }
 
@@ -457,40 +456,63 @@
 
 <template>
   <div>
-    <div style="margin-bottom: 2rem;">Your public key: {{ binToHex(pubkey) }}</div>
-    <div style="margin-bottom: 2rem;">Olando category: {{ olandoCategory }}</div>
-    <fieldset style="margin-top: 20px; padding-top: 2rem; max-width: 75rem; margin: auto 10px;">
-    <div v-if="contractDeployed === true" style="display: flex; flex-direction: column;">
-      <div style="font-size: large;">Invest in OLA</div>
-      <div style="">Investing in OLA is beneficial for the community. You buy OLA tokens from Cauldron at a 5% premium and unlock the same amount to be sent to the Community Council Fund which distributes it to help various community projects.</div>
-      <div style="display: flex; flex-direction: column; gap: 2rem;">
-        <div style="display: flex; flex-direction: row; gap: 2rem; margin-top: 8px;">
-          <input :disabled="disabled" v-model="investAmountBch" @input="(event: Event) => investAmountChange(event)" style="width: 100%;" placeholder="Amount BCH" type="number" />
-          <input :disabled="disabled" @click="() => investMaxClick()" type="button" class="primaryButton" value="max" style="padding:12px;">
+    <!-- key display -->
+    <!-- 
+      <div style="margin-bottom: 2rem;">Your public key: {{ binToHex(pubkey) }}</div>
+      <div style="margin-bottom: 2rem;">Olando category: {{ olandoCategory }}</div>
+    -->
+    <fieldset class="olando" style="margin-top: 20px; padding-top: 2rem; max-width: 75rem; margin: auto 10px;">
+      <!--<legend>Buy {{ olandoName }}</legend>-->
+      <div v-if="contractDeployed === true" style="display: flex; flex-direction: column;">
+        <div style="">
+          <h5>Buy {{ olandoSymbol }} with BCH.</h5>
+          <br/>
         </div>
-        <div style="display: flex; flex-direction: column; align-items: center;">
-          <span style="margin-bottom: 1rem;">{{ issuanceContractStats?.cauldronTradeAdjustedTokenAmount ?? 0n > 0n ? `Estimated OLA received ${Number(issuanceContractStats!.cauldronTradeAdjustedTokenAmount) / 10**2}` : '' }}</span>
-          <input @click="invest(true)" type="button" class="primaryButton" value="Invest" :disabled="investButtonDisabled || disabled">
-          <span style="margin-top: 1rem; background-color: indianred; padding-left: 0.5rem; padding-right: 0.5rem;">{{ investStatusMessage }}</span>
+<!--        <div style="">Buying {{ olandoName }} is beneficial for the community. You buy {{ olandoSymbol }} tokens from Cauldron at a 5% premium and unlock the same amount to be sent to the Community Council Fund which distributes it to help various community projects.</div>-->
+        <div style="display: flex; flex-direction: column; gap: 2rem;">
+          <div style="display: flex; flex-direction: row; gap: 2rem; margin-top: 8px;">
+            <!--<div>BCH to spend</div>-->
+            <input :disabled="disabled" v-model="investAmountBch" @input="(event: Event) => investAmountChange(event)" style="width: 100%;" placeholder="Amount BCH" type="number" />
+            <input :disabled="disabled" @click="() => investMaxClick()" type="button" class="primaryButton" value="max" style="padding:12px;">
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <span style="margin-bottom: 1rem;">{{ issuanceContractStats?.cauldronTradeAdjustedTokenAmount ?? 0n > 0n ? `You will receive ${(Number(issuanceContractStats!.cauldronTradeAdjustedTokenAmount) / 10**2).toLocaleString("en-US")} ${olandoSymbol} ` : '' }}</span>
+            <span style="margin-bottom: 1rem;">{{ issuanceContractStats?.cauldronTradeAdjustedTokenAmount ?? 0n > 0n ? `You will mirror ${(Number(issuanceContractStats!.cauldronTradeAdjustedTokenAmount) / 10**2).toLocaleString("en-US")} ${olandoSymbol} ` : '' }}</span>
+            <input @click="invest(true)" type="button" class="primaryButton" value="Buy" :disabled="investButtonDisabled || disabled">
+            <span style="margin-top: 1rem; background-color: indianred; padding-left: 0.5rem; padding-right: 0.5rem;">{{ investStatusMessage }}</span>
+          </div>
         </div>
+
+        <!-- explanatory propaganda -->
+
+        <div style="padding-top: 30px">
+          Every <b>payment</b> for goods and services with OLANDO increase <b>freedom</b> and promotes a free means of payment. 
+          <br/><br/>
+          OLANDO is a symbol for the real value of human life, not just the exchange rate.
+          <br/><br/>
+          The conversion rate with BCH is reduced by 5% as security fee to prevent abuse. A maximum of 8.888 billion OLANDO will be issued. The amount of OLANDO issued is dynamically limited to prevent excessive hoarding.
+          <br/><br/>
+          More info: <a href="http://www.olando.club">www.olando.club</a> 
+        </div>       
+        <!--
+        <hr />
+        <div>Already have {{ olandoSymbol }} and want to give it back to issuance fund? Want to help the community grow? Donate today!</div>
+        <div style="display: flex; flex-direction: column; gap: 2rem;">
+          <div style="display: flex; flex-direction: row; gap: 2rem; margin-top: 8px;">
+            <input :disabled="disabled" v-model="donateAmountOla" @input="(event: Event) => donateAmountChange(event)" style="width: 100%;" placeholder="Amount {{ olandoName }}" type="number" />
+            <input :disabled="disabled" @click="() => donateMaxClick()" type="button" class="primaryButton" value="max" style="padding:12px;">
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <input @click="donateToFund()" type="button" class="primaryButton" value="Donate" :disabled="donateButtonDisabled || disabled">
+            <span style="margin-top: 1rem; background-color: indianred; padding-left: 0.5rem; padding-right: 0.5rem;">{{ donateStatusMessage }}</span>
+          </div>
+        </div>
+        -->
       </div>
-      <hr />
-      <div>Already have OLA and want to give it back to issuance fund? Want to help the community grow? Donate today!</div>
-      <div style="display: flex; flex-direction: column; gap: 2rem;">
-        <div style="display: flex; flex-direction: row; gap: 2rem; margin-top: 8px;">
-          <input :disabled="disabled" v-model="donateAmountOla" @input="(event: Event) => donateAmountChange(event)" style="width: 100%;" placeholder="Amount OLA" type="number" />
-          <input :disabled="disabled" @click="() => donateMaxClick()" type="button" class="primaryButton" value="max" style="padding:12px;">
-        </div>
-        <div style="display: flex; flex-direction: column; align-items: center;">
-          <input @click="donateToFund()" type="button" class="primaryButton" value="Donate" :disabled="donateButtonDisabled || disabled">
-          <span style="margin-top: 1rem; background-color: indianred; padding-left: 0.5rem; padding-right: 0.5rem;">{{ donateStatusMessage }}</span>
-        </div>
+      <div v-else-if="contractDeployed === false" style="display: flex; flex-direction: column;">
+        Contract is not deployed yet. Admins should deploy it first.
       </div>
-    </div>
-    <div v-else-if="contractDeployed === false" style="display: flex; flex-direction: column;">
-      Contract is not deployed yet. Admins should deploy it first.
-    </div>
-    <div v-else style="text-align: center;">Loading...</div>
+      <div v-else style="text-align: center;">Loading...</div>
     </fieldset>
 
     <fieldset v-if="isAdmin" style="margin-top: 20px; padding-top: 2rem; max-width: 75rem; margin: auto 10px;">

@@ -138,9 +138,9 @@
           <tr style="padding-left: 10px;">
             <th scope="col"></th>
             <th scope="col">Date</th>
-            <th scope="col" class="valueHeader">Amount</th>
-            <th scope="col" class="valueHeader">Balance</th>
-            <th scope="col" style="text-align: right; padding-right: 40px;">Tokens</th>
+            <th scope="col" class="valueHeader">BCH</th>
+            <!--<th scope="col" class="valueHeader">Balance</th>-->
+            <th scope="col" style="text-align: right; padding-right: 40px;">Token</th>
           </tr>
         </thead>
         <tbody class="transactionTable">
@@ -153,16 +153,19 @@
 
             <td><EmojiItem :emoji="transaction.timestamp ? '✅' : '⏳' " style="margin: 0 5px; vertical-align: sub;"/> </td>
 
+            <!-- date -->
             <td v-if="isMobile">
               <div v-if="transaction.timestamp" style="line-height: 1.3">
-                <div>{{ new Date(transaction.timestamp * 1000).toLocaleDateString().replace("202", "2") }}</div>
+                <div>{{new Date(transaction.timestamp * 1000).toLocaleDateString().replace("202", "2").replaceAll("/", "-") }}</div>
                 <div>{{new Date(transaction.timestamp * 1000).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }) }}</div>
               </div>
               <div v-else>pending</div>
             </td>
-            <td v-else>{{ transaction.timestamp ? formatTimestamp(transaction.timestamp) : "Unconfirmed" }}</td>
+            <td v-else>{{ transaction.timestamp ? formatTimestamp(transaction.timestamp).replaceAll("/", "-") : "Unconfirmed" }}</td>
 
-            <td class="value" :style="transaction.valueChange < 0 ? 'color: rgb(188,30,30)' : ''">
+            <!-- BCH -->
+
+            <td class="value" :style="transaction.valueChange < 0 ? 'color: var(--color-red-text)' : ''">
               {{ `${transaction.valueChange > 0 ? '+' : '' }${(transaction.valueChange / 100_000_000).toFixed(5)}`}}
               {{ isMobile? "" : (bchDisplayUnit) }}
               <div v-if="settingsStore.showFiatValueHistory">
@@ -170,21 +173,22 @@
               </div>
             </td>
               
-            <td class="value">
+            <!-- balance -->
+            <!--<td class="value">
               {{ (transaction.balance / 100_000_000).toFixed(5) }}
               {{ isMobile? "" : (bchDisplayUnit) }}
               <div v-if="settingsStore.showFiatValueHistory">
                 ~{{formatFiatAmount(exchangeRate * transaction.balance / 100_000_000, settingsStore.currency) }}
               </div>
-            </td>
+            </td>-->
 
             <td class="tokenChange">
               <div class="tokenChangeItem" v-for="tokenChange in transaction.tokenAmountChanges" :key="tokenChange.tokenId">
                 <span v-if="tokenChange.amount !== 0n || tokenChange.nftAmount == 0n">
                   <span v-if="tokenChange.amount > 0n" class="value">+{{ (Number(tokenChange.amount) / 10**(store.bcmrRegistries?.[tokenChange.tokenId]?.token.decimals ?? 0)).toLocaleString("en-US") }}</span>
-                  <span v-else class="value" style="color: rgb(188,30,30)">{{ (Number(tokenChange.amount) / 10**(store.bcmrRegistries?.[tokenChange.tokenId]?.token.decimals ?? 0)).toLocaleString("en-US") }}</span>
+                  <span v-else class="value" style="color: var(--color-red-text)">{{ (Number(tokenChange.amount) / 10**(store.bcmrRegistries?.[tokenChange.tokenId]?.token.decimals ?? 0)).toLocaleString("en-US") }}</span>
                   <span class="hideOnOverflow"> {{ " " + (store.bcmrRegistries?.[tokenChange.tokenId]?.token?.symbol ?? tokenChange.tokenId.slice(0, 8)) }}</span>
-                  <div v-if="settingsStore.showFiatValueHistory" :style="tokenChange.amount < 0n ? 'color: rgb(188,30,30)' : ''">
+                  <div class="value" v-if="settingsStore.showFiatValueHistory" :style="tokenChange.amount < 0n ? 'var(--color-red-text)' : ''">
                     {{ tokenChange.amount < 0n ? '' : '+' }}{{ tokenChangeCurrencyValues[`${tokenChange.tokenId}-${transaction.timestamp ?? 0}-${tokenChange.amount}`] === 0 ? `${CurrencySymbols[settingsStore.currency]}0.00` : `${CurrencySymbols[settingsStore.currency]}${tokenChangeCurrencyValues[`${tokenChange.tokenId}-${transaction.timestamp ?? 0}-${tokenChange.amount}`]}` }}
                   </div>
                 </span>
