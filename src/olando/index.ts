@@ -31,9 +31,9 @@ export interface RostrumUtxo {
   commitment?: string;
 }
 
-export const olandoCategory = "d4c0b80d9ea541b8671b266c4b02abd4379b490378ffdd96bbcc18990032faf7";
-export const olandoName = "IncredibleTestToken"
-export const olandoSymbol = "ITT2"
+export const olandoCategory = "7eb17fedcb4839d29407535aaecb1825b54eace93a6c12f27769edeb0e65e92e";
+export const olandoName = "Terrible Test Token"
+export const olandoSymbol = "TTT"
 export const olandoDecimals = 2
 
 export const adminPubkeys = [
