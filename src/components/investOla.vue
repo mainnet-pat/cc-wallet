@@ -165,7 +165,8 @@
       return;
     }
 
-      try {
+    console.log("creating tx (calling migrate())");
+    try {
       const sigTemplate = new SignatureTemplate(store.wallet!.privateKey!, HashType.SIGHASH_ALL, SignatureAlgorithm.ECDSA);
       rawTxHex.value = await migrate({
         address: address,
@@ -510,7 +511,14 @@
         -->
       </div>
       <div v-else-if="contractDeployed === false" style="display: flex; flex-direction: column;">
-        Contract is not deployed yet. Admins should deploy it first.
+        <div style="margin-bottom: 2rem;"><h4>Contract is not deployed yet. Admins should deploy it first.</h4></div>
+        <div style="margin-bottom: 2rem;">
+          AdminA pubkey: <b>{{ adminPubkeys[0] }}</b>
+          AdminB pubkey: <b>{{ adminPubkeys[1] }}</b>
+          AdminC pubkey: <b>{{ adminPubkeys[2] }}</b>
+        </div>
+        <div style="margin-bottom: 2rem;">issuanceFundContract.address: <b>{{ newIssuanceFundContractAddress }}</b></div>
+        <div style="margin-bottom: 2rem;">councilMultisigContract.address: <b>{{ councilMultisigContract.address }}</b></div>        
       </div>
       <div v-else style="text-align: center;">Loading...</div>
     </fieldset>
