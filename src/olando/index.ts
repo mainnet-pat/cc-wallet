@@ -31,15 +31,21 @@ export interface RostrumUtxo {
   commitment?: string;
 }
 
-export const olandoCategory = "7eb17fedcb4839d29407535aaecb1825b54eace93a6c12f27769edeb0e65e92e";
-export const olandoName = "Terrible Test Token"
-export const olandoSymbol = "TTT"
+export const olandoCategory = "7fa887fd4eac015478b95392c4984721fbe3060223c30b342d43cc06817f07f6";
+export const olandoName = "Olando"
+export const olandoSymbol = "OLANDO"
 export const olandoDecimals = 2
 
 export const adminPubkeys = [
-  "02b574c8c162bfbc60741e54e9c534afe2b299bd368f284f0d4191650b5b0ce812", // olando_master
-  "03633edb35f6552ecc3138c01c7219ddb278e1ae17304b60b2fd2aa8a1f20d0aaf", // olando_twp_user (seed "strategy")
-  "02850d0e2caebe80ca036555fe602ebd6725267fee9f8f04bf252882a72b89d2ed", // olando_twp_multi_1 (seed "remain")
+  "03050676be740bb2b23fccdfaab20dbcd169aba19dc71c0eb915565e8ec1368c04",
+  "03cc9a1c1fc14e98b59d2b21b887ebf2888988e234cb30a859d73b2577a9c91913",
+  "03c3e22c6f1df7894c2bfd6bc5b5f8d1f026eced0a9f68bc2aac8384a3048f295e", // emergency
+].sort().reverse(); // sort pubkeys to match the ElectronCash order
+
+export const councilPubkeys = [
+  "03050676be740bb2b23fccdfaab20dbcd169aba19dc71c0eb915565e8ec1368c04",
+  "03cc9a1c1fc14e98b59d2b21b887ebf2888988e234cb30a859d73b2577a9c91913",
+  "03c3e22c6f1df7894c2bfd6bc5b5f8d1f026eced0a9f68bc2aac8384a3048f295e", // emergency
 ].sort().reverse(); // sort pubkeys to match the ElectronCash order
 
 export const getAdminMultisig2of3Contract = (provider: ElectrumNetworkProvider, pubkeys: Uint8Array[]) => {
@@ -55,9 +61,9 @@ export const getAdminMultisig2of3Contract = (provider: ElectrumNetworkProvider, 
 
 export const getCouncilMultisig2of3Contract = (provider: ElectrumNetworkProvider, pubkeys: Uint8Array[]) => {
   const artifact = replaceArtifactPlaceholders(Multisig_2of3Artifact, {
-    pubkeyA: pubkeys[0] ?? hexToBin(adminPubkeys[0]!),
-    pubkeyB: pubkeys[1] ?? hexToBin(adminPubkeys[1]!),
-    pubkeyC: pubkeys[2] ?? hexToBin(adminPubkeys[2]!),
+    pubkeyA: pubkeys[0] ?? hexToBin(councilPubkeys[0]!),
+    pubkeyB: pubkeys[1] ?? hexToBin(councilPubkeys[1]!),
+    pubkeyC: pubkeys[2] ?? hexToBin(councilPubkeys[2]!),
   });
 
   const contract = new Contract(artifact, [], { provider, ignoreFunctionSelector: true, addressType: 'p2sh20' });
