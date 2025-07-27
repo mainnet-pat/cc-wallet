@@ -6183,9 +6183,9 @@ ohash@^1.1.3:
   resolved "https://registry.yarnpkg.com/ohash/-/ohash-1.1.3.tgz#f12c3c50bfe7271ce3fd1097d42568122ccdcf07"
   integrity sha512-zuHHiGTYTA1sYJ/wZN+t5HKZaH23i4yI1HMwbuXm24Nid7Dv0KcuRlKoNKS9UNfAVSBlnGLcuQrnOKWOZoEGaw==
 
-"olando@https://github.com/mainnet-pat/olando.git#0.0.17":
-  version "0.0.17"
-  resolved "https://github.com/mainnet-pat/olando.git#1b34404eed894d786334998d7e0f4b1b00b75d18"
+"olando@https://github.com/mainnet-pat/olando.git#0.0.19":
+  version "0.0.19"
+  resolved "https://github.com/mainnet-pat/olando.git#53ecf03b8a86fa05f38d9ea770aec1047049ceb5"
   dependencies:
     "@bitauth/libauth" "^3.1.0-next.2"
     cashlab "0.0.11"
