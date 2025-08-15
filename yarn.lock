@@ -122,7 +122,7 @@
   dependencies:
     tslib "^2.1.0"
 
-"@cashscript/utils@^0.11.0":
+"@cashscript/utils@^0.11.0", "@cashscript/utils@^0.11.4":
   version "0.11.4"
   resolved "https://registry.yarnpkg.com/@cashscript/utils/-/utils-0.11.4.tgz#f5428a82afeac5b33c11edc82bbe7b3c56382329"
   integrity sha512-YU6jiH8dnd4ur/PgTRrRvFK2haOl2oVZUU5faQLLNqXtmAbBwfNi8aKh4kZnbCZQcacdsz5PT4OLjBg3sGSw0A==
@@ -1830,6 +1830,13 @@
   dependencies:
     undici-types "~6.19.2"
 
+"@types/node@^22.17.0":
+  version "22.17.1"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.17.1.tgz#484a755050497ebc3b37ff5adb7470f2e3ea5f5b"
+  integrity sha512-y3tBaz+rjspDTylNjAX37jEC3TETEFGNJL6uQDxwF9/8GLLIjW1rvVHlynyuUKMnMr1Roq8jOv3vkopBjC4/VA==
+  dependencies:
+    undici-types "~6.21.0"
+
 "@types/node@^22.7.7":
   version "22.13.10"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-22.13.10.tgz#df9ea358c5ed991266becc3109dc2dc9125d77e4"
@@ -3296,6 +3303,21 @@ cashscript@0.11.0:
     fast-deep-equal "^3.1.3"
     pako "^2.1.0"
     semver "^7.6.3"
+
+cashscript@^0.11.0:
+  version "0.11.4"
+  resolved "https://registry.yarnpkg.com/cashscript/-/cashscript-0.11.4.tgz#d8ff88f347d8d16dcef7d64db9d01aef89840983"
+  integrity sha512-V2atEcxaAozsbw0EqbyxOc0VzQUPbOa+PdOx1B+ZbQs3uaqbFxYzn8yJw9WrCt21GWNIi8xEfPBuvmK1E9Y7WA==
+  dependencies:
+    "@bitauth/libauth" "^3.1.0-next.2"
+    "@cashscript/utils" "^0.11.4"
+    "@electrum-cash/network" "^4.1.3"
+    "@mr-zwets/bchn-api-wrapper" "^1.0.1"
+    "@types/node" "^22.17.0"
+    delay "^6.0.0"
+    fast-deep-equal "^3.1.3"
+    pako "^2.1.0"
+    semver "^7.7.2"
 
 chai@^5.2.0:
   version "5.2.0"
@@ -6185,13 +6207,13 @@ ohash@^1.1.3:
   resolved "https://registry.yarnpkg.com/ohash/-/ohash-1.1.3.tgz#f12c3c50bfe7271ce3fd1097d42568122ccdcf07"
   integrity sha512-zuHHiGTYTA1sYJ/wZN+t5HKZaH23i4yI1HMwbuXm24Nid7Dv0KcuRlKoNKS9UNfAVSBlnGLcuQrnOKWOZoEGaw==
 
-"olando@https://github.com/mainnet-pat/olando.git#0.0.21":
-  version "0.0.19"
-  resolved "https://github.com/mainnet-pat/olando.git#06802095ba29449cbaf108e13918cc75a96a596c"
+"olando@https://github.com/mainnet-pat/olando.git#0.0.22":
+  version "0.0.22"
+  resolved "https://github.com/mainnet-pat/olando.git#2b6faaf535df442bc9c43c9f54850de3e078cf4d"
   dependencies:
     "@bitauth/libauth" "^3.1.0-next.2"
     cashlab "0.0.11"
-    cashscript "0.11.0"
+    cashscript "^0.11.0"
     mainnet-js "^2.6.5"
 
 on-exit-leak-free@^0.2.0:
@@ -7177,6 +7199,11 @@ semver@^7.6.0, semver@^7.6.3:
   resolved "https://registry.yarnpkg.com/semver/-/semver-7.6.3.tgz#980f7b5550bc175fb4dc09403085627f9eb33143"
   integrity sha512-oVekP1cKtI+CTDvHWYFUcMtsK/00wmAEfyqKfNdARm8u1wNVhSgaX7A8d4UuIlUI5e84iEwOhs7ZPYRmzU9U6A==
 
+semver@^7.7.2:
+  version "7.7.2"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-7.7.2.tgz#67d99fdcd35cec21e6f8b87a7fd515a33f982b58"
+  integrity sha512-RF0Fw+rO5AMf9MAyaRXI4AV0Ulj5lMHqVxxdSgiVbixSCXoEmmX/jk0CuJw4+3SqroYO9VoUh+HcuJivvtJemA==
+
 send@0.19.0:
   version "0.19.0"
   resolved "https://registry.yarnpkg.com/send/-/send-0.19.0.tgz#bbc5a388c8ea6c048967049dbeac0e4a3f09d7f8"
@@ -7918,6 +7945,11 @@ undici-types@~6.20.0:
   version "6.20.0"
   resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-6.20.0.tgz#8171bf22c1f588d1554d55bf204bc624af388433"
   integrity sha512-Ny6QZ2Nju20vw1SRHe3d9jVu6gJ+4e3+MMpqu7pqE5HT6WsTSlce++GQmK5UXS8mzV8DSYHrQH+Xrf2jVcuKNg==
+
+undici-types@~6.21.0:
+  version "6.21.0"
+  resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-6.21.0.tgz#691d00af3909be93a7faa13be61b3a5b50ef12cb"
+  integrity sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==
 
 unenv@^1.9.0:
   version "1.9.0"
