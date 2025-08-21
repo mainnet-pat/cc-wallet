@@ -224,6 +224,7 @@
       </div>
     </div>
 
+    <!-- Backup Wallet -->
     <div v-if="displaySettingsMenu == 1">
       <div style="margin-top:15px">Make backup of seed phrase (mnemonic)</div>
         <input @click="toggleShowSeedphrase()" class="button primary" type="button" style="padding: 1rem 1.5rem; display: block;" 
@@ -241,31 +242,47 @@
           </span>
         </div>
     </div>
-    <div v-else-if="displaySettingsMenu == 2">
-      <div style="margin-bottom:15px;">
-        Dark mode <Toggle v-model="selectedDarkMode" @change="changeDarkMode()" style="vertical-align: middle; display: inline-block;"/>
-      </div>
 
-      <div style="margin-top: 15px;">Enable WalletConnect
-        <Toggle v-model="selectedWalletConnect" @change="changeWalletConnect()" style="vertical-align: middle; display: inline-block;"/>
-      </div>
+
+    <!-- User Options -->
+    <div v-else-if="displaySettingsMenu == 2">
+      <!-- <div style="margin-bottom:15px;">
+        Dark mode <Toggle v-model="selectedDarkMode" @change="changeDarkMode()" style="vertical-align: middle; display: inline-block;"/>
+      </div> -->
 
       <div style="margin-top:15px">
         Show fiat value in History <Toggle v-model="showFiatValueHistory" @change="toggleShowFiatValueHistory" style="vertical-align: middle;display: inline-block;"/>
-      </div>
-
-      <div style="margin-top:15px">
-        Show Cauldron Swap Button <Toggle v-model="selectedShowSwap" @change="toggleShowSwap" style="vertical-align: middle;display: inline-block;"/>
-      </div>
-
-      <div style="margin-top: 15px; margin-bottom: 15px;">Enable token-burn  
-        <Toggle v-model="selectedTokenBurn" @change="changeTokenBurn()" style="vertical-align: middle; display: inline-block;"/>
       </div>
 
       <div v-if="!isCapacitor" style="margin-top: 15px; margin-bottom: 15px;">Enable QR scan 
         <Toggle v-model="enableQrScan" @change="changeQrScan()" style="vertical-align: middle; display: inline-block;"/>
       </div>
     </div>
+
+    <!-- Crypto Pro Options -->
+    <div v-else-if="displaySettingsMenu == 4">
+      <div style="margin-top: 15px;">Enable WalletConnect
+        <Toggle v-model="selectedWalletConnect" @change="changeWalletConnect()" style="vertical-align: middle; display: inline-block;"/>
+      </div>
+
+      <div style="margin-top:15px">
+        Show Cauldron Swap Button <Toggle v-model="selectedShowSwap" @change="toggleShowSwap" style="vertical-align: middle;display: inline-block;"/>
+      </div>
+
+      <!--<div style="margin-top: 15px; margin-bottom: 15px;">Enable token-burn  
+        <Toggle v-model="selectedTokenBurn" @change="changeTokenBurn()" style="vertical-align: middle; display: inline-block;"/>
+      </div>-->
+
+      <div style="margin-top: 15px; cursor: pointer;" @click="() => store.changeView(7)">
+        → UTXO Management <span v-if="utxosWithBchAndTokens?.length" style="color: orange">(important)</span>
+      </div>
+
+      <div v-if="!isMobile" style="margin-top: 15px; cursor: pointer;" @click="() => store.changeView(6)">
+        → Token Creation
+      </div>
+    </div>
+
+    <!-- Advanced Settings -->
     <div v-else-if="displaySettingsMenu == 3">
       <div>
         <label for="selectNetwork">Change network:</label>
@@ -345,12 +362,8 @@
         ↳ Advanced settings
       </div>
 
-      <div v-if="!isMobile" style="margin-bottom: 15px; cursor: pointer;" @click="() => store.changeView(6)">
-        → Token Creation
-      </div>
-
-      <div style="margin-bottom: 15px; cursor: pointer;" @click="() => store.changeView(7)">
-        → UTXO Management <span v-if="utxosWithBchAndTokens?.length" style="color: orange">(important)</span>
+      <div style="margin-bottom: 15px; cursor: pointer;" @click="() => displaySettingsMenu = 4">
+        ↳ Crypto Pro options
       </div>
 
       <div style="margin-top:15px">
