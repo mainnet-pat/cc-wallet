@@ -78,12 +78,13 @@
   
   <fieldset style="margin-top: 15px;">
     <div style="margin: 20px 0;">
-      <h4><img class="icon plusIcon" src="images/plus-square.svg"> Create new wallet</h4>
+      <h4>Create new wallet</h4>
       <input @click="createNewWallet()" class="button primary" type="button" value="Create">
     </div>
-    <hr style="margin: 30px 0;">
-    <div style="margin: 20px 0;">
-      <h4><img class="icon importIcon" src="images/import.svg"> Import existing wallet</h4>
+  </fieldset>
+  <fieldset style="margin-top: 15px;">
+    <div style="margin: 10px 0;">
+      <h4>Import existing wallet (or restore wallet)</h4>
       
       <div>Enter mnemonic seed phrase</div>
       <textarea autocorrect="off" autocapitalize="off" autocomplete="off" v-model="seedphrase" style="resize: none;" rows="3" cols="50" placeholder="word1 word2 ..."></textarea>
