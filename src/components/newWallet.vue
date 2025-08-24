@@ -59,7 +59,7 @@
     <div style="margin: 20px 0;">
       <h4><img class="icon importIcon" src="images/import.svg"> Import existing wallet</h4>
       <div>Enter mnemonic seed phrase</div>
-      <textarea v-model="seedphrase" style="resize: none;" rows="3" cols="50" placeholder="word1 word2 ..."></textarea>
+      <textarea autocorrect="off" autocapitalize="off" autocomplete="off" v-model="seedphrase" style="resize: none;" rows="3" cols="50" placeholder="word1 word2 ..."></textarea>
       <span>Derivation path: </span>
       <select v-model="selectedDerivationPath">
         <option value="standard">m/44’/145’/0’ (standard)</option>
