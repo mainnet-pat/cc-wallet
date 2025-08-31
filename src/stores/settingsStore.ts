@@ -10,6 +10,9 @@ const defaultElectrumMainnet = "electrum.imaginary.cash"
 const defaultElectrumChipnet = "chipnet.bch.ninja"
 const defaultChaingraph = "https://gql.chaingraph.pat.mn/v1/graphql";
 const dafaultIpfsGateway = "https://w3s.link/ipfs/";
+const defaultFeaturedTokens = [
+  "7fa887fd4eac015478b95392c4984721fbe3060223c30b342d43cc06817f07f6"
+];
 
 const { width,height } = useWindowSize();
 const isDesktop = (process.env.MODE == "electron");
@@ -29,6 +32,7 @@ export const useSettingsStore = defineStore('settingsStore', () => {
   const showFiatValueHistory = ref(true);
   const tokenBurn = ref(false);
   const showCauldronSwap = ref(false);
+  const walletConnect = ref(true);
   const qrScan = ref(true);
   const featuredTokens = ref([] as string[]);
   const hasInstalledPWA = ref(false as boolean);
@@ -75,6 +79,12 @@ export const useSettingsStore = defineStore('settingsStore', () => {
     darkMode.value = true;
   }
 
+  const readWalletConnect = localStorage.getItem("walletConnect");
+  if(readWalletConnect == "true"){
+    document.body.classList.add("walletConnect");
+    walletConnect.value = true;
+  }
+
   const readShowSwap = localStorage.getItem("showCauldronSwap");
   if(readShowSwap == "true"){
     showCauldronSwap.value = true;
@@ -83,6 +93,8 @@ export const useSettingsStore = defineStore('settingsStore', () => {
   const readFeaturedTokens = localStorage.getItem("featuredTokens");
   if(readFeaturedTokens) {
     featuredTokens.value = JSON.parse(readFeaturedTokens) as string[];
+  } else {
+    featuredTokens.value = defaultFeaturedTokens;
   }
 
   const readHasInstalledPWA = localStorage.getItem("pwaInstalled");
@@ -199,6 +211,7 @@ export const useSettingsStore = defineStore('settingsStore', () => {
     chaingraph,
     ipfsGateway,
     darkMode,
+    walletConnect,
     showFiatValueHistory,
     tokenBurn,
     showCauldronSwap,

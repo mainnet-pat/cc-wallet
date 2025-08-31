@@ -2,11 +2,14 @@
   import { useSettingsStore } from 'src/stores/settingsStore';
   import { useStore } from 'src/stores/store'
   import { computed, ref } from 'vue';
-  import { useWindowSize } from '@vueuse/core';
-  import { ExchangeRate, type TransactionHistoryItem } from 'mainnet-js';
+  import { asyncComputed, useWindowSize } from '@vueuse/core';
+  import { convert, ExchangeRate, type TransactionHistoryItem } from 'mainnet-js';
   import TransactionDialog from './transactionDialog.vue';
   import EmojiItem from '../general/emojiItem.vue';
   import { formatTimestamp, formatFiatAmount } from 'src/utils/utils';
+  import { fetchCurrentTokenPrice, fetchHistoricTokenPrice } from 'src/utils/priceUtils';
+  import { type TokenDataFT } from 'src/interfaces/interfaces';
+  import { CurrencySymbols } from 'src/interfaces/interfaces';
 
   const store = useStore()
   const settingsStore = useSettingsStore()
@@ -22,14 +25,83 @@
 
   const exchangeRate = await ExchangeRate.get(settingsStore.currency, true)
 
+const tokenPricesForTransaction = ref({} as Record<string, number>);
+
+  const tokenPrices = ref({} as Record<string, number>);
+  const tokenChangeCurrencyValues = ref({} as Record<string, number>);
+
+  const processHistoryCurrency = async (history: TransactionHistoryItem[] | undefined, unit: string): Promise<TransactionHistoryItem[] | undefined> => {
+    if (!history) {
+      return history;
+    }
+
+    const prices: Record<string, Promise<number> | number> = {};
+    for (const item of history) {
+      for (const inOutput of [...item.inputs, ...item.outputs]) {
+        if (inOutput.token?.amount) {
+          const key = `${inOutput.token.tokenId}-${(item.timestamp ?? 0)}`;
+          if (prices[key] !== undefined) {
+            continue;
+          }
+
+          if (item.timestamp === undefined) {
+            prices[key] = fetchCurrentTokenPrice(inOutput.token.tokenId)
+          } else {
+            prices[key] = fetchHistoricTokenPrice(inOutput.token.tokenId, item.timestamp)
+          }
+        }
+      }
+    }
+
+    await Promise.all(Object.entries(prices).map(async ([key, promise]) => {
+      prices[key] = await promise;
+    }));
+
+    tokenPrices.value = prices as Record<string, number>;
+
+    if (unit.includes("sat")) {
+      return history;
+    }
+
+    const changeCurrencyValues: Record<string, number> = {};
+    for (const transaction of history) {
+      for (const tokenChange of transaction.tokenAmountChanges) {
+        if (tokenChange.amount) {
+          const priceInSat = tokenPrices.value[`${tokenChange.tokenId}-${transaction.timestamp ?? 0}`] ?? 0;
+          changeCurrencyValues[`${tokenChange.tokenId}-${transaction.timestamp ?? 0}-${tokenChange.amount}`] = await convert(priceInSat * Number(tokenChange.amount), "sat", settingsStore.currency);
+        }
+      }
+    }
+    tokenChangeCurrencyValues.value = changeCurrencyValues;
+  };
+
+  const loadedTokenIds = store.tokenList?.map(token => token.tokenId) ?? [];
+  const tokenIds = (store.walletHistory?.map(transaction => transaction.tokenAmountChanges.map(tokenChange => tokenChange.tokenId)) ?? [])
+    .flat()
+    .filter((value, index, array) => array.indexOf(value) === index)
+    .filter(tokenId => !loadedTokenIds.includes(tokenId));
+
+  store.importRegistries(tokenIds.map(tokenId => ({tokenId} as TokenDataFT)), false);
+
+  const selectTransaction = (transaction: TransactionHistoryItem) => {
+    selectedTransaction.value = transaction;
+    const tokenIds = [...transaction.inputs, ...transaction.outputs].map(inOutput => inOutput.token?.amount ? inOutput.token?.tokenId : undefined).filter((value, index, array) => value && array.indexOf(value) === index);
+    tokenPricesForTransaction.value = Object.fromEntries(Object.entries(tokenPrices.value).filter(([key, ]) => tokenIds.includes(key.split('-')[0]) && key.includes(`-${transaction.timestamp ?? 0}`)));
+  }
+
   const selectedTransaction = ref(undefined as TransactionHistoryItem | undefined);
   const selectedFilter = ref("allTransactions" as "allTransactions" | "bchTransactions" | "tokenTransactions");
 
-  const selectedHistory = computed(() => {
-    if (selectedFilter.value === "bchTransactions") return store.walletHistory?.filter(tx => !tx.tokenAmountChanges.length);
-    if (selectedFilter.value === "tokenTransactions") return store.walletHistory?.filter(tx => tx.tokenAmountChanges.length);
-    return store.walletHistory;
-  });
+  const selectedHistory = asyncComputed(async () => {
+    const filteredHistory = (() => {
+      if (selectedFilter.value === "bchTransactions") return store.walletHistory?.filter(tx => !tx.tokenAmountChanges.length) ?? [];
+      if (selectedFilter.value === "tokenTransactions") return store.walletHistory?.filter(tx => tx.tokenAmountChanges.length) ?? [];
+      return store.walletHistory ?? [];
+    })();
+
+    await processHistoryCurrency(filteredHistory, settingsStore.currency);
+    return filteredHistory;
+  }, []);
 
   const transactionCount = computed(() => selectedHistory.value?.length);
 
@@ -75,7 +147,7 @@
           <tr
             v-for="transaction in paginatedHistory"
             :key="transaction.hash"
-            @click="() => selectedTransaction = transaction"
+            @click="() => selectTransaction(transaction)"
             :class="settingsStore.darkMode ? 'dark' : ''"
           >
 
@@ -112,6 +184,9 @@
                   <span v-if="tokenChange.amount > 0n" class="value">+{{ (Number(tokenChange.amount) / 10**(store.bcmrRegistries?.[tokenChange.tokenId]?.token.decimals ?? 0)).toLocaleString("en-US") }}</span>
                   <span v-else class="value" style="color: rgb(188,30,30)">{{ (Number(tokenChange.amount) / 10**(store.bcmrRegistries?.[tokenChange.tokenId]?.token.decimals ?? 0)).toLocaleString("en-US") }}</span>
                   <span class="hideOnOverflow"> {{ " " + (store.bcmrRegistries?.[tokenChange.tokenId]?.token?.symbol ?? tokenChange.tokenId.slice(0, 8)) }}</span>
+                  <div v-if="settingsStore.showFiatValueHistory" :style="tokenChange.amount < 0n ? 'color: rgb(188,30,30)' : ''">
+                    {{ tokenChange.amount < 0n ? '' : '+' }}{{ tokenChangeCurrencyValues[`${tokenChange.tokenId}-${transaction.timestamp ?? 0}-${tokenChange.amount}`] === 0 ? `${CurrencySymbols[settingsStore.currency]}0.00` : `${CurrencySymbols[settingsStore.currency]}${tokenChangeCurrencyValues[`${tokenChange.tokenId}-${transaction.timestamp ?? 0}-${tokenChange.amount}`]}` }}
+                  </div>
                 </span>
                 <span v-if="tokenChange.nftAmount !== 0n">
                   <span v-if="tokenChange.nftAmount > 0n" class="value">+{{ tokenChange.nftAmount }}</span>
@@ -142,7 +217,7 @@
     </fieldset>
   </div>
 
-  <TransactionDialog v-if="selectedTransaction" :history-item="selectedTransaction" @hide="() => {selectedTransaction = undefined}"></TransactionDialog>
+  <TransactionDialog v-if="selectedTransaction" :history-item="selectedTransaction" :tokenPrices="tokenPricesForTransaction" @hide="() => {selectedTransaction = undefined}"></TransactionDialog>
 </template>
 
 <style scoped>

@@ -54,7 +54,7 @@
     if(!utxosWithBchAndTokens.value || !store.walletUtxos) return
     try{
       const tokenUtxos = getTokenUtxos(store.walletUtxos);
-      const fungibleTokensResult = getFungibleTokenBalances(tokenUtxos);
+      const fungibleTokensResult = getFungibleTokenBalances(tokenUtxos, settingsStore.featuredTokens);
       const uniqueTokenIdsToSplit: Set<string> = new Set()
       utxosWithBchAndTokens.value.forEach(utxo => {
         if(utxo.token?.amount && !utxo.token?.capability) {

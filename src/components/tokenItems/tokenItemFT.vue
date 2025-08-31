@@ -1,10 +1,11 @@
 <script setup lang="ts">
   import { ref, onMounted, toRefs, computed, watch } from 'vue';
-  import { TokenSendRequest, type SendRequest } from "mainnet-js"
+  import { convert, TokenSendRequest, type SendRequest } from "mainnet-js"
   import { decodeCashAddress } from "@bitauth/libauth"
   // @ts-ignore
   import { createIcon } from '@download/blockies';
   import alertDialog from 'src/components/alertDialog.vue'
+  import swapDialog from './swapDialog.vue';
   import QrCodeDialog from '../qr/qrCodeScanDialog.vue';
   import type { TokenDataFT, BcmrTokenMetadata } from "src/interfaces/interfaces"
   import { queryTotalSupplyFT, queryReservedSupply } from "src/queryChainGraph"
@@ -12,6 +13,8 @@
   import { useStore } from 'src/stores/store'
   import { useSettingsStore } from 'src/stores/settingsStore'
   import {caughtErrorToString} from 'src/utils/errorHandling'
+  import { fetchCurrentTokenPrice } from 'src/utils/priceUtils';
+  import { CurrencySymbols } from 'src/interfaces/interfaces';
   import { useQuasar } from 'quasar'
   const $q = useQuasar()
   const store = useStore()
@@ -54,6 +57,16 @@
   const tokenName = computed(() => {
     return tokenMetaData.value?.name;
   })
+
+  const showSwapDialog = ref(false);
+
+  const tokenPrice = ref(0);
+  const updateTokenPrice = async () => {
+    const priceInSat = await fetchCurrentTokenPrice(tokenData.value.tokenId);
+    tokenPrice.value = await convert(Number(tokenData.value.amount) * priceInSat, "sat", settingsStore.currency);
+  };
+  setTimeout(updateTokenPrice, 1);
+  watch(tokenData, updateTokenPrice);
 
   onMounted(() => {
     const icon = createIcon({
@@ -325,8 +338,11 @@
             </div>
             <div style="word-break: break-all;" class="hide"></div>
           </div>
-          <div v-if="tokenData?.amount" class="tokenAmount">Amount: 
+          <div class="tokenAmount">Amount: 
             {{ numberFormatter.format(toAmountDecimals(tokenData?.amount)) }} {{ tokenMetaData?.token?.symbol }}
+          </div>
+          <div v-if="tokenPrice !== 0" class="tokenAmount" id="tokenAmount">Value: 
+            {{ CurrencySymbols[settingsStore.currency] }}{{ tokenPrice }}
           </div>
         </div>
         <span @click="store.toggleFavorite(tokenData.tokenId)" class="boxStarIcon">
@@ -342,10 +358,8 @@
           <span @click="displayTokenInfo = !displayTokenInfo">
             <img class="icon" :src="settingsStore.darkMode? 'images/infoLightGrey.svg' : 'images/info.svg'"> info
           </span>
-          <span v-if="settingsStore.showCauldronSwap && store.wallet.network == 'mainnet'" style="white-space: nowrap;">
-            <a :href="`https://app.cauldron.quest/swap/${tokenData.tokenId}`" target="_blank" style="color: var(--font-color);">
-              <img class="icon" :src="settingsStore.darkMode? 'images/cauldronLightGrey.svg' : 'images/cauldron.svg'"> swap
-            </a>
+          <span v-if="tokenPrice && settingsStore.showCauldronSwap && store.wallet?.network == 'mainnet'" style="white-space: nowrap;" @click="showSwapDialog = true">
+            <img class="icon" :src="settingsStore.darkMode? 'images/cauldronLightGrey.svg' : 'images/cauldron.svg'"> swap
           </span>
           <span v-if="settingsStore.tokenBurn && tokenData?.amount" @click="displayBurnFungibles = !displayBurnFungibles" style="white-space: nowrap;">
             <img class="icon" :src="settingsStore.darkMode? 'images/fireLightGrey.svg' : 'images/fire.svg'">
@@ -448,6 +462,9 @@
         </div>
       </div>
     </fieldset>
+    <div v-if="tokenPrice && showSwapDialog">
+      <swapDialog :token-balance="tokenData.amount" :token-id="tokenData.tokenId" :token-metadata="tokenMetaData" @close-dialog="() => showSwapDialog = false"/>
+    </div>
   </div>
   <div v-if="showQrCodeDialog">
     <QrCodeDialog @hide="() => showQrCodeDialog = false" @decode="qrDecode" :filter="qrFilter"/>

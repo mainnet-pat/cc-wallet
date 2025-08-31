@@ -422,6 +422,9 @@ export const useStore = defineStore('store', () => {
   }
 
   function tokenIconUrl(tokenId: string) {
+    if (tokenId === "BCH") {
+      return 'images/bch-icon.png';
+    }
     const tokenIconUri = bcmrRegistries.value?.[tokenId]?.uris?.icon;
     if (!tokenIconUri) return undefined;
 

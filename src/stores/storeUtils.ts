@@ -3,16 +3,18 @@ import { cachedFetch } from "src/utils/cacheUtils";
 import type { UtxoI } from "mainnet-js";
 import type { BcmrIndexerResponse, BcmrTokenMetadata, TokenList } from "src/interfaces/interfaces";
 import { getAllNftTokenBalances, getFungibleTokenBalances, getTokenUtxos } from "src/utils/utils";
+import { useSettingsStore } from 'src/stores/settingsStore'
+const settingsStore = useSettingsStore();
 
 export function tokenListFromUtxos(walletUtxos: UtxoI[]) {
   const tokenUtxos = getTokenUtxos(walletUtxos);
-  const fungibleTokensResult = getFungibleTokenBalances(tokenUtxos);
+  const fungibleTokensResult = getFungibleTokenBalances(tokenUtxos, settingsStore.featuredTokens);
   const nftsResult = getAllNftTokenBalances(tokenUtxos);
   const arrayTokens: TokenList = [];
   for (const tokenId of Object.keys(fungibleTokensResult)) {
     const fungibleTokenAmount = fungibleTokensResult[tokenId]
     if(!fungibleTokenAmount) continue // should never happen
-    arrayTokens.push({ tokenId, amount: fungibleTokenAmount });
+    arrayTokens.push({ tokenId, amount: fungibleTokenAmount ?? 0n });
   }
   for (const tokenId of Object.keys(nftsResult)) {
     const utxosNftTokenid = tokenUtxos.filter((val) =>val.token?.tokenId === tokenId);
