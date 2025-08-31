@@ -1,4 +1,5 @@
 <script setup lang="ts">
+  import { olandoSymbol } from 'src/olando'
   import newWalletView from 'src/components/newWallet.vue'
   import bchWalletView from 'src/components/bchWallet.vue'
   import myTokensView from 'src/components/myTokens.vue'
@@ -6,6 +7,7 @@
   import settingsMenu from 'src/components/settingsMenu.vue'
   import connectDappView from 'src/components/connectDapp.vue'
   import createTokensView from 'src/components/createTokens.vue'
+  import investOla from 'src/components/investOla.vue'
   import UtxoManagement from 'src/components/utxoManagement.vue'
   import { ref, computed, watch } from 'vue'
   import { storeToRefs } from 'pinia'
@@ -98,10 +100,11 @@
 
 <template>
   <header>
-    <img :src="settingsStore.darkMode? 'images/olando-wallet-logo.png' : 'images/olando-wallet-logo.png'" alt="CC-Wallet: a Bitcoin Cash Community Currency Wallet" style="height: 100px;" >
+    <img :src="settingsStore.darkMode? 'images/olando-wallet-logo.png' : 'images/olando-wallet-logo.png'" alt="CC-Wallet: a Bitcoin Cash Community Currency Wallet" style="max-height: 120px; max-width:95%" >
     <nav v-if="store.displayView" style="display: flex; justify-content: center;" class="tabs">
-      <div @click="store.changeView(1)" :class="{ active: store.displayView == 1 }"> {{ isMobile ? "BCH" : "BCH" }} </div>
-      <div @click="store.changeView(2)" :class="{ active: store.displayView == 2 }"> {{ isMobile ? "Olando" : "Olando" }} </div>
+      <div @click="store.changeView(1)" class="bold" :class="{ active: store.displayView == 1 }"> {{ isMobile ? "BCH" : "BCH" }} </div>
+      <div @click="store.changeView(2)" class="bold" :class="{ active: store.displayView == 2 }"> {{ isMobile ? olandoSymbol : olandoSymbol }} </div>
+      <div @click="store.changeView(8)" :class="{ active: store.displayView == 8 }"> {{ isMobile ? "Buy" : "Buy" }} </div>
       <div @click="store.changeView(3)" :class="{ active: store.displayView == 3 }"> {{ isMobile ? "History" : "History" }} </div>
       <div v-if="settingsStore.walletConnect" @click="store.changeView(4)" v-bind:style="store.displayView == 4 ? {color: 'var(--color-primary'} : ''">{{isMobile?  "Connect" : "WalletConnect"}}</div>
       <div @click="store.changeView(5)" style="width: max-content; position: relative;">
@@ -116,6 +119,7 @@
 
     <bchWalletView v-if="store.displayView == 1" :bchSendRequest="bchSendRequest"/>
     <myTokensView v-if="store.displayView == 2"/>
+    <investOla v-if="store.displayView == 8" />
     <historyView v-if="store.displayView == 3"/>
     <connectDappView v-if="store.displayView == 4" :dappUriUrlParam="dappUriUrlParam"/>
     <settingsMenu v-if="store.displayView == 5"/>
