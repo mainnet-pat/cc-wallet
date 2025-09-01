@@ -2,7 +2,9 @@
 @import 'chota';
 
 :root {
-  --color-primary: #0ac18f;
+  --color-primary: #2aa9e1;
+  --color-bch: #0ac18e;
+  --color-red-text: #ff9900;
   --toggle-height: 1.7rem;
 }
 
@@ -41,6 +43,11 @@ nav div {
   cursor: pointer;
   border-bottom: 2px solid var(--color-lightGrey);
 }
+nav div:hover {
+}
+nav > .bold {
+  font-weight: bold;
+}
 b {
   font-weight: 700;
 }
@@ -49,6 +56,9 @@ a,
   text-decoration: none;
   color: hsla(160, 100%, 37%, 1);
   transition: 0.4s;
+}
+.olando a {
+  color: var(--color-primary);
 }
 img {
   -webkit-user-drag: none;
@@ -125,7 +135,8 @@ input[type='number'] {
 }
 .tokenBaseInfo {
   width: 100%;
-  display: flex;
+  padding-left: 20px;
+  display: block;
   align-items: center;
 }
 .tokenIcon {
@@ -148,7 +159,11 @@ input[type='number'] {
   display: block;
 }
 .tokenAmount {
-  margin-left: 30px;
+  font-size: large;
+  font-weight: bold;
+}
+.olando .tokenAmount {
+  color: var(--color-primary)
 }
 .addressInputFtSend {
   margin-right: 14px;
@@ -162,15 +177,19 @@ input[type='number'] {
   gap: 0.5rem;
 }
 .actionBar {
-  margin-top: 15px;
+  margin-top: 10px;
   margin-bottom: 5px;
 }
 .inputGroup {
   margin: 0 0 8px;
   display: flex;
 }
+.actionBar {
+  padding-top: 5px;
+  border-top: 1px solid grey;
+}
 .actionBar span {
-  margin: 0 20px;
+  margin: 0 15px;
   cursor: pointer;
 }
 .actionBar :first-of-type {

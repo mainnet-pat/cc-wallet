@@ -28,11 +28,11 @@ export const useSettingsStore = defineStore('settingsStore', () => {
   const electrumServerChipnet = ref(defaultElectrumChipnet);
   const chaingraph = ref(defaultChaingraph);
   const ipfsGateway = ref(dafaultIpfsGateway);
-  const darkMode  = ref(false);
+  const darkMode  = ref(true);
   const showFiatValueHistory = ref(true);
   const tokenBurn = ref(false);
-  const showCauldronSwap = ref(false);
-  const walletConnect = ref(true);
+  const showCauldronSwap = ref(true);
+  const walletConnect = ref(false);
   const qrScan = ref(true);
   const featuredTokens = ref([] as string[]);
   const hasInstalledPWA = ref(false as boolean);
@@ -69,7 +69,7 @@ export const useSettingsStore = defineStore('settingsStore', () => {
   if(readQrAnimation) qrAnimation.value = readQrAnimation as QRCodeAnimationName | 'None';
 
   const readDarkMode = localStorage.getItem("darkMode");
-  if(readDarkMode == "true"){
+  if(readDarkMode !== "false"){
     document.body.classList.add("dark");
     darkMode.value = true;
   }

@@ -213,48 +213,30 @@
 
 <template>
   <fieldset style="margin-top: 20px; padding-top: 2rem; padding-bottom: 1rem; max-width: 75rem; margin: auto 10px;">
-    <div v-if="store.network == 'mainnet'" style="font-size: 1.2em">
-      {{ CurrencyShortNames[settingsStore.currency] }} balance:
-      <span style="color: hsla(160, 100%, 37%, 1);">{{ displayCurrencyBalance }}</span>
-    </div>
-    <span>
-      {{ bchDisplayNetwork }} balance:  
-      <span style="color: hsla(160, 100%, 37%, 1);">
-        {{ store.balance && store.balance[settingsStore.bchUnit] != undefined 
-          ? numberFormatter.format(store.balance[settingsStore.bchUnit]) + displayUnitLong : "" }}
+    <div style="text-align: center;">
+      {{ bchDisplayNetwork }} balance:
+      <span style="color: var(--color-bch);">
+        {{ store.balance && store.balance[settingsStore.bchUnit] != undefined
+          ? numberFormatter.format(store.balance[settingsStore.bchUnit] as number) + displayUnitLong : "" }}
+          ({{ store.balance && store.balance[settingsStore.currency] != undefined ?  (store.balance[settingsStore.currency] ?? 0).toFixed(2) + ` ${CurrencySymbols[settingsStore.currency]}`: "" }})
       </span>
-    </span>
-    <span v-if="!isMobilePhone">
-      , Tokens: 
-      <span style="color: hsla(160, 100%, 37%, 1);">
-        {{ nrTokenCategories != undefined ? nrTokenCategories + " different categories" : ""}}
-      </span>
-    </span>
-    <div v-else style="margin-bottom: 10px;">
-      Tokens: 
-      <span style="color: hsla(160, 100%, 37%, 1);">
-        {{ nrTokenCategories != undefined ? nrTokenCategories + " different categories" : ""}}
-      </span>
-    </div>
-    <div style="word-break: break-all;">
-      {{ bchDisplayNetwork }} address: 
+
       <span @click="() => copyToClipboard(store.wallet.cashaddr)" style="cursor:pointer;">
         <span class="depositAddr">{{ store.wallet.cashaddr ?? "" }} </span>
         <img class="copyIcon" src="images/copyGrey.svg">
       </span>
-    </div>
-    <div style="word-break: break-all;">
-      Token address:
-      <span @click="() => copyToClipboard(store.wallet.tokenaddr)" style="cursor:pointer;">
-        <span class="depositAddr">{{ store.wallet.tokenaddr ?? "" }}</span>
-        <img class="copyIcon" src="images/copyGrey.svg"> 
-      </span>
-    </div>
-    <qr-code ref="qrCodeRef" :contents="addressQrcode" @click="copyToClipboard(addressQrcode)" class="qr-code" @codeRendered="animateQrCode">
-      <img :src="displayBchQr? 'images/bch-icon.png':'images/tokenicon.png'" slot="icon" /> <!-- eslint-disable-line -->
-    </qr-code>
-    <div style="text-align: center;">
-      <div class="switchAddressButton icon" @click="switchAddressTypeQr()">⇄
+
+      <qr-code :contents="store.wallet.cashaddr" @click="copyToClipboard(addressQrcode)" class="qr-code"
+        style="cursor:pointer; display: block; width: 230px; height: 230px; margin: 5px auto 5px auto; background-color: #fff;"
+      >
+        <img src="images/bch-icon.png" slot="icon" /> <!-- eslint-disable-line -->
+      </qr-code>
+
+      <div style="word-break: break-all; text-align: center; font-size: 8pt">
+        <span @click="() => copyToClipboard(store.wallet.cashaddr)" style="cursor:pointer;">
+          <span class="depositAddr">{{ store.wallet.cashaddr ?? "" }} </span>
+          <img class="copyIcon" src="images/copyGrey.svg">
+        </span>
       </div>
     </div>
     <div>
@@ -281,7 +263,7 @@
       <div v-if="(store.maxAmountToSend?.[settingsStore.bchUnit] ?? 0) < (bchSendAmount ?? 0)" style="color: red;">Not enough BCH in wallet to send</div>
       
     </div>
-    <input @click="sendBch()" type="button" class="primaryButton" value="Send" style="margin-top: 8px;">
+    <input @click="sendBch()" type="button" class="primaryButton" value="Send" style="margin-top: 8px; background-color:var(--color-bch);">
   </fieldset>
   <div v-if="showQrCodeDialog">
     <QrCodeDialog @hide="() => showQrCodeDialog = false" @decode="qrDecode" :filter="qrFilter"/>

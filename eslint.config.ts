@@ -79,6 +79,7 @@ export default defineConfigWithVueTs(
         'error',
         { allowTernary: true } // Allow function calls and other expressions in ternaries
       ],
+      '@typescript-eslint/no-unused-vars': 'off',
 
       // allow debugger during development only
       'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'

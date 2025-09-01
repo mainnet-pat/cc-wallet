@@ -1,4 +1,5 @@
 <script setup lang="ts">
+  import { olandoCategory } from 'src/olando'
   import { ref, onMounted, toRefs, computed, watch } from 'vue';
   import { convert, TokenSendRequest, type SendRequest } from "mainnet-js"
   import { decodeCashAddress } from "@bitauth/libauth"
@@ -321,27 +322,14 @@
 <template>
   <div :id="`id${tokenData.tokenId.slice(0, 10)}`" class="item">
     <fieldset style="position: relative;">
-      <div class="tokenInfo">
+      <div class="tokenInfo" :class="{olando: ( tokenData.tokenId == olandoCategory )}">
         <img v-if="httpsUrlTokenIcon" class="tokenIcon" width="48" height="48" loading="lazy" :src="httpsUrlTokenIcon">
         <div v-else id="genericTokenIcon" class="tokenIcon"></div>
         <div class="tokenBaseInfo">
-          <div class="tokenBaseInfo1">
-            <div v-if="tokenName">Name: {{ tokenName }}</div>
-            <div style="word-break: break-all;">
-              TokenId: 
-              <span @click="copyToClipboard(tokenData.tokenId)">
-                <span class="tokenId" style="cursor: pointer;">
-                  {{ !isMobile ? `${tokenData.tokenId.slice(0, 20)}...${tokenData.tokenId.slice(-8)}` :  `${tokenData.tokenId.slice(0, 10)}...${tokenData.tokenId.slice(-8)}`}}
-                </span>
-                <img class="copyIcon" src="images/copyGrey.svg">
-              </span>
-            </div>
-            <div style="word-break: break-all;" class="hide"></div>
-          </div>
-          <div class="tokenAmount">Amount: 
+          <div class="tokenAmount">
             {{ numberFormatter.format(toAmountDecimals(tokenData?.amount)) }} {{ tokenMetaData?.token?.symbol }}
           </div>
-          <div v-if="tokenPrice !== 0" class="tokenAmount" id="tokenAmount">Value: 
+          <div v-if="tokenPrice !== 0" class="tokenValue" id="tokenAmount">Value: 
             {{ CurrencySymbols[settingsStore.currency] }}{{ tokenPrice }}
           </div>
         </div>
@@ -371,7 +359,16 @@
           </span>
         </div>
         <div v-if="displayTokenInfo" class="tokenAction">
-          <div></div>
+          <div v-if="tokenName">Name: {{ tokenName }}</div>
+          <div style="word-break: break-all;">
+            TokenId: 
+            <span @click="copyToClipboard(tokenData.tokenId)">
+              <span class="tokenId" style="cursor: pointer;">
+                {{ !isMobile ? `${tokenData.tokenId.slice(0, 8)}...${tokenData.tokenId.slice(-8)}` :  `${tokenData.tokenId.slice(0, 10)}...${tokenData.tokenId.slice(-8)}`}}
+              </span>
+              <img class="copyIcon" src="images/copyGrey.svg">
+            </span>
+          </div>
           <div v-if="tokenMetaData?.description" class="indentText"> Token description: {{ tokenMetaData.description }} </div>
           <div v-if="tokenData.amount && tokenMetaData">
             Number of decimals: {{ tokenMetaData?.token?.decimals ?? 0 }}
@@ -380,7 +377,7 @@
             Token web link: 
             <a :href="tokenMetaData.uris.web" target="_blank">{{ tokenMetaData.uris.web }}</a>
           </div>
-          <div>
+          <!-- <div>
             Max supply: 
             <span v-if="totalSupplyFT">
               {{ totalSupplyFT!= MAX_SUPPLY_FTS ?
@@ -389,7 +386,7 @@
                 : "open ended"
               }}
             </span><span v-else>...</span>
-          </div>
+          </div> -->
           <div>
             Circulating supply: 
             <span v-if="totalSupplyFT && reservedSupply != undefined">
@@ -410,7 +407,7 @@
         </div>
 
         <div v-if="displaySendTokens" class="tokenAction">
-          Send these tokens to
+          Send {{ tokenMetaData?.token?.symbol }} to
           <div class="inputGroup">
             <div class="addressInputFtSend">
               <span style="width: 100%; position: relative;">

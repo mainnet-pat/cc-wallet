@@ -1,8 +1,8 @@
 {
   "name": "cashonize-wallet",
   "version": "0.5.5",
-  "description": "Cashonize is a Bitcoin Cash (BCH) Wallet which supports CashTokens, WalletConnect and CashConnect.",
-  "productName": "Cashonize",
+  "description": "Olando-Wallet is a Bitcoin Cash (BCH) Wallet which supports the Olando Community Currency.",
+  "productName": "Olando-Wallet",
   "author": "Mathieu Geukens",
   "repository": {
     "type": "git",
@@ -14,7 +14,8 @@
     "lint": "eslint -c ./eslint.config.ts \"./src*/**/*.{ts,js,cjs,mjs,vue}\"",
     "test": "vitest",
     "dev": "quasar dev",
-    "build": "quasar build"
+    "build": "quasar build",
+    "postinstall": "patch-package --patch-dir node_modules/olando/patches"
   },
   "dependencies": {
     "@bitauth/libauth": "3.1.0-next.2",
@@ -30,9 +31,12 @@
     "@walletconnect/core": "2.19.2",
     "cashconnect": "^0.0.19",
     "cashlab": "0.0.11",
+    "cashscript": "0.11.0",
     "chota": "^0.9.2",
     "electron-store": "^10.1.0",
+    "electrum-cash": "2.0.10",
     "mainnet-js": "^2.7.17",
+    "olando": "https://github.com/mainnet-pat/olando.git#0.0.27",
     "pinia": "^3.0.3",
     "quasar": "^2.18.2",
     "vue": "^3.5.20",
@@ -54,6 +58,7 @@
     "eslint-plugin-vue": "^10.4.0",
     "globals": "^16.3.0",
     "jiti": "^2.5.1",
+    "patch-package": "^8.0.0",
     "rollup-plugin-visualizer": "^6.0.3",
     "typescript": "^5.9.2",
     "vite-plugin-checker": "^0.10.0",
