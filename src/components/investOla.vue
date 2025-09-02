@@ -41,8 +41,10 @@
   const isAdmin = adminPubkeys.includes(binToHex(pubkey));
 
   const provider = new ElectrumNetworkProvider(Network.MAINNET, {
-    manualConnectionManagement: false,
-  })
+    manualConnectionManagement: true,
+  });
+  await provider.connect();
+
   const adminMultisigContract = getAdminMultisig2of3Contract(provider, [])
   const councilMultisigContract = getCouncilMultisig2of3Contract(provider, [])
 
@@ -463,6 +465,8 @@
     await electrumClient.unsubscribe("cauldron.contract.subscribe", 2, olandoCategory);
     await electrumClient.unsubscribe("blockchain.address.subscribe", issuanceContract.address);
     await electrumClient.disconnect(true, false);
+
+    await provider.disconnect();
   });
 
   watchEffect(async () => {
