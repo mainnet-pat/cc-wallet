@@ -36,7 +36,7 @@
     "electron-store": "^10.1.0",
     "electrum-cash": "2.0.10",
     "mainnet-js": "^2.7.17",
-    "olando": "https://github.com/mainnet-pat/olando.git#0.0.27",
+    "olando": "https://github.com/mainnet-pat/olando.git#0.0.28",
     "pinia": "^3.0.3",
     "quasar": "^2.18.2",
     "vue": "^3.5.20",
