@@ -31,7 +31,7 @@ export const useSettingsStore = defineStore('settingsStore', () => {
   const darkMode  = ref(false);
   const showFiatValueHistory = ref(true);
   const tokenBurn = ref(false);
-  const showCauldronSwap = ref(false);
+  const showCauldronSwap = ref(true);
   const walletConnect = ref(true);
   const qrScan = ref(true);
   const featuredTokens = ref([] as string[]);
