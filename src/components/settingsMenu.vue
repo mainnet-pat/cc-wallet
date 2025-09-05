@@ -237,6 +237,7 @@
       </div>
     </div>
 
+    <!-- Backup Wallet -->
     <div v-if="displaySettingsMenu == 1">
       <div style="margin-top:15px">Make backup of seed phrase (mnemonic)</div>
         <input @click="toggleShowSeedphrase()" class="button primary" type="button" style="padding: 1rem 1.5rem; display: block;" 
@@ -254,30 +255,35 @@
           </span>
         </div>
     </div>
-    <div v-else-if="displaySettingsMenu == 2">
-      <div style="margin-bottom:15px;">
-        Dark mode <Toggle v-model="selectedDarkMode" @change="changeDarkMode()" style="vertical-align: middle; display: inline-block;"/>
-      </div>
 
-      <div style="margin-top: 15px;">Enable WalletConnect
-        <Toggle v-model="selectedWalletConnect" @change="changeWalletConnect()" style="vertical-align: middle; display: inline-block;"/>
-      </div>
+    <!-- User Options -->
+    <div v-else-if="displaySettingsMenu == 2">
+      <!--<div style="margin-bottom:15px;">
+        Dark mode <Toggle v-model="selectedDarkMode" @change="changeDarkMode()" style="vertical-align: middle; display: inline-block;"/>
+      </div>-->
 
       <div style="margin-top:15px">
         Show fiat value in History <Toggle v-model="showFiatValueHistory" @change="toggleShowFiatValueHistory" style="vertical-align: middle;display: inline-block;"/>
+      </div>
+
+      <div v-if="!isCapacitor" style="margin-top: 15px;">
+        Enable QR scan <Toggle v-model="enableQrScan" @change="changeQrScan()" style="vertical-align: middle; display: inline-block;"/>
+      </div>
+    </div>
+
+    <!-- Crypto Pro Options -->
+    <div v-else-if="displaySettingsMenu == 5">
+      <div style="margin-top: 15px;">Enable WalletConnect
+        <Toggle v-model="selectedWalletConnect" @change="changeWalletConnect()" style="vertical-align: middle; display: inline-block;"/>
       </div>
 
       <div style="margin-top:15px">
         Show Cauldron Swap Button <Toggle v-model="selectedShowSwap" @change="toggleShowSwap" style="vertical-align: middle;display: inline-block;"/>
       </div>
 
-      <div style="margin-top: 15px; margin-bottom: 15px;">
+      <!--<div style="margin-top: 15px; margin-bottom: 15px;">
         Enable token-burn <Toggle v-model="selectedTokenBurn" @change="changeTokenBurn()" style="vertical-align: middle; display: inline-block;"/>
-      </div>
-
-      <div v-if="!isCapacitor" style="margin-top: 15px;">
-        Enable QR scan <Toggle v-model="enableQrScan" @change="changeQrScan()" style="vertical-align: middle; display: inline-block;"/>
-      </div>
+      </div>-->
 
       <div style="margin-top:15px">
         <label for="selectUnit">Select fiat currency:</label>
@@ -306,7 +312,14 @@
           <option value="None">None</option>
         </select>
       </div>
+
+      <div style="margin-bottom: 15px; cursor: pointer;" @click="() => store.changeView(8)">
+        → Sweep Private Key
+      </div>
+
     </div>
+
+    <!-- Advanced Settings -->
     <div v-else-if="displaySettingsMenu == 3">
 
       <div v-if="store.network == 'mainnet'" style="margin-top:15px">
@@ -370,6 +383,8 @@
         <input @click="clearMetadataCache()" type="button" value="Clear token cache" class="button" style="display: block; color: black;">
       </div>
     </div>
+
+    <!-- network settings -->
     <div v-else-if="displaySettingsMenu == 4">
       <div>
         <label for="selectNetwork">Change network:</label>
@@ -404,6 +419,10 @@
         ↳ User options
       </div>
 
+      <div style="margin-bottom: 15px; cursor: pointer;" @click="() => displaySettingsMenu = 5">
+        ↳ Crypto Pro Options
+      </div>
+
       <div style="margin-bottom: 15px; cursor: pointer;" @click="() => displaySettingsMenu = 3">
         ↳ Advanced settings
       </div>
@@ -414,10 +433,6 @@
 
       <div style="margin-bottom: 15px; cursor: pointer;" @click="() => store.changeView(7)">
         → UTXO Management <span v-if="utxosWithBchAndTokens?.length" style="color: orange">(important)</span>
-      </div>
-
-      <div style="margin-bottom: 15px; cursor: pointer;" @click="() => store.changeView(8)">
-        → Sweep Private Key
       </div>
 
       <div style="margin-top:15px; margin-bottom:15px;">
