@@ -3,6 +3,9 @@
   import { Wallet, TestNetWallet, Config } from "mainnet-js"
   import { useQuasar } from 'quasar'
   import { useStore } from 'src/stores/store'
+  import { wordlist } from '@scure/bip39/wordlists/english'
+  import { Notify } from 'quasar'
+
   const store = useStore()
   const $q = useQuasar()
   const isBrowser = (process.env.MODE == "spa");
@@ -11,6 +14,7 @@
   const selectedDerivationPath =  ref("standard" as ("standard" | "bitcoindotcom"));
 
   const nameWallet = "mywallet";
+  const checkWordsResult = ref("");
 
   async function createNewWallet() {
     Config.DefaultParentDerivationPath = "m/44'/145'/0'";
@@ -18,6 +22,29 @@
     const walletId = mainnetWallet.toDbString().replace("mainnet", "testnet");
     await TestNetWallet.replaceNamed(nameWallet, walletId);
     store.setWallet(mainnetWallet)
+  }
+
+  async function checkWords() {
+    let words = seedphrase.value.split(" ")
+    words = words.filter(f => f !== "")
+    let msg = ""
+    if (words.length != 12) { 
+      msg += "Your seed consists of " + (words.length<12?"only ":" ") + words.length + " words, check for missing or additional words.\n" 
+    }
+    words.forEach((word, index) => {
+      if (!wordlist.includes(word.toLowerCase())) {
+        msg += "Word #" + (index+1) + " (\"" + word + "\") not in dictionary, check for typos.\n"
+      }
+    })
+    checkWordsResult.value = msg;
+    if (msg === "") {
+      Notify.create({
+        message: "Seed phrase looks OK.",
+        icon: 'info',
+        timeout : 2000,
+        color: "green"
+      })
+    }
   }
 
   async function importWallet() {
@@ -52,15 +79,19 @@
   
   <fieldset style="margin-top: 15px;">
     <div style="margin: 20px 0;">
-      <h4><img class="icon plusIcon" src="images/plus-square.svg"> Create new wallet</h4>
+      <h4>Create new wallet</h4>
       <input @click="createNewWallet()" class="button primary" type="button" value="Create">
     </div>
-    <hr style="margin: 30px 0;">
-    <div style="margin: 20px 0;">
-      <h4><img class="icon importIcon" src="images/import.svg"> Import existing wallet</h4>
+  </fieldset>
+  <fieldset style="margin-top: 15px;">
+    <div style="margin: 10px 0;">
+      <h4>Restore wallet</h4>
       <div>Enter mnemonic seed phrase</div>
       <textarea autocorrect="off" autocapitalize="off" autocomplete="off" v-model="seedphrase" style="resize: none;" rows="3" cols="50" placeholder="word1 word2 ..."></textarea>
-      <span>Derivation path: </span>
+      <input @click="checkWords()" class="button primary" type="button" style="margin-top:15px" value="Check Seed Word Spelling">
+      <pre v-if="checkWordsResult !== ''" style="margin-top: 1rem; background-color: indianred; padding-left: 0.5rem; padding-right: 0.5rem;">{{ checkWordsResult }}</pre>
+
+      <div style="margin-top: 10px">Derivation path: </div>
       <select v-model="selectedDerivationPath">
         <option value="standard">m/44’/145’/0’ (standard)</option>
         <option value="bitcoindotcom">m/44’/0’/0’ (bitcoin.com wallet)</option>
