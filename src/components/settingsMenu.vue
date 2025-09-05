@@ -317,6 +317,10 @@
         → Sweep Private Key
       </div>
 
+      <div style="margin-bottom: 15px; cursor: pointer;" @click="() => store.changeView(7)">
+        → UTXO Management <span v-if="utxosWithBchAndTokens?.length" style="color: orange">(important)</span>
+      </div>
+
     </div>
 
     <!-- Advanced Settings -->
@@ -429,10 +433,6 @@
 
       <div style="margin-bottom: 15px; cursor: pointer;" @click="() => displaySettingsMenu = 4">
         ↳ Developer settings
-      </div>
-
-      <div style="margin-bottom: 15px; cursor: pointer;" @click="() => store.changeView(7)">
-        → UTXO Management <span v-if="utxosWithBchAndTokens?.length" style="color: orange">(important)</span>
       </div>
 
       <div style="margin-top:15px; margin-bottom:15px;">
