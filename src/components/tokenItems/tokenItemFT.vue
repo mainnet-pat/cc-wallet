@@ -15,7 +15,7 @@
   import { useSettingsStore } from 'src/stores/settingsStore'
   import {caughtErrorToString} from 'src/utils/errorHandling'
   import { fetchCurrentTokenPrice } from 'src/utils/priceUtils';
-  import { CurrencySymbols } from 'src/interfaces/interfaces';
+  import { CurrencySymbols, CurrencyShortNames } from 'src/interfaces/interfaces'
   import { useQuasar } from 'quasar'
   const $q = useQuasar()
   const store = useStore()
@@ -34,6 +34,7 @@
   const displayAuthTransfer = ref(false);
   const displayTokenInfo = ref(false);
   const tokenSendAmount = ref("");
+  const fiatSendAmount = ref("");
   const destinationAddr = ref("");
   const burnAmountFTs = ref("");
   const reservedSupplyInput = ref("")
@@ -41,6 +42,7 @@
   const totalSupplyFT = ref(undefined as bigint | undefined);
   const reservedSupply = ref(undefined as bigint | undefined);
   const showQrCodeDialog = ref(false);
+  const tokenPriceInSat = ref(undefined as number | undefined);
 
   tokenMetaData.value = store.bcmrRegistries?.[tokenData.value.tokenId];
 
@@ -64,6 +66,7 @@
   const tokenPrice = ref(0);
   const updateTokenPrice = async () => {
     const priceInSat = await fetchCurrentTokenPrice(tokenData.value.tokenId);
+    tokenPriceInSat.value = priceInSat;
     tokenPrice.value = await convert(Number(tokenData.value.amount) * priceInSat, "sat", settingsStore.currency);
   };
   setTimeout(updateTokenPrice, 1);
@@ -128,6 +131,22 @@
     const amountTokens = decimals ? Number(tokenData.value.amount) / (10 ** decimals) : tokenData.value.amount;
     const targetState = tokenSend? tokenSendAmount : burnAmountFTs;
     targetState.value = numberFormatter.format(amountTokens);
+  }
+  async function setCurrencyAmount() {
+    console.log("typeof tokenSendAmount", typeof tokenSendAmount.value)
+    const decimals = tokenMetaData.value?.token?.decimals ?? 0;
+    const newBchValue = Number(tokenSendAmount.value.replace(/,/g, '')) * (tokenPriceInSat.value!) * (10 ** decimals)
+    const newFiatValue = await convert(newBchValue, 'sat', settingsStore.currency);
+    console.log("newBchValue", newBchValue);
+    console.log("newFiatValue", newFiatValue);
+    fiatSendAmount.value = numberFormatter.format(Number(newFiatValue.toFixed(2)));
+  }
+  async function setTokenAmount() {
+    const decimals = tokenMetaData.value?.token?.decimals ?? 0;
+    const newBchValue = await convert(Number(fiatSendAmount.value.replace(/,/g, '')), settingsStore.currency, 'sat');
+    //await updateTokenPrice;
+    const newTokenValue = (newBchValue / (tokenPriceInSat.value!) / (10 ** decimals)).toFixed(2);
+    tokenSendAmount.value = numberFormatter.format(Number(newTokenValue));
   }
   async function sendTokens(){
     try{
@@ -407,9 +426,11 @@
         </div>
 
         <div v-if="displaySendTokens" class="tokenAction">
+
+          <!-- send -->
           Send {{ tokenMetaData?.token?.symbol }} to
           <div class="inputGroup">
-            <div class="addressInputFtSend">
+            <div class="addressInputFtSend" style="width: 100%;">
               <span style="width: 100%; position: relative;">
                 <input v-model="destinationAddr" name="tokenAddress" placeholder="token address">
               </span>
@@ -417,18 +438,28 @@
                 <img src="images/qrscan.svg" />
               </button>
             </div>
-            <div class="sendTokenAmount">
-              <span style="width: 100%; position: relative;">
-                <input v-model="tokenSendAmount" placeholder="amount" name="tokenAmountInput">
+          </div>
+          <div class="inputGroup">
+            <div class="addressInputFtSend" style="width: 100%;">
+              <span style="width: 50%; position: relative;">
+                <input v-model="tokenSendAmount" @input="setCurrencyAmount()" placeholder="amount" name="tokenAmountInput">
                 <i class="input-icon" style="width: min-content; padding-right: 15px; color: black;">
                   {{ tokenMetaData?.token?.symbol ?? "tokens" }}
                 </i>
               </span>
+              <span class="sendCurrencyInput">
+                <input v-model="fiatSendAmount" @input="setTokenAmount()" placeholder="amount" name="fiatAmountInput">
+                <i class="input-icon" style="color: black;">
+                  {{"" + `${CurrencyShortNames[settingsStore.currency]}`}}
+                </i>
+              </span> 
               <button @click="maxTokenAmount(true)" style="color: black;">max</button>
             </div>
           </div>
           <input @click="sendTokens()" type="button" class="primaryButton" value="Send">
         </div>
+
+        <!-- burn -->
         <div v-if="displayBurnFungibles" class="tokenAction">
           <div>Burning tokens removes them from the supply forever</div>
           <div style="display: flex">
@@ -442,6 +473,8 @@
           </div>
           <input @click="burnFungibles()" type="button" value="burn tokens" class="button error" style="margin-top: 10px;">
         </div>
+
+        <!-- auth transfer -->
         <div v-if="displayAuthTransfer" class="tokenAction">
           Transfer the authority to change the token's metadata <br>
           You can either transfer the Auth to a dedicated wallet or to the <a href="https://cashtokens.studio/" target="_blank">CashTokens Studio</a>.<br>
@@ -457,6 +490,7 @@
           </span>
           <input @click="transferAuth()" type="button" class="primaryButton" value="Transfer Auth"  style="margin-top: 10px;">
         </div>
+
       </div>
     </fieldset>
     <div v-if="tokenPrice && showSwapDialog">

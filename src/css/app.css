@@ -169,6 +169,7 @@ input[type='number'] {
   margin-right: 14px;
   width: 50%;
   display: flex;
+  gap: 0.5rem;
 }
 .addressInputNftSend {
   margin-right: 14px;
@@ -202,6 +203,7 @@ input[type='number'] {
 .sendTokenAmount {
   display: flex;
   width: 50%;
+  gap: 0.5rem;
 }
 .showChildNfts {
   cursor: pointer;
@@ -285,7 +287,6 @@ select, summary {
     margin-bottom: 10px;
   }
   .sendTokenAmount {
-    margin-top: 4px;
     width: 100%;
     gap: 0.5rem;
   }
