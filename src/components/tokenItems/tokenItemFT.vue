@@ -453,7 +453,7 @@
                   {{"" + `${CurrencyShortNames[settingsStore.currency]}`}}
                 </i>
               </span> 
-              <button @click="maxTokenAmount(true)" style="color: black;">max</button>
+              <button @click="maxTokenAmount(true); setCurrencyAmount();" style="color: black;">max</button>
             </div>
           </div>
           <input @click="sendTokens()" type="button" class="primaryButton" value="Send">
