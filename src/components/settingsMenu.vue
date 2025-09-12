@@ -85,7 +85,7 @@
     Config.DefaultCurrency = selectedCurrency.value;
     settingsStore.currency = selectedCurrency.value;
     localStorage.setItem("currency", selectedCurrency.value);
-    store.changeView(1);
+    //store.changeView(1);
     if (store.wallet) {
       store.balance = await store.wallet.getBalance() as BalanceResponse;
     }
@@ -264,6 +264,17 @@
       </div>-->
 
       <div style="margin-top:15px">
+        <label for="selectUnit">Select fiat currency:</label>
+        <select v-model="selectedCurrency" @change="changeCurrency()">
+          <option value="usd">USD - US-Dollar</option>
+          <option value="eur">EUR - Euro</option>
+          <option value="chf">CHF - Swiss Franc</option>
+          <option value="rub">RUB - Russian Ruble</option>
+          <option value="aed">AED - UAE Dirham</option>
+        </select>
+      </div>
+
+      <div style="margin-top:15px">
         Show fiat value in History <Toggle v-model="showFiatValueHistory" @change="toggleShowFiatValueHistory" style="vertical-align: middle;display: inline-block;"/>
       </div>
 
@@ -285,17 +296,6 @@
       <!--<div style="margin-top: 15px; margin-bottom: 15px;">
         Enable token-burn <Toggle v-model="selectedTokenBurn" @change="changeTokenBurn()" style="vertical-align: middle; display: inline-block;"/>
       </div>-->
-
-      <div style="margin-top:15px">
-        <label for="selectUnit">Select fiat currency:</label>
-        <select v-model="selectedCurrency" @change="changeCurrency()">
-          <option value="usd">USD - US-Dollar</option>
-          <option value="eur">EUR - Euro</option>
-          <option value="chf">CHF - Swiss Franc</option>
-          <option value="rub">RUB - Russian Ruble</option>
-          <option value="aed">AED - UAE Dirham</option>
-        </select>
-      </div>
 
       <div style="margin-top:15px;">
         <label for="selectUnit">Select Bitcoin Cash unit:</label>
@@ -455,19 +455,6 @@
           <option v-if="store.network == 'chipnet'" value="https://chipnet.chaingraph.cash/tx">chipnet.chaingraph.cash</option>
           <option v-if="store.network == 'chipnet'" value="https://cbch.loping.net/tx">cbch.loping.net</option>
         </select>
-      </div>
-
-      <div v-if="isBrowser" style="margin-bottom:15px;">
-        <a style="color: var(--font-color); cursor: pointer;" href="https://github.com/cashonize/cashonize-wallet/releases/latest" target="_blank">
-          Download Cashonize
-          <img :src="settingsStore.darkMode? '/images/external-link-grey.svg' : '/images/external-link.svg'" style="vertical-align: sub;"/>
-        </a>
-      </div>
-      
-      <div style="margin-bottom:15px;">
-        <a style="color: var(--font-color); cursor: pointer;" href="https://x.com/GeukensMathieu" target="_blank">
-          Made with <EmojiItem emoji="💚" :sizePx="18" style="vertical-align: sub;" /> by Mathieu G.
-        </a>
       </div>
 
     </div>
