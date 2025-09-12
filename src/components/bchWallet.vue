@@ -255,7 +255,7 @@
         <span class="sendCurrencyInput">
           <input v-model="currencySendAmount" @input="setBchAmount()" type="number" placeholder="amount" name="bchAmountInput">
           <i class="input-icon" style="color: black;">
-            {{(store.network == "mainnet"? "" : "t") + `${CurrencyShortNames[settingsStore.currency]} ${CurrencySymbols[settingsStore.currency]}`}}
+            {{(store.network == "mainnet"? "" : "t") + `${CurrencyShortNames[settingsStore.currency]}`}}
           </i>
         </span> 
             <button @click="useMaxBchAmount()" class="fillInMaxBch">max</button>
