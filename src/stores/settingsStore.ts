@@ -20,7 +20,7 @@ const isMobileDevice = width.value / height.value < 1.5
 
 export const useSettingsStore = defineStore('settingsStore', () => {
   // Global settings
-  const currency = ref("usd" as ("usd" | "eur"));
+  const currency = ref("usd" as ("usd" | "eur" | "chf" | "rub" | "aed" ));
   const bchUnit = ref("bch" as ("bch" | "sat"));
   const explorerMainnet = ref(defaultExplorerMainnet);
   const explorerChipnet = ref(defaultExplorerChipnet);
@@ -44,7 +44,7 @@ export const useSettingsStore = defineStore('settingsStore', () => {
 
   // read local storage for stored settings
   const readCurrency = localStorage.getItem("currency");
-  if(readCurrency && (readCurrency=="usd" || readCurrency=="eur")) {
+  if(readCurrency && (readCurrency=="usd" || readCurrency=="eur" || readCurrency=="chf" || readCurrency=="rub" || readCurrency=="aed")) {
     currency.value = readCurrency;
     Config.DefaultCurrency = readCurrency;
   }

@@ -81,6 +81,7 @@
   loadCacheSizes()
 
   async function changeCurrency(){
+    console.log("changeCurrency() to ", selectedCurrency.value)
     Config.DefaultCurrency = selectedCurrency.value;
     settingsStore.currency = selectedCurrency.value;
     localStorage.setItem("currency", selectedCurrency.value);
@@ -288,8 +289,11 @@
       <div style="margin-top:15px">
         <label for="selectUnit">Select fiat currency:</label>
         <select v-model="selectedCurrency" @change="changeCurrency()">
-          <option value="usd">USD</option>
-          <option value="eur">EUR</option>
+          <option value="usd">USD - US-Dollar</option>
+          <option value="eur">EUR - Euro</option>
+          <option value="chf">CHF - Swiss Franc</option>
+          <option value="rub">RUB - Russian Ruble</option>
+          <option value="aed">AED - UAE Dirham</option>
         </select>
       </div>
 

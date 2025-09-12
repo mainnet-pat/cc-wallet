@@ -2,12 +2,18 @@ import type { UtxoI, ElectrumRawTransaction, TokenSendRequest, TokenMintRequest,
 
 export const CurrencySymbols = {
   usd: "$",
-  eur: "€"
+  eur: "€",
+  chf: '₣',
+  rub: '₽',
+  aed: 'AED ',
 } as const
 
 export const CurrencyShortNames = {
   usd: "USD",
-  eur: "EUR"
+  eur: "EUR",
+  chf: "CHF",
+  rub: "RUB",
+  aed: "AED",
 } as const
 
 export type QRCodeAnimationName =
