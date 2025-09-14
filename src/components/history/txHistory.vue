@@ -9,7 +9,7 @@
   import { formatTimestamp, formatFiatAmount } from 'src/utils/utils';
   import { fetchCurrentTokenPrice, fetchHistoricTokenPrice } from 'src/utils/priceUtils';
   import { type TokenDataFT } from 'src/interfaces/interfaces';
-  import { CurrencySymbols } from 'src/interfaces/interfaces';
+  import { CurrencyShortNames } from 'src/interfaces/interfaces';
 
   const store = useStore()
   const settingsStore = useSettingsStore()
@@ -140,7 +140,7 @@ const tokenPricesForTransaction = ref({} as Record<string, number>);
             <th scope="col">Date</th>
             <th scope="col" class="valueHeader">BCH</th>
             <!--<th scope="col" class="valueHeader">Balance</th>-->
-            <th scope="col" style="text-align: right; padding-right: 40px;">Token</th>
+            <th colspan="2" scope="col" style="text-align: right; padding-right: 5px;">Token</th>
           </tr>
         </thead>
         <tbody class="transactionTable">
@@ -154,21 +154,20 @@ const tokenPricesForTransaction = ref({} as Record<string, number>);
             <td><EmojiItem :emoji="transaction.timestamp ? '✅' : '⏳' " style="margin: 0 5px; vertical-align: sub;"/> </td>
 
             <!-- date -->
-            <td v-if="isMobile">
+            <td class="value">
               <div v-if="transaction.timestamp" style="line-height: 1.3">
-                <div>{{new Date(transaction.timestamp * 1000).toLocaleDateString().replace("202", "2").replaceAll("/", "-") }}</div>
-                <div>{{new Date(transaction.timestamp * 1000).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }) }}</div>
+                <div>{{new Date(transaction.timestamp * 1000).toLocaleDateString(undefined, { month: '2-digit', day: "2-digit", year: "numeric" }).replaceAll('/','-') }}</div>
+                <div style="font-size: smaller; opacity:70%">{{new Date(transaction.timestamp * 1000).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }) }}</div>
               </div>
               <div v-else>pending</div>
             </td>
-            <td v-else>{{ transaction.timestamp ? formatTimestamp(transaction.timestamp).replaceAll("/", "-") : "Unconfirmed" }}</td>
 
             <!-- BCH -->
             <td class="value" :style="transaction.valueChange < 0 ? 'color: var(--color-red-text)' : ''">
               {{ `${transaction.valueChange > 0 ? '+' : '' }${(transaction.valueChange / 100_000_000).toFixed(5)}`}}
               {{ isMobile? "" : (bchDisplayUnit) }}
-              <div v-if="settingsStore.showFiatValueHistory">
-                ({{`${transaction.valueChange > 0 ? '+' : '' }` + formatFiatAmount(exchangeRate * transaction.valueChange / 100_000_000, settingsStore.currency)}})
+              <div class="value" v-if="settingsStore.showFiatValueHistory" style="font-size: smaller; opacity:70%">
+                {{`${transaction.valueChange > 0 ? '+' : '' }` + formatFiatAmount(exchangeRate * transaction.valueChange / 100_000_000, settingsStore.currency)}}
               </div>
             </td>
 
@@ -181,22 +180,28 @@ const tokenPricesForTransaction = ref({} as Record<string, number>);
               </div>
             </td>-->
 
+            <!-- token change value -->
             <td class="tokenChange">
               <div class="tokenChangeItem" v-for="tokenChange in transaction.tokenAmountChanges" :key="tokenChange.tokenId">
                 <span v-if="tokenChange.amount !== 0n || tokenChange.nftAmount == 0n">
                   <span v-if="tokenChange.amount > 0n" class="value">+{{ (Number(tokenChange.amount) / 10**(store.bcmrRegistries?.[tokenChange.tokenId]?.token.decimals ?? 0)).toLocaleString("en-US") }}</span>
                   <span v-else class="value" style="color: var(--color-red-text)">{{ (Number(tokenChange.amount) / 10**(store.bcmrRegistries?.[tokenChange.tokenId]?.token.decimals ?? 0)).toLocaleString("en-US") }}</span>
-                  <span class="hideOnOverflow"> {{ " " + (store.bcmrRegistries?.[tokenChange.tokenId]?.token?.symbol ?? tokenChange.tokenId.slice(0, 8)) }}</span>
-                  <div class="value" v-if="settingsStore.showFiatValueHistory" :style="tokenChange.amount < 0n ? 'var(--color-red-text)' : ''">
-                    {{ tokenChange.amount < 0n ? '' : '+' }}{{ tokenChangeCurrencyValues[`${tokenChange.tokenId}-${transaction.timestamp ?? 0}-${tokenChange.amount}`] === 0 ? `${CurrencySymbols[settingsStore.currency]}0.00` : `${CurrencySymbols[settingsStore.currency]}${tokenChangeCurrencyValues[`${tokenChange.tokenId}-${transaction.timestamp ?? 0}-${tokenChange.amount}`]}` }}
+                  <span class="hideOnOverflow">&nbsp;{{(store.bcmrRegistries?.[tokenChange.tokenId]?.token?.symbol ?? tokenChange.tokenId.slice(0, 8)) }}</span>
+                  <div class="value" style="font-size: smaller; opacity:70%" v-if="settingsStore.showFiatValueHistory && tokenChange.amount > 0n" :style="tokenChange.amount < 0n ? 'var(--color-red-text)' : ''">
+                    {{ tokenChange.amount < 0n ? '' : '+' }}{{ formatFiatAmount(tokenChangeCurrencyValues[`${tokenChange.tokenId}-${transaction.timestamp ?? 0}-${tokenChange.amount}`], settingsStore.currency) }}
                   </div>
                 </span>
                 <span v-if="tokenChange.nftAmount !== 0n">
                   <span v-if="tokenChange.nftAmount > 0n" class="value">+{{ tokenChange.nftAmount }}</span>
-                  <span v-else class="value" style="color: rgb(188,30,30)">{{ tokenChange.nftAmount }}</span>
-                  <span> {{ " " + (store.bcmrRegistries?.[tokenChange.tokenId]?.token?.symbol ?? tokenChange.tokenId.slice(0, 8)) }} NFT</span>
+                  <span v-else class="value" style="color: var(--color-red-text)">{{ tokenChange.nftAmount }}</span>
+                  <span class="value">{{ " " + (store.bcmrRegistries?.[tokenChange.tokenId]?.token?.symbol ?? tokenChange.tokenId.slice(0, 8)) }} NFT</span>
                 </span>
+              </div>
+            </td>
 
+            <!-- token icon -->
+            <td style="width: 40px">
+              <div class="tokenChangeItem" v-for="tokenChange in transaction.tokenAmountChanges" :key="tokenChange.tokenId">
                 <img
                   v-if="store.bcmrRegistries?.[tokenChange.tokenId]"
                   class="tokenIcon"

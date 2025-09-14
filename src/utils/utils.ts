@@ -1,8 +1,9 @@
 import { type UtxoI } from "mainnet-js"
 import { hexToBin } from "@bitauth/libauth"
-import type { ElectrumTokenData, TokenDataFT, TokenDataNFT, CurrencyShortNames } from "../interfaces/interfaces"
+import type { ElectrumTokenData, TokenDataFT, TokenDataNFT } from "../interfaces/interfaces"
 import { Notify } from "quasar";
 import { type Ref, watch, type WatchStopHandle } from "vue";
+import { CurrencyShortNames } from 'src/interfaces/interfaces';
 
 export function copyToClipboard(copyText:string|undefined){
   if(!copyText) return
@@ -27,8 +28,10 @@ export function convertToCurrency(satAmount: bigint, exchangeRate:number) {
   return Number(newFiatValue.toFixed(2));
 }
 
-export function formatFiatAmount(amount: number, currency: keyof typeof CurrencyShortNames): string {
-  return amount.toLocaleString('en', { style: "currency", currency });
+const numberFormatterFiat = new Intl.NumberFormat('en-US', {maximumFractionDigits: 2});
+export function formatFiatAmount(amount: number | undefined, currency: keyof typeof CurrencyShortNames): string {
+  //return amount.toLocaleString('en-US', { style: "currency", currency });
+  return amount == undefined ? "" : numberFormatterFiat.format(amount) + ' ' + CurrencyShortNames[currency];
 }
 
 export function satsToBch(satoshis: bigint | number) {

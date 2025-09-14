@@ -218,7 +218,9 @@
       <span style="color: var(--color-bch);">
         {{ store.balance && store.balance[settingsStore.bchUnit] != undefined
           ? numberFormatter.format(store.balance[settingsStore.bchUnit] as number) + displayUnitLong : "" }}
-          ({{ store.balance && store.balance[settingsStore.currency] != undefined ?  (store.balance[settingsStore.currency] ?? 0).toFixed(2) + ` ${CurrencySymbols[settingsStore.currency]}`: "" }})
+      </span>
+      <span style="color: var(--color-bch); font-size:smaller; opacity: 70%">
+        ({{ store.balance && store.balance[settingsStore.currency] != undefined ? formatFiatAmount(store.balance[settingsStore.currency], settingsStore.currency) : "" }})
       </span>
 
       <span @click="() => copyToClipboard(store.wallet.cashaddr)" style="cursor:pointer;">

@@ -10,7 +10,7 @@
   import QrCodeDialog from '../qr/qrCodeScanDialog.vue';
   import type { TokenDataFT, BcmrTokenMetadata } from "src/interfaces/interfaces"
   import { queryTotalSupplyFT, queryReservedSupply } from "src/queryChainGraph"
-  import { copyToClipboard } from 'src/utils/utils';
+  import { copyToClipboard, formatFiatAmount } from 'src/utils/utils';
   import { useStore } from 'src/stores/store'
   import { useSettingsStore } from 'src/stores/settingsStore'
   import {caughtErrorToString} from 'src/utils/errorHandling'
@@ -349,7 +349,7 @@
             {{ numberFormatter.format(toAmountDecimals(tokenData?.amount)) }} {{ tokenMetaData?.token?.symbol }}
           </div>
           <div v-if="tokenPrice !== 0" class="tokenValue" id="tokenAmount">Value: 
-            {{ CurrencySymbols[settingsStore.currency] }}{{ tokenPrice }}
+            {{ formatFiatAmount(tokenPrice, settingsStore.currency) }}
           </div>
         </div>
         <span @click="store.toggleFavorite(tokenData.tokenId)" class="boxStarIcon">
