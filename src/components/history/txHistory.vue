@@ -164,7 +164,7 @@ const tokenPricesForTransaction = ref({} as Record<string, number>);
 
             <!-- BCH -->
             <td class="value" :style="transaction.valueChange < 0 ? 'color: var(--color-red-text)' : ''">
-              {{ `${transaction.valueChange > 0 ? '+' : '' }${(transaction.valueChange / 100_000_000).toFixed(5)}`}}
+              {{ `${transaction.valueChange > 0 ? '+' : '' }${(transaction.valueChange / 100_000_000).toFixed(8)}`}}
               {{ isMobile? "" : (bchDisplayUnit) }}
               <div class="value" v-if="settingsStore.showFiatValueHistory" style="font-size: smaller; opacity:70%">
                 {{`${transaction.valueChange > 0 ? '+' : '' }` + formatFiatAmount(exchangeRate * transaction.valueChange / 100_000_000, settingsStore.currency)}}
