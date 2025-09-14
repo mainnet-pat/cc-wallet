@@ -241,14 +241,18 @@
     </div>
     <div>
       Send {{ bchDisplayNetwork }}:
-      <div style="display: flex; gap: 0.5rem;">
-        <input v-model="destinationAddr" @input="parseAddrParams()" placeholder="address" name="addressInput">
-        <button v-if="settingsStore.qrScan" @click="() => showQrCodeDialog = true" style="padding: 12px">
-            <img src="images/qrscan.svg" />
-        </button>
+      <div class="inputGroup">
+        <div class="addressInputFtSend">
+          <span style="width: 100%; position: relative;">
+            <input v-model="destinationAddr" @input="parseAddrParams()" placeholder="address" name="addressInput">
+          </span>
+          <button v-if="settingsStore.qrScan" @click="() => showQrCodeDialog = true" style="padding: 12px">
+              <img src="images/qrscan.svg" />
+          </button>
+        </div>
       </div>
-      <span class="sendAmountGroup">
-        <span style="position: relative; width: 50%;">
+      <span class="inputGroup">
+        <span class="sendCurrencyInput">
           <input v-model="bchSendAmount" @input="setCurrencyAmount()" type="number" placeholder="amount" name="currencyInput">
           <i class="input-icon" style="color: black;">{{ bchDisplayUnit }}</i>
         </span>
@@ -258,12 +262,14 @@
             {{(store.network == "mainnet"? "" : "t") + `${CurrencyShortNames[settingsStore.currency]}`}}
           </i>
         </span> 
-            <button @click="useMaxBchAmount()" class="fillInMaxBch">max</button>
       </span>
       <div v-if="(store.maxAmountToSend?.[settingsStore.bchUnit] ?? 0) < (bchSendAmount ?? 0)" style="color: red;">Not enough BCH in wallet to send</div>
       
     </div>
-    <input @click="sendBch()" type="button" class="primaryButton" value="Send" style="margin-top: 8px; background-color:var(--color-bch);">
+    <div style="display:flex;">
+      <input @click="sendBch()" type="button" class="primaryButton" value="Send" style="background-color:var(--color-bch);">
+      <button @click="useMaxBchAmount()" class="fillInMaxBch" style="margin-left: auto">max</button>
+    </div>
   </fieldset>
   <div v-if="showQrCodeDialog">
     <QrCodeDialog @hide="() => showQrCodeDialog = false" @decode="qrDecode" :filter="qrFilter"/>

@@ -99,7 +99,6 @@ img {
 .sendCurrencyInput {
   position: relative;
   width: 50%;
-  margin-left: 5px;
 }
 .fillInMaxBch {
   margin-left: 5px;
@@ -166,8 +165,7 @@ input[type='number'] {
   color: var(--color-primary)
 }
 .addressInputFtSend {
-  margin-right: 14px;
-  width: 50%;
+  width: 100%;
   display: flex;
   gap: 0.5rem;
 }
@@ -184,6 +182,7 @@ input[type='number'] {
 .inputGroup {
   margin: 0 0 8px;
   display: flex;
+  gap: 0.5em;
 }
 .actionBar {
   padding-top: 5px;
@@ -267,8 +266,10 @@ select, summary {
   }
   .sendCurrencyInput {
     position: relative;
-    width: 140px;
-    margin-left: 5px;
+    display: flex;
+    width: 100%;
+    margin-left: 0px;
+    margin-bottom: 5px;
   }
   .fillInMaxBch {
     padding: 1rem 1.5rem;
@@ -287,6 +288,7 @@ select, summary {
     margin-bottom: 10px;
   }
   .sendTokenAmount {
+    margin-top: 4px;
     width: 100%;
     gap: 0.5rem;
   }

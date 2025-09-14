@@ -430,7 +430,7 @@
           <!-- send -->
           Send {{ tokenMetaData?.token?.symbol }} to
           <div class="inputGroup">
-            <div class="addressInputFtSend" style="width: 100%;">
+            <div class="addressInputFtSend">
               <span style="width: 100%; position: relative;">
                 <input v-model="destinationAddr" name="tokenAddress" placeholder="token address">
               </span>
@@ -440,23 +440,23 @@
             </div>
           </div>
           <div class="inputGroup">
-            <div class="addressInputFtSend" style="width: 100%;">
-              <span style="width: 50%; position: relative;">
-                <input v-model="tokenSendAmount" @input="setCurrencyAmount()" placeholder="amount" name="tokenAmountInput">
-                <i class="input-icon" style="width: min-content; padding-right: 15px; color: black;">
-                  {{ tokenMetaData?.token?.symbol ?? "tokens" }}
-                </i>
-              </span>
-              <span class="sendCurrencyInput">
-                <input v-model="fiatSendAmount" @input="setTokenAmount()" placeholder="amount" name="fiatAmountInput">
-                <i class="input-icon" style="color: black;">
-                  {{"" + `${CurrencyShortNames[settingsStore.currency]}`}}
-                </i>
-              </span> 
-              <button @click="maxTokenAmount(true); setCurrencyAmount();" style="color: black;">max</button>
-            </div>
+            <span class="sendCurrencyInput">
+              <input v-model="tokenSendAmount" @input="setCurrencyAmount()" placeholder="amount" name="tokenAmountInput">
+              <i class="input-icon" style="width: min-content; padding-right: 15px; color: black;">
+                {{ tokenMetaData?.token?.symbol ?? "tokens" }}
+              </i>
+            </span>
+            <span class="sendCurrencyInput">
+              <input v-model="fiatSendAmount" @input="setTokenAmount()" placeholder="amount" name="fiatAmountInput">
+              <i class="input-icon" style="color: black;">
+                {{"" + `${CurrencyShortNames[settingsStore.currency]}`}}
+              </i>
+            </span> 
           </div>
-          <input @click="sendTokens()" type="button" class="primaryButton" value="Send">
+          <div style="display:flex;">
+            <input @click="sendTokens()" type="button" class="primaryButton" value="Send">
+            <button @click="maxTokenAmount(true); setCurrencyAmount();" style="color: black; margin-left: auto">max</button>
+          </div>
         </div>
 
         <!-- burn -->
