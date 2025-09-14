@@ -133,15 +133,20 @@
     targetState.value = numberFormatter.format(amountTokens);
   }
   async function setCurrencyAmount() {
-    console.log("typeof tokenSendAmount", typeof tokenSendAmount.value)
+    if (tokenSendAmount.value === "") {
+      fiatSendAmount.value = "";
+      return;
+    }
     const decimals = tokenMetaData.value?.token?.decimals ?? 0;
     const newBchValue = Number(tokenSendAmount.value.replace(/,/g, '')) * (tokenPriceInSat.value!) * (10 ** decimals)
     const newFiatValue = await convert(newBchValue, 'sat', settingsStore.currency);
-    console.log("newBchValue", newBchValue);
-    console.log("newFiatValue", newFiatValue);
     fiatSendAmount.value = numberFormatter.format(Number(newFiatValue.toFixed(2)));
   }
   async function setTokenAmount() {
+    if (fiatSendAmount.value === "") {
+      tokenSendAmount.value = "";
+      return;
+    }
     const decimals = tokenMetaData.value?.token?.decimals ?? 0;
     const newBchValue = await convert(Number(fiatSendAmount.value.replace(/,/g, '')), settingsStore.currency, 'sat');
     //await updateTokenPrice;
