@@ -170,9 +170,22 @@
     displaySeedphrase.value = !displaySeedphrase.value;
   }
   function confirmDeleteWallet(){
-    let text = `You are about to delete your Olando wallet info from this ${platformString}.\nAre you sure you want to delete it?`;
+    let text = `You are about to delete your Olando wallet info from this ${platformString}.
+
+The wallet will still exist on the blockchain, but can only be accessed using its corresponding seed phrase.
+
+If you have not done so, please BACKUP YOUR SEED PHRASE!
+
+Are you sure you want to delete the wallet?`;
     if (isPwaMode) {
-      text = `You are about to delete your Olando wallet info from this ${platformString}.\nThis will also delete the wallet from your browser!\nAre you sure you want to delete it?`;
+      text = `You are about to delete your Olando wallet info from this ${platformString}.
+The wallet will still exist on the blockchain, but can only be accessed using its corresponding seed phrase.
+
+If you have not done so, please BACKUP YOUR SEED PHRASE!
+
+This will also delete the wallet from your browser!
+
+Are you sure you want to delete the wallet?`;
     }
     if (confirm(text)){
       indexedDB.deleteDatabase("bitcoincash");
@@ -222,7 +235,7 @@
 
 <template>
   <fieldset class="item">
-    
+
     <legend>Settings</legend>
     <div v-if="!isBrowser" style="margin-bottom: 15px;">
       Version Olando App: {{ applicationVersion }}
