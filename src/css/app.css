@@ -25,7 +25,24 @@ body.dark {
   --font-color: #f5f5f5;
   --color-grey: #ccc;
   --color-darkGrey: #777;
+  /* background image */
+  background: url('../images/olando_bg.jpg');
+  /* backdrop-filter: brightness(1.5); */
+  background-size: auto 100%;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-color: black;
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
+@media (min-width: 1201px) {
+  body.dark {
+    background-size: 100% auto; /* Scales width to 100% of viewport, height proportional */
+  }
+}
+
 .transition-enabled {
   transition:
     color 0.5s,

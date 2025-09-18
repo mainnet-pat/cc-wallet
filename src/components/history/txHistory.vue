@@ -233,7 +233,10 @@ tr:nth-child(even) {
   background-color: var(--color-background-soft);
 }
 tr.dark:nth-child(even) {
-  background-color: #232326;
+  background: #00000040;
+}
+tr.dark:nth-child(odd) {
+  background: #ffffff40;
 }
 
 .transactionTable > * {
