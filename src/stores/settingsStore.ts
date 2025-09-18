@@ -4,7 +4,7 @@ import { defineStore } from "pinia"
 import { type QRCodeAnimationName } from "src/interfaces/interfaces";
 import { ref } from 'vue'
 
-const defaultExplorerMainnet = "https://blockchair.com/bitcoin-cash/transaction";
+const defaultExplorerMainnet = "https://explorer.salemkode.com/tx";
 const defaultExplorerChipnet = "https://chipnet.chaingraph.cash/tx";
 const defaultElectrumMainnet = "electrum.imaginary.cash"
 const defaultElectrumChipnet = "chipnet.bch.ninja"
