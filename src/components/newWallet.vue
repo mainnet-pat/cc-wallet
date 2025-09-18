@@ -10,6 +10,7 @@
   const $q = useQuasar()
   const isBrowser = (process.env.MODE == "spa");
 
+  const import_button = ref("Import");
   const seedphrase = ref('');
   const selectedDerivationPath =  ref("standard" as ("standard" | "bitcoindotcom"));
 
@@ -38,13 +39,20 @@
     })
     checkWordsResult.value = msg;
     if (msg === "") {
-      Notify.create({
+/*      Notify.create({
         message: "Seed phrase looks OK.",
         icon: 'info',
         timeout : 2000,
         color: "green"
-      })
+      })*/
+      return true;
     }
+    return false;
+  }
+
+  async function seedModified() {
+    import_button.value = 'Import';
+    checkWordsResult.value = '';
   }
 
   async function importWallet() {
@@ -52,12 +60,17 @@
       const derivationPath = selectedDerivationPath.value == "standard"? "m/44'/145'/0'/0/0" : "m/44'/0'/0'/0/0";
       if(selectedDerivationPath.value == "standard") Config.DefaultParentDerivationPath = "m/44'/145'/0'";
       if(!seedphrase.value) throw("Enter a seed phrase to import wallet")
-      const walletId = `seed:mainnet:${seedphrase.value}:${derivationPath}`;
-      await Wallet.replaceNamed(nameWallet, walletId);
-      const walletIdTestnet = `seed:testnet:${seedphrase.value}:${derivationPath}`;
-      await TestNetWallet.replaceNamed(nameWallet, walletIdTestnet);
-      const mainnetWallet = await Wallet.named(nameWallet);
-      store.setWallet(mainnetWallet)
+      if (await checkWords() || import_button.value === 'Import anyway') { // check seed prhase
+        const walletId = `seed:mainnet:${seedphrase.value}:${derivationPath}`;
+        await Wallet.replaceNamed(nameWallet, walletId);
+        const walletIdTestnet = `seed:testnet:${seedphrase.value}:${derivationPath}`;
+        await TestNetWallet.replaceNamed(nameWallet, walletIdTestnet);
+        const mainnetWallet = await Wallet.named(nameWallet);
+        store.setWallet(mainnetWallet)
+      } else {
+        console.log("seedphrase problem detected, button: ")
+        import_button.value = 'Import anyway'
+      }
     } catch (error) {
       const errorMessage = typeof error == 'string' ? error : "Not a valid seed phrase"
       $q.notify({
@@ -87,19 +100,19 @@
     <div style="margin: 10px 0;">
       <h4>Restore wallet</h4>
       <div>Enter mnemonic seed phrase</div>
-      <textarea autocorrect="off" autocapitalize="off" autocomplete="off" v-model="seedphrase" style="resize: none;" rows="3" cols="50" placeholder="word1 word2 ..."></textarea>
-      <input @click="checkWords()" class="button primary" type="button" style="margin-top:15px" value="Check Seed Word Spelling">
-      <pre v-if="checkWordsResult !== ''" style="margin-top: 1rem; background-color: indianred; padding-left: 0.5rem; padding-right: 0.5rem;">{{ checkWordsResult }}</pre>
+      <textarea autocorrect="off" autocapitalize="off" autocomplete="off" v-model="seedphrase" @input="seedModified()" style="resize: none;" rows="3" cols="50" placeholder="word1 word2 ..."></textarea>
+      <!--<input @click="checkWords()" class="button primary" type="button" style="margin-top:15px" value="Check Seed Word Spelling">-->
+      <pre v-if="checkWordsResult !== ''" style="margin-top: 1rem; font-size: small; background-color: indianred; padding-left: 0.5rem; padding-right: 0.5rem;">{{ checkWordsResult }}</pre>
 
-      <div style="margin-top: 10px">Derivation path: </div>
+      <!--<div style="margin-top: 10px">Derivation path: </div> 
       <select v-model="selectedDerivationPath">
         <option value="standard">m/44’/145’/0’ (standard)</option>
         <option value="bitcoindotcom">m/44’/0’/0’ (bitcoin.com wallet)</option>
       </select>
       <div style="margin-top: 5px;">
         <i>Note:</i> Cashonize is a single-address wallet so you can't fully import HD wallets
-      </div>
-      <input @click="importWallet()" class="button primary" type="button" style="margin-top:15px" value="Import">
+      </div>-->
+      <input @click="importWallet()" v-model="import_button" class="button primary" type="button" style="margin-top:15px" value="Import">
     </div>
   </fieldset>
 </template>
