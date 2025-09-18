@@ -223,11 +223,6 @@
         ({{ store.balance && store.balance[settingsStore.currency] != undefined ? formatFiatAmount(store.balance[settingsStore.currency], settingsStore.currency) : "" }})
       </span>
 
-      <span @click="() => copyToClipboard(store.wallet.cashaddr)" style="cursor:pointer;">
-        <span class="depositAddr">{{ store.wallet.cashaddr ?? "" }} </span>
-        <img class="copyIcon" src="images/copyGrey.svg">
-      </span>
-
       <qr-code :contents="store.wallet.cashaddr" @click="copyToClipboard(addressQrcode)" class="qr-code"
         style="cursor:pointer; display: block; width: 230px; height: 230px; margin: 5px auto 5px auto; background-color: #fff;"
       >
