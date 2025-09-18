@@ -222,6 +222,7 @@
 
 <template>
   <fieldset class="item">
+    
     <legend>Settings</legend>
     <div v-if="!isBrowser" style="margin-bottom: 15px;">
       Version Olando App: {{ applicationVersion }}
@@ -258,7 +259,9 @@
     </div>
 
     <!-- User Options -->
+
     <div v-else-if="displaySettingsMenu == 2">
+
       <!--<div style="margin-bottom:15px;">
         Dark mode <Toggle v-model="selectedDarkMode" @change="changeDarkMode()" style="vertical-align: middle; display: inline-block;"/>
       </div>-->
@@ -284,126 +287,21 @@
     </div>
 
     <!-- Crypto Pro Options -->
+
     <div v-else-if="displaySettingsMenu == 5">
-      <div style="margin-top: 15px;">Enable WalletConnect
-        <Toggle v-model="selectedWalletConnect" @change="changeWalletConnect()" style="vertical-align: middle; display: inline-block;"/>
-      </div>
 
-      <div style="margin-top:15px">
-        Show Cauldron Swap Button <Toggle v-model="selectedShowSwap" @change="toggleShowSwap" style="vertical-align: middle;display: inline-block;"/>
-      </div>
+      <!-- Advanced Options -->
 
-      <!--<div style="margin-top: 15px; margin-bottom: 15px;">
-        Enable token-burn <Toggle v-model="selectedTokenBurn" @change="changeTokenBurn()" style="vertical-align: middle; display: inline-block;"/>
-      </div>-->
+      <fieldset class="item">
+        <legend>Advanced Options</legend>
 
-      <div style="margin-top:15px;">
-        <label for="selectUnit">Select Bitcoin Cash unit:</label>
-        <select v-model="selectedUnit" @change="changeUnit()">
-          <option value="bch">BCH</option>
-          <option value="sat">satoshis</option>
-        </select>
-      </div>
-      
-      <div style="margin-top:15px; margin-bottom: 15px;">
-        <label for="selectUnit">Qr code animation:</label>
-        <select v-model="qrAnimation" @change="changeQrAnimation()">
-          <option value="MaterializeIn">MaterializeIn</option>
-          <option value="FadeInTopDown">FadeInTopDown</option>
-          <option value="FadeInCenterOut">FadeInCenterOut</option>
-          <option value="RadialRipple">RadialRipple</option>
-          <option value="RadialRippleIn">RadialRippleIn</option>
-          <option value="None">None</option>
-        </select>
-      </div>
-
-      <div style="margin-bottom: 15px; cursor: pointer;" @click="() => store.changeView(8)">
-        → Sweep Private Key
-      </div>
-
-      <div style="margin-bottom: 15px; cursor: pointer;" @click="() => store.changeView(7)">
-        → UTXO Management <span v-if="utxosWithBchAndTokens?.length" style="color: orange">(important)</span>
-      </div>
-
-    </div>
-
-    <!-- Advanced Settings -->
-    <div v-else-if="displaySettingsMenu == 3">
-
-      <div v-if="store.network == 'mainnet'" style="margin-top:15px">
-        <label for="selectNetwork">Change Electrum server mainnet:</label>
-        <select v-model="selectedElectrumServer" @change="changeElectrumServer('mainnet')">
-          <option value="electrum.imaginary.cash">electrum.imaginary.cash (default)</option>
-          <option value="bch.imaginary.cash">bch.imaginary.cash</option>
-          <option value="cashnode.bch.ninja">cashnode.bch.ninja</option>
-          <option value="fulcrum.greyh.at">fulcrum.greyh.at</option>
-          <option value="electroncash.dk">electroncash.dk</option>
-          <option value="fulcrum.jettscythe.xyz">fulcrum.jettscythe.xyz</option>
-          <option value="bch.loping.net">bch.loping.net</option>
-        </select>
-      </div>
-
-      <div v-if="store.network == 'chipnet'" style="margin-top:15px">
-        <label for="selectNetwork">Change Electrum server chipnet:</label>
-        <select v-model="selectedElectrumServerChipnet" @change="changeElectrumServer('chipnet')">
-          <option value="chipnet.bch.ninja">chipnet.bch.ninja (default)</option>
-          <option value="chipnet.imaginary.cash">chipnet.imaginary.cash</option>
-        </select>
-      </div>
-
-      <div style="margin-top:15px">
-        <label for="selectNetwork">Change IPFS gateway:</label>
-        <select v-model="selectedIpfsGateway" @change="changeIpfsGateway()">
-          <option value="https://w3s.link/ipfs/">w3s.link (default)</option>
-          <option value="https://ipfs.io/ipfs/">ipfs.io</option>
-          <option value="https://dweb.link/ipfs/">dweb.link</option>
-          <option value="https://nftstorage.link/ipfs/">nftstorage.link</option>
-        </select>
-      </div>
-
-      <div style="margin-top:15px">
-        <label for="selectNetwork">Change ChainGraph:</label>
-        <select v-model="selectedChaingraph" @change="changeChaingraph()">
-          <option value="https://gql.chaingraph.pat.mn/v1/graphql">Pat's Chaingraph (default)</option>
-          <option value="https://demo.chaingraph.cash/v1/graphql">Demo Chaingraph</option>
-        </select>
-      </div>
-
-      <div style="margin-top:15px;">Remove wallet from {{ platformString }}
-        <div v-if="isPwaMode" style="color: red">
-          Deleting the wallet data in the 'Installed web-app' will also delete the wallet from your browser!
+        <div style="margin-top: 15px;">Enable WalletConnect
+          <Toggle v-model="selectedWalletConnect" @change="changeWalletConnect()" style="vertical-align: middle; display: inline-block;"/>
         </div>
-        <div v-if="!isPwaMode && settingsStore.hasInstalledPWA" style="color: red">
-          Deleting the wallet data from the browser will also remove the wallet from any 'Installed web-app'.
+
+        <div style="margin-top:15px">
+          Show Cauldron Swap Button <Toggle v-model="selectedShowSwap" @change="toggleShowSwap" style="vertical-align: middle;display: inline-block;"/>
         </div>
-        <input @click="confirmDeleteWallet()" type="button" value="Delete wallet" class="button error" style="display: block;">
-      </div>
-
-      <div style="margin-top:15px; margin-bottom: 15px">
-        Clear wallet history cache {{ isMobile? '' : 'from ' + platformString }}
-        <span v-if="indexedDbCacheSizeMB != undefined" class="nowrap">({{ indexedDbCacheSizeMB.toFixed(2) }} MB)</span>
-        <input @click="clearHistoryCache()" type="button" value="Clear history cache" class="button" style="display: block; color: black;">
-      </div>
-
-      <div style="margin-top:15px; margin-bottom: 15px">
-        Clear token-metadata cache {{ isMobile? '' : 'from ' + platformString }}
-        <span v-if="localStorageSizeMB != undefined" class="nowrap">({{ localStorageSizeMB.toFixed(2) }} MB)</span>
-        <input @click="clearMetadataCache()" type="button" value="Clear token cache" class="button" style="display: block; color: black;">
-      </div>
-    </div>
-
-    <!-- network settings -->
-    <div v-else-if="displaySettingsMenu == 4">
-      <div>
-        <label for="selectNetwork">Change network:</label>
-        <select v-model="selectedNetwork" @change="changeNetwork()">
-          <option value="mainnet">mainnet</option>
-          <option value="chipnet">chipnet</option>
-        </select>
-      </div>
-
-      <div  style="margin-top:15px">Token Creation Functionality:</div>
-      <div style="margin: 0px 10px;">
 
         <div style="margin-top:15px">
           Enable mint NFTs <Toggle v-model="enableMintNfts" @change="changeMintNfts()" style="vertical-align: middle;display: inline-block;"/>
@@ -413,11 +311,146 @@
           Enable authchain resolution <Toggle v-model="enableAuthchains" @change="changeAuthchains()" style="vertical-align: middle;display: inline-block;"/>
         </div>
 
-        <div v-if="!isMobile" style="margin-top:15px; margin-bottom: 15px; cursor: pointer;" @click="() => store.changeView(6)">
-          → Token Creation Page
+        <div style="margin-top: 15px; margin-bottom: 15px;">
+          Enable token-burn <Toggle v-model="selectedTokenBurn" @change="changeTokenBurn()" style="vertical-align: middle; display: inline-block;"/>
         </div>
-      </div>
+
+        <div style="margin-top:15px;">
+          <label for="selectUnit">Select Bitcoin Cash unit:</label>
+          <select v-model="selectedUnit" @change="changeUnit()">
+            <option value="bch">BCH</option>
+            <option value="sat">satoshis</option>
+          </select>
+        </div>
+        
+        <div style="margin-top:15px; margin-bottom: 15px;">
+          <label for="selectUnit">Qr code animation:</label>
+          <select v-model="qrAnimation" @change="changeQrAnimation()">
+            <option value="MaterializeIn">MaterializeIn</option>
+            <option value="FadeInTopDown">FadeInTopDown</option>
+            <option value="FadeInCenterOut">FadeInCenterOut</option>
+            <option value="RadialRipple">RadialRipple</option>
+            <option value="RadialRippleIn">RadialRippleIn</option>
+            <option value="None">None</option>
+          </select>
+        </div>
+
+      </fieldset>
+
+      <!-- Network Settings -->
+
+      <fieldset class="item">
+        <legend>Network Settings</legend>
+        <div>
+          <label for="selectNetwork">Change network:</label>
+          <select v-model="selectedNetwork" @change="changeNetwork()">
+            <option value="mainnet">mainnet</option>
+            <option value="chipnet">chipnet</option>
+          </select>
+        </div>
+
+        <div v-if="store.network == 'mainnet'" style="margin-top:15px">
+          <label for="selectNetwork">Change Electrum server mainnet:</label>
+          <select v-model="selectedElectrumServer" @change="changeElectrumServer('mainnet')">
+            <option value="electrum.imaginary.cash">electrum.imaginary.cash (default)</option>
+            <option value="bch.imaginary.cash">bch.imaginary.cash</option>
+            <option value="cashnode.bch.ninja">cashnode.bch.ninja</option>
+            <option value="fulcrum.greyh.at">fulcrum.greyh.at</option>
+            <option value="electroncash.dk">electroncash.dk</option>
+            <option value="fulcrum.jettscythe.xyz">fulcrum.jettscythe.xyz</option>
+            <option value="bch.loping.net">bch.loping.net</option>
+          </select>
+        </div>
+
+        <div v-if="store.network == 'chipnet'" style="margin-top:15px">
+          <label for="selectNetwork">Change Electrum server chipnet:</label>
+          <select v-model="selectedElectrumServerChipnet" @change="changeElectrumServer('chipnet')">
+            <option value="chipnet.bch.ninja">chipnet.bch.ninja (default)</option>
+            <option value="chipnet.imaginary.cash">chipnet.imaginary.cash</option>
+          </select>
+        </div>
+
+        <div style="margin-top:15px">
+          <label for="selectNetwork">Change IPFS gateway:</label>
+          <select v-model="selectedIpfsGateway" @change="changeIpfsGateway()">
+            <option value="https://w3s.link/ipfs/">w3s.link (default)</option>
+            <option value="https://ipfs.io/ipfs/">ipfs.io</option>
+            <option value="https://dweb.link/ipfs/">dweb.link</option>
+            <option value="https://nftstorage.link/ipfs/">nftstorage.link</option>
+          </select>
+        </div>
+
+        <div style="margin-top:15px">
+          <label for="selectNetwork">Change ChainGraph:</label>
+          <select v-model="selectedChaingraph" @change="changeChaingraph()">
+            <option value="https://gql.chaingraph.pat.mn/v1/graphql">Pat's Chaingraph (default)</option>
+            <option value="https://demo.chaingraph.cash/v1/graphql">Demo Chaingraph</option>
+          </select>
+        </div>
+
+        <div style="margin-top:15px; margin-bottom:15px;">
+          <label for="selectUnit">Select BlockExplorer:</label>
+          <select v-model="selectedExplorer" @change="changeBlockExplorer()">
+            <option v-if="store.network == 'mainnet'" value="https://blockchair.com/bitcoin-cash/transaction">Blockchair</option>
+            <option v-if="store.network == 'mainnet'" value="https://3xpl.com/bitcoin-cash/transaction">3xpl</option>
+            <option v-if="store.network == 'mainnet'" value="https://explorer.bch.ninja/tx">explorer.bch.ninja</option>
+            <option v-if="store.network == 'mainnet'" value="https://bch.loping.net/tx">bch.loping.net</option>
+            <option v-if="store.network == 'mainnet'" value="https://explorer.salemkode.com/tx">SalemKode explorer</option>
+            <option v-if="store.network == 'mainnet'" value="https://explorer.coinex.com/bch/tx">CoinEx explorer (no CashTokens support)</option>
+            <option v-if="store.network == 'mainnet'" value="https://explorer.melroy.org/tx">Melroy explorer (no CashTokens support)</option>
+
+            <option v-if="store.network == 'chipnet'" value="https://chipnet.bch.ninja/tx">chipnet.bch.ninja</option>
+            <option v-if="store.network == 'chipnet'" value="https://chipnet.imaginary.cash/tx">chipnet.imaginary.cash</option>
+            <option v-if="store.network == 'chipnet'" value="https://chipnet.chaingraph.cash/tx">chipnet.chaingraph.cash</option>
+            <option v-if="store.network == 'chipnet'" value="https://cbch.loping.net/tx">cbch.loping.net</option>
+          </select>
+        </div>
+
+      </fieldset>
+
+      <!-- Advanced Functions -->
+
+      <fieldset class="item">
+        <legend>Advanced Functions</legend>
+        <div style="margin-bottom: 15px; cursor: pointer;" @click="() => store.changeView(8)">
+          → Sweep Private Key
+        </div>
+
+        <div style="margin-bottom: 15px; cursor: pointer;" @click="() => store.changeView(7)">
+          → UTXO Management <span v-if="utxosWithBchAndTokens?.length" style="color: orange">(important)</span>
+        </div>
+
+        <div v-if="!isMobile" style="margin-top:15px; margin-bottom: 15px; cursor: pointer;" @click="() => store.changeView(6)">
+          → Create New Token
+        </div>
+
+        <div style="margin-top:15px;">Remove wallet from {{ platformString }}
+          <div v-if="isPwaMode" style="color: red">
+            Deleting the wallet data in the 'Installed web-app' will also delete the wallet from your browser!
+          </div>
+          <div v-if="!isPwaMode && settingsStore.hasInstalledPWA" style="color: red">
+            Deleting the wallet data from the browser will also remove the wallet from any 'Installed web-app'.
+          </div>
+          <input @click="confirmDeleteWallet()" type="button" value="Delete wallet" class="button error" style="display: block;">
+        </div>
+
+        <div style="margin-top:15px; margin-bottom: 15px">
+          Clear wallet history cache {{ isMobile? '' : 'from ' + platformString }}
+          <span v-if="indexedDbCacheSizeMB != undefined" class="nowrap">({{ indexedDbCacheSizeMB.toFixed(2) }} MB)</span>
+          <input @click="clearHistoryCache()" type="button" value="Clear history cache" class="button" style="display: block; color: black;">
+        </div>
+
+        <div style="margin-top:15px; margin-bottom: 15px">
+          Clear token-metadata cache {{ isMobile? '' : 'from ' + platformString }}
+          <span v-if="localStorageSizeMB != undefined" class="nowrap">({{ localStorageSizeMB.toFixed(2) }} MB)</span>
+          <input @click="clearMetadataCache()" type="button" value="Clear token cache" class="button" style="display: block; color: black;">
+        </div>
+      </fieldset>
+
     </div>
+
+    <!-- main menu -->
+
     <div v-else>
       <div style="margin-bottom: 15px; cursor: pointer;" @click="() => displaySettingsMenu = 1">
         ↳ Backup wallet <span v-if="!settingsStore.hasSeedBackedUp" style="color: var(--color-primary)">(important)</span>
@@ -429,32 +462,6 @@
 
       <div style="margin-bottom: 15px; cursor: pointer;" @click="() => displaySettingsMenu = 5">
         ↳ Crypto Pro Options
-      </div>
-
-      <div style="margin-bottom: 15px; cursor: pointer;" @click="() => displaySettingsMenu = 3">
-        ↳ Advanced settings
-      </div>
-
-      <div style="margin-bottom: 15px; cursor: pointer;" @click="() => displaySettingsMenu = 4">
-        ↳ Developer settings
-      </div>
-
-      <div style="margin-top:15px; margin-bottom:15px;">
-        <label for="selectUnit">Select BlockExplorer:</label>
-        <select v-model="selectedExplorer" @change="changeBlockExplorer()">
-          <option v-if="store.network == 'mainnet'" value="https://blockchair.com/bitcoin-cash/transaction">Blockchair</option>
-          <option v-if="store.network == 'mainnet'" value="https://3xpl.com/bitcoin-cash/transaction">3xpl</option>
-          <option v-if="store.network == 'mainnet'" value="https://explorer.bch.ninja/tx">explorer.bch.ninja</option>
-          <option v-if="store.network == 'mainnet'" value="https://bch.loping.net/tx">bch.loping.net</option>
-          <option v-if="store.network == 'mainnet'" value="https://explorer.salemkode.com/tx">SalemKode explorer</option>
-          <option v-if="store.network == 'mainnet'" value="https://explorer.coinex.com/bch/tx">CoinEx explorer (no CashTokens support)</option>
-          <option v-if="store.network == 'mainnet'" value="https://explorer.melroy.org/tx">Melroy explorer (no CashTokens support)</option>
-
-          <option v-if="store.network == 'chipnet'" value="https://chipnet.bch.ninja/tx">chipnet.bch.ninja</option>
-          <option v-if="store.network == 'chipnet'" value="https://chipnet.imaginary.cash/tx">chipnet.imaginary.cash</option>
-          <option v-if="store.network == 'chipnet'" value="https://chipnet.chaingraph.cash/tx">chipnet.chaingraph.cash</option>
-          <option v-if="store.network == 'chipnet'" value="https://cbch.loping.net/tx">cbch.loping.net</option>
-        </select>
       </div>
 
     </div>
