@@ -165,7 +165,7 @@ const tokenPricesForTransaction = ref({} as Record<string, number>);
             <!-- BCH -->
             <td class="value" :style="transaction.valueChange < 0 ? 'color: var(--color-red-text)' : ''">
               {{ `${transaction.valueChange > 0 ? '+' : '' }${(transaction.valueChange / 100_000_000).toFixed(8)}`}}
-              {{ isMobile? "" : (bchDisplayUnit) }}
+              {{ bchDisplayUnit }}
               <div class="value" v-if="settingsStore.showFiatValueHistory" style="font-size: smaller; opacity:70%">
                 {{`${transaction.valueChange > 0 ? '+' : '' }` + formatFiatAmount(exchangeRate * transaction.valueChange / 100_000_000, settingsStore.currency)}}
               </div>
@@ -184,9 +184,9 @@ const tokenPricesForTransaction = ref({} as Record<string, number>);
             <td class="tokenChange">
               <div class="tokenChangeItem" v-for="tokenChange in transaction.tokenAmountChanges" :key="tokenChange.tokenId">
                 <span v-if="tokenChange.amount !== 0n || tokenChange.nftAmount == 0n">
-                  <span v-if="tokenChange.amount > 0n" class="value">+{{ (Number(tokenChange.amount) / 10**(store.bcmrRegistries?.[tokenChange.tokenId]?.token.decimals ?? 0)).toLocaleString("en-US") }}</span>
+                  <span v-if="tokenChange.amount >= 0n" class="value">+{{ (Number(tokenChange.amount) / 10**(store.bcmrRegistries?.[tokenChange.tokenId]?.token.decimals ?? 0)).toLocaleString("en-US") }}</span>
                   <span v-else class="value" style="color: var(--color-red-text)">{{ (Number(tokenChange.amount) / 10**(store.bcmrRegistries?.[tokenChange.tokenId]?.token.decimals ?? 0)).toLocaleString("en-US") }}</span>
-                  <span class="hideOnOverflow">&nbsp;{{(store.bcmrRegistries?.[tokenChange.tokenId]?.token?.symbol ?? tokenChange.tokenId.slice(0, 8)) }}</span>
+                  <span class="value">&nbsp;{{(store.bcmrRegistries?.[tokenChange.tokenId]?.token?.symbol ?? tokenChange.tokenId.slice(0, 8)) }}</span>
                   <div class="value" style="font-size: smaller; opacity:70%" v-if="settingsStore.showFiatValueHistory && tokenChange.amount > 0n" :style="tokenChange.amount < 0n ? 'var(--color-red-text)' : ''">
                     {{ tokenChange.amount < 0n ? '' : '+' }}{{ formatFiatAmount(tokenChangeCurrencyValues[`${tokenChange.tokenId}-${transaction.timestamp ?? 0}-${tokenChange.amount}`], settingsStore.currency) }}
                   </div>
@@ -255,7 +255,6 @@ tr.dark:nth-child(even) {
 .tokenChangeItem {
   max-width: 160px;
   display: flex;
-  align-items: center;
 }
 
 img.tokenIcon {
@@ -279,10 +278,8 @@ img.tokenIcon {
   }
   .tokenChangeItem {
     max-width: 120px;
-    text-align: center;
     width: 100%;
     flex-direction: column;
-    justify-content: center;
   }
   .transactionTable > * {
     font-size: small;
