@@ -411,7 +411,7 @@
               }}
             </span><span v-else>...</span>
           </div> -->
-          <div>
+          <!--<div>
             Circulating supply: 
             <span v-if="totalSupplyFT && reservedSupply != undefined">
               {{ numberFormatter.format(toAmountDecimals(totalSupplyFT - reservedSupply)) +
@@ -422,7 +422,7 @@
                 :"" 
               }}
             </span><span v-else>...</span>
-          </div>
+          </div>-->
           <div>
             <a style="color: var(--font-color); cursor: pointer;" :href="'https://tokenexplorer.cash/?tokenId=' + tokenData.tokenId" target="_blank">
               See details on TokenExplorer <img :src="settingsStore.darkMode? 'images/external-link-grey.svg' : 'images/external-link.svg'" style="vertical-align: sub;"/>
