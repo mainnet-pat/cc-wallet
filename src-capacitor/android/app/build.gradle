@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "com.cashonize.wallet"
+    namespace "cash.olando.wallet"
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.cashonize.wallet"
+        applicationId "cash.olando.wallet"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -16,13 +16,24 @@ android {
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+       release {
+           // put your passwords in ~/.gradle/gradle.properties and your keystore in ~/keystores/my-release-key.jks
+           storeFile file("/home/nick/olando/keystore/my-release-key.jks")  // Full path, e.g., ~/keystores/my-release-key.jks
+           storePassword project.findProperty("RELEASE_STORE_PASSWORD") ?: ""
+           keyAlias "myappkey"                          // Matches what you set in keytool
+           keyPassword project.findProperty("RELEASE_KEY_PASSWORD") ?: ""
+       }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release     // Add this line to enable signing
         }
     }
 }
+
 
 repositories {
     flatDir{

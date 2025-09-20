@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Cashonize</string>
-    <string name="title_activity_main">Cashonize</string>
-    <string name="package_name">com.cashonize.wallet</string>
-    <string name="custom_url_scheme">com.cashonize.wallet</string>
+    <string name="app_name">Olando-Wallet</string>
+    <string name="title_activity_main">Olando-Wallet</string>
+    <string name="package_name">cash.olando.wallet</string>
+    <string name="custom_url_scheme">cash.olando.wallet</string>
 </resources>

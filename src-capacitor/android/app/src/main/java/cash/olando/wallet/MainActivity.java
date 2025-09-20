@@ -1,4 +1,4 @@
-package com.cashonize.wallet;
+package cash.olando.wallet;
 
 import com.getcapacitor.BridgeActivity;
 

@@ -1,6 +1,6 @@
 {
-  "appId": "com.cashonize.wallet",
-  "appName": "Cashonize",
+  "appId": "cash.olando.wallet",
+  "appName": "Olando-Wallet",
   "webDir": "www",
   "server": {
     "androidScheme": "https"
