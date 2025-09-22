@@ -4,5 +4,15 @@
   "webDir": "www",
   "server": {
     "androidScheme": "https"
+  },
+  "android": {
+    "buildOptions": {
+      "versionCode": 705,
+      "versionName": "0.7.5",
+      "keystorePath": "/home/nick/olando/keystore/my-release-key.jks",
+      "keystorePassword": "<secret>",
+      "keystoreAlias": "myappkey",
+      "keystoreAliasPassword": "<secret>"
+    }
   }
 }

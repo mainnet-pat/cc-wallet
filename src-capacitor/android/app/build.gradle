@@ -7,8 +7,8 @@ android {
         applicationId "cash.olando.wallet"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 701
+        versionName "0.7.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -19,9 +19,9 @@ android {
     signingConfigs {
        release {
            // put your passwords in ~/.gradle/gradle.properties and your keystore in ~/keystores/my-release-key.jks
-           storeFile file("/home/nick/olando/keystore/my-release-key.jks")  // Full path, e.g., ~/keystores/my-release-key.jks
+           storeFile file("/home/nick/olando/keystore/my-release-key.jks")
            storePassword project.findProperty("RELEASE_STORE_PASSWORD") ?: ""
-           keyAlias "myappkey"                          // Matches what you set in keytool
+           keyAlias "myappkey"
            keyPassword project.findProperty("RELEASE_KEY_PASSWORD") ?: ""
        }
     }
