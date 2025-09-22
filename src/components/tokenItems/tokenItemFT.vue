@@ -164,6 +164,8 @@
       const amountTokensNumber = decimals ? +sanitizedInput * (10 ** decimals) : sanitizedInput;
       const amountTokensInt = typeof amountTokensNumber == "number" ? BigInt(Math.round(amountTokensNumber)): BigInt(amountTokensNumber)
       if(amountTokensInt > tokenData.value.amount) throw(`Insufficient token balance`);
+
+      destinationAddr.value = destinationAddr.value.split('?')[0] || destinationAddr.value;
       if(!destinationAddr.value.startsWith("bitcoincash:") && !destinationAddr.value.startsWith("bchtest:")){
         const networkPrefix = store.network == 'mainnet' ? "bitcoincash:" : "bchtest:"
         destinationAddr.value = networkPrefix + destinationAddr.value
