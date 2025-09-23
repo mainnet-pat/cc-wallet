@@ -313,9 +313,10 @@ Are you sure you want to delete the wallet?`;
         </div>
 
         <div style="margin-top:15px">
-          Show Cauldron Swap Button <Toggle v-model="selectedShowSwap" @change="toggleShowSwap" style="vertical-align: middle;display: inline-block;"/>
+          Show Swap Button <Toggle v-model="selectedShowSwap" @change="toggleShowSwap" style="vertical-align: middle;display: inline-block;"/>
         </div>
 
+        <!--
         <div style="margin-top:15px">
           Enable mint NFTs <Toggle v-model="enableMintNfts" @change="changeMintNfts()" style="vertical-align: middle;display: inline-block;"/>
         </div>
@@ -327,6 +328,7 @@ Are you sure you want to delete the wallet?`;
         <div style="margin-top: 15px; margin-bottom: 15px;">
           Enable token-burn <Toggle v-model="selectedTokenBurn" @change="changeTokenBurn()" style="vertical-align: middle; display: inline-block;"/>
         </div>
+        -->
 
         <div style="margin-top:15px;">
           <label for="selectUnit">Select Bitcoin Cash unit:</label>
