@@ -1,12 +1,12 @@
 {
-  "name": "cashonize-wallet",
+  "name": "olando-wallet",
   "version": "0.5.5",
-  "description": "Olando-Wallet is a Bitcoin Cash (BCH) Wallet which supports the Olando Community Currency.",
+  "description": "Olando-Wallet is a Bitcoin Cash (BCH) Wallet which supports Olando, the conspiracy currency for free mankind",
   "productName": "Olando-Wallet",
-  "author": "Mathieu Geukens",
+  "author": "",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cashonize/cashonize-wallet.git"
+    "url": "https://github.com/mainnet-pat/cc-wallet.git"
   },
   "type": "module",
   "private": true,
