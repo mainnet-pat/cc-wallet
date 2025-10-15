@@ -5,15 +5,10 @@ Cashonize: a Bitcoin Cash Wallet
 ## Install the dependencies
 ```bash
 yarn
-# or
-npm install
-```
 
 ### Start the app in development mode (hot-code reloading, error reporting, etc.)
 ```bash
-yarn quasar dev
-# or
-npx quasar dev
+quasar dev
 ```
 
 
@@ -36,9 +31,7 @@ npm run format
 
 ### Build the app for production
 ```bash
-yarn quasar build
-# or
-npx quasar dev
+yarn build
 ```
 
 ### Optionally Install the Quasar CLI
