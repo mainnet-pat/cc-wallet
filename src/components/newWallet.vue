@@ -83,13 +83,6 @@
 </script>
 
 <template>
-  <div v-if="isBrowser" style="display:block; margin-top: -25px;">
-    <a style="color: black; padding: 5px;" href="https://about.cashonize.com">
-      <span style="font-size: 24px; vertical-align: sub;">⬅</span>
-      <span> About page</span>
-    </a>
-  </div>
-  
   <fieldset style="margin-top: 15px;">
     <div style="margin: 20px 0;">
       <h4>Create new wallet</h4>
