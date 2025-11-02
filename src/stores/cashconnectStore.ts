@@ -61,10 +61,10 @@ export const useCashconnectStore = async (wallet: Ref<Wallet | TestNetWallet>) =
         "3fd234b8e2cd0e1da4bc08a0011bbf64",
         // Metadata.
         {
-          name: "Cashonize",
-          description: "Cashonize BitcoinCash Web Wallet",
-          url: "https://cashonize.com",
-          icons: ["https://cashonize.com/images/favicon.ico"],
+          name: 'OlandoWallet',
+          description: 'Olando BCH Community Wallet',
+          url: 'https://olando.cash/',
+          icons: ['https://olando.cash/favicon.ico'],
         },
         // Event Callbacks.
         {
