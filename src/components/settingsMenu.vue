@@ -440,14 +440,14 @@ Are you sure you want to delete the wallet?`;
           → Create New Token
         </div>
 
-        <div style="margin-top:15px;">Remove wallet from {{ platformString }}
+        <div style="margin-top:15px;">
           <div v-if="isPwaMode" style="color: red">
             Deleting the wallet data in the 'Installed web-app' will also delete the wallet from your browser!
           </div>
           <div v-if="!isPwaMode && settingsStore.hasInstalledPWA" style="color: red">
             Deleting the wallet data from the browser will also remove the wallet from any 'Installed web-app'.
           </div>
-          <input @click="confirmDeleteWallet()" type="button" value="Delete wallet" class="button error" style="display: block;">
+          <input @click="confirmDeleteWallet()" type="button" value="Remove wallet from this browser" class="button error" style="display: block;">
         </div>
 
         <div style="margin-top:15px; margin-bottom: 15px">
