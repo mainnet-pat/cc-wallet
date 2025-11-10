@@ -12,7 +12,7 @@
   import sweepPrivateKey from 'src/components/sweepPrivateKey.vue'
   import { ref, computed, watch } from 'vue'
   import { storeToRefs } from 'pinia'
-  import { Wallet, TestNetWallet, DefaultProvider } from 'mainnet-js'
+  import { Wallet, TestNetWallet } from 'mainnet-js'
   import { waitForInitialized } from 'src/utils/utils'
   import { namedWalletExistsInDb } from 'src/utils/dbUtils'
   import { useStore } from 'src/stores/store'
@@ -33,7 +33,14 @@
   const bchSendRequest = ref(undefined as undefined|string);
   const wifToSweep = ref(undefined as undefined|string);
 
-  DefaultProvider.servers.chipnet = ["wss://chipnet.bch.ninja:50004"];
+  const readNetwork = localStorage.getItem('network') || 'mainnet';
+  if (readNetwork === 'mainnet') {
+    // @ts-ignore
+    globalThis["BCH"] = settingsStore.createFallbackElectrumClient("mainnet");
+  } else {
+    // @ts-ignore
+    globalThis["tBCH"] = settingsStore.createFallbackElectrumClient("chipnet");
+  }
 
   // The currentView and its viewSpecificProps are computed based on 'store.displayView' 
   // These view & prop refs are passed to a dynamic component rendering the current view

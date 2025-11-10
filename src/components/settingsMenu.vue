@@ -1,15 +1,17 @@
 <script setup lang="ts">
   import Toggle from '@vueform/toggle'
-  import EmojiItem from './general/emojiItem.vue'
   import { computed, ref } from 'vue'
-  import { Connection, type ElectrumNetworkProvider, Config, type BalanceResponse } from "mainnet-js"
+  import { Config, type BalanceResponse } from "mainnet-js"
   import { useStore } from '../stores/store'
   import { useSettingsStore } from '../stores/settingsStore'
   import { copyToClipboard } from 'src/utils/utils';
   import { getElectrumCacheSize, clearElectrumCache } from "src/utils/cacheUtils";
+  import { useWindowSize } from '@vueuse/core'
+  import ElectrumServersTable from './electrumServersTable.vue'
+
   const store = useStore()
   const settingsStore = useSettingsStore()
-  import { useWindowSize } from '@vueuse/core'
+
   const { width } = useWindowSize();
   const isMobile = computed(() => width.value < 480)
 
@@ -105,24 +107,6 @@
     const explorerNetwork = store.network == "mainnet" ? "explorerMainnet" : "explorerChipnet";
     settingsStore[explorerNetwork] = selectedExplorer.value;
     localStorage.setItem(explorerNetwork, selectedExplorer.value);
-  }
-  function changeElectrumServer(targetNetwork: "mainnet" | "chipnet"){
-    if(!store._wallet) throw new Error('No wallet set in global store');
-    store.changeView(1)
-    store.resetWalletState()
-    if(targetNetwork == "mainnet"){
-      const newConnection = new Connection("mainnet",`wss://${selectedElectrumServer.value}:50004` )
-      store._wallet.provider = newConnection.networkProvider as ElectrumNetworkProvider;
-      settingsStore.electrumServerMainnet = selectedElectrumServer.value
-      localStorage.setItem("electrum-mainnet", selectedElectrumServer.value);
-    }
-    if(targetNetwork == "chipnet"){
-      const newConnection = new Connection("testnet",`wss://${selectedElectrumServerChipnet.value}:50004` )
-      store._wallet.provider = newConnection.networkProvider as ElectrumNetworkProvider;
-      settingsStore.electrumServerChipnet = selectedElectrumServerChipnet.value
-      localStorage.setItem("electrum-chipnet", selectedElectrumServerChipnet.value);
-    }
-    store.initializeWallet()
   }
   function changeIpfsGateway(){
     settingsStore.ipfsGateway = selectedIpfsGateway.value
@@ -364,27 +348,8 @@ Are you sure you want to delete the wallet?`;
           </select>
         </div>
 
-        <div v-if="store.network == 'mainnet'" style="margin-top:15px">
-          <label for="selectNetwork">Change Electrum server mainnet:</label>
-          <select v-model="selectedElectrumServer" @change="changeElectrumServer('mainnet')">
-            <option value="electrum.imaginary.cash">electrum.imaginary.cash (default)</option>
-            <option value="bch.imaginary.cash">bch.imaginary.cash</option>
-            <option value="cashnode.bch.ninja">cashnode.bch.ninja</option>
-            <option value="fulcrum.greyh.at">fulcrum.greyh.at</option>
-            <option value="electroncash.dk">electroncash.dk</option>
-            <option value="fulcrum.jettscythe.xyz">fulcrum.jettscythe.xyz</option>
-            <option value="bch.loping.net">bch.loping.net</option>
-            <option value="fulcrum.criptolayer.net">fulcrum.criptolayer.net</option>
-          </select>
-        </div>
-
-        <div v-if="store.network == 'chipnet'" style="margin-top:15px">
-          <label for="selectNetwork">Change Electrum server chipnet:</label>
-          <select v-model="selectedElectrumServerChipnet" @change="changeElectrumServer('chipnet')">
-            <option value="chipnet.bch.ninja">chipnet.bch.ninja (default)</option>
-            <option value="chipnet.imaginary.cash">chipnet.imaginary.cash</option>
-          </select>
-        </div>
+        <ElectrumServersTable v-if="store.network == 'mainnet'" :servers="settingsStore.electrumServerMainnet" network="mainnet" style="margin-top:15px"/>
+        <ElectrumServersTable v-if="store.network == 'chipnet'" :servers="settingsStore.electrumServerChipnet" network="chipnet" style="margin-top:15px"/>
 
         <div style="margin-top:15px">
           <label for="selectNetwork">Change IPFS gateway:</label>

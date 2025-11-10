@@ -335,7 +335,6 @@ export const fundProposedTrade = async ({
 
   let selectedInputCoins: SpendableCoin[] = [];
   const writeTxController = {
-    // eslint-disable-next-line
     async generateMiddleware (result: GenerateChainedTradeTxResult, groupedEntries: Array<{ supply_token_id: TokenId, demand_token_id: TokenId, list: PoolTrade[] }>, input_coins: SpendableCoin[]): Promise<GenerateChainedTradeTxResult> {
       selectedInputCoins = [ ...selectedInputCoins, ...result.input_coins ];
       return result;

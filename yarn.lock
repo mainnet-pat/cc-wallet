@@ -263,6 +263,18 @@
     eventemitter3 "^5.0.1"
     lossless-json "^4.0.1"
 
+"@electrum-cash/network@^4.1.4":
+  version "4.1.4"
+  resolved "https://registry.yarnpkg.com/@electrum-cash/network/-/network-4.1.4.tgz#c3a6e622998259513122061a8b85767d7dca6488"
+  integrity sha512-nHC/HTo26JGghVunXMlc2lh2p6gwUDjs8umGvEE4we+G0Hyv7xaO+WVYqKrGcr5huBnUX9wakVBIJmbtigzi4Q==
+  dependencies:
+    "@electrum-cash/debug-logs" "^1.0.0"
+    "@electrum-cash/web-socket" "^1.0.0"
+    async-mutex "^0.5.0"
+    debug "^4.3.2"
+    eventemitter3 "^5.0.1"
+    lossless-json "^4.0.1"
+
 "@electrum-cash/web-socket@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@electrum-cash/web-socket/-/web-socket-1.0.0.tgz#0ab57e46d41e941ffb57deff86afea3ae1379d5d"
@@ -862,6 +874,16 @@
   integrity sha512-QAzDJZzpi3N7yruFeXKa7Oj0xs6bDJybLMXGrqKmiD08jaeVZFiqZqN9wJxdLVaivDAvM64YFZZreo+0me82mw==
   dependencies:
     mainnet-js "2.7.17"
+
+"@mainnet-pat/electrum-fallback-client@^4.1.11":
+  version "4.1.11"
+  resolved "https://registry.yarnpkg.com/@mainnet-pat/electrum-fallback-client/-/electrum-fallback-client-4.1.11.tgz#a62998b0b88758973d04e5be38cabb291bf3f3b4"
+  integrity sha512-KbOmx1wqNCcL9E5e2LkFZBN4UpbDuDjCLlvOtPU5CoK7SMM8eBAXqjPkg3XLMlB3oZBIofJ6qnkWOcABFMlxgA==
+  dependencies:
+    "@electrum-cash/debug-logs" "^1.0.0"
+    "@electrum-cash/network" "^4.1.4"
+    debug "^4.3.2"
+    eventemitter3 "^5.0.1"
 
 "@malept/cross-spawn-promise@^2.0.0":
   version "2.0.0"

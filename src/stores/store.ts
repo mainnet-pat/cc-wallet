@@ -5,13 +5,11 @@ import {
   TestNetWallet,
   BaseWallet,
   Config,
-  Connection,
   binToHex,
   convert,
   balanceResponseFromSatoshi,
   type BalanceResponse,
   type UtxoI,
-  type ElectrumNetworkProvider,
   type CancelFn,
   type HexHeaderI
 } from "mainnet-js"
@@ -97,14 +95,6 @@ export const useStore = defineStore('store', () => {
 
   async function setWallet(newWallet: Wallet | TestNetWallet){
     changeView(1);
-    if(newWallet.network == 'mainnet'){
-      const connectionMainnet = new Connection("mainnet", `wss://${settingsStore.electrumServerMainnet}:50004`)
-      newWallet.provider = connectionMainnet.networkProvider as ElectrumNetworkProvider 
-    }
-    if(newWallet.network == 'testnet'){
-      const connectionChipnet = new Connection("testnet", `wss://${settingsStore.electrumServerChipnet}:50004`)
-      newWallet.provider = connectionChipnet.networkProvider as ElectrumNetworkProvider 
-    }
     _wallet.value = newWallet;
     await initializeWallet();
   }
@@ -118,12 +108,13 @@ export const useStore = defineStore('store', () => {
       // otherwise this can cause the router to error (and UI to fail) in offline mode
       (() => {
         let timeoutHandle: ReturnType<typeof setTimeout>
-        const electrumServer = network.value == 'mainnet' ? settingsStore.electrumServerMainnet : settingsStore.electrumServerChipnet
+        wallet.value.provider.disconnect().catch(() => {/*ignore eventual disconnection errors as we do not care about them*/});
+        wallet.value.provider = settingsStore.createFallbackElectrumClient(network.value);
         Promise.race([wallet.value.provider.connect(),
           new Promise((_, reject) =>
             (timeoutHandle = setTimeout(() => {
               earlyError = true
-              reject(new Error(`Unable to connect to Electrum server '${electrumServer}'`));
+              reject(new Error(`Unable to connect to Electrum server '${wallet.value.provider.electrum.hostIdentifier}'`));
             }, 3000))
           )
         ]).finally(() => clearTimeout(timeoutHandle))

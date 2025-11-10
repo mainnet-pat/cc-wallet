@@ -1,13 +1,15 @@
 import { useWindowSize } from "@vueuse/core";
-import { Config } from "mainnet-js";
+import { Config, ElectrumNetworkProvider } from "mainnet-js";
 import { defineStore } from "pinia"
 import { type QRCodeAnimationName } from "src/interfaces/interfaces";
 import { ref } from 'vue'
+import { DefaultChipnetElectrumServers, DefaultMainnetElectrumServers } from "./config";
+import { ElectrumWebSocket } from '@electrum-cash/web-socket';
+import { ElectrumFallbackClient } from '@mainnet-pat/electrum-fallback-client';
+import { type ElectrumClientEvents, type ElectrumClient } from '@electrum-cash/network';
 
 const defaultExplorerMainnet = "https://explorer.salemkode.com/tx";
 const defaultExplorerChipnet = "https://chipnet.chaingraph.cash/tx";
-const defaultElectrumMainnet = "electrum.imaginary.cash"
-const defaultElectrumChipnet = "chipnet.bch.ninja"
 const defaultChaingraph = "https://gql.chaingraph.pat.mn/v1/graphql";
 const dafaultIpfsGateway = "https://w3s.link/ipfs/";
 const defaultFeaturedTokens = [
@@ -24,8 +26,8 @@ export const useSettingsStore = defineStore('settingsStore', () => {
   const bchUnit = ref("bch" as ("bch" | "sat"));
   const explorerMainnet = ref(defaultExplorerMainnet);
   const explorerChipnet = ref(defaultExplorerChipnet);
-  const electrumServerMainnet = ref(defaultElectrumMainnet);
-  const electrumServerChipnet = ref(defaultElectrumChipnet);
+  const electrumServerMainnet = ref<[string, boolean][]>(DefaultMainnetElectrumServers.map(server => [server, true]));
+  const electrumServerChipnet = ref<[string, boolean][]>(DefaultChipnetElectrumServers.map(server => [server, true]));
   const chaingraph = ref(defaultChaingraph);
   const ipfsGateway = ref(dafaultIpfsGateway);
   const darkMode  = ref(true);
@@ -35,6 +37,7 @@ export const useSettingsStore = defineStore('settingsStore', () => {
   const walletConnect = ref(false);
   const qrScan = ref(true);
   const featuredTokens = ref([] as string[]);
+  // const electrumServers = ref({} as Record<string, [string, boolean][]>);
   const hasInstalledPWA = ref(false as boolean);
   const qrAnimation = ref("MaterializeIn" as QRCodeAnimationName | 'None')
   const hasPlayedAnmation = ref(false as boolean)
@@ -106,11 +109,15 @@ export const useSettingsStore = defineStore('settingsStore', () => {
     alert("Using Cashonize as an 'Installed Web app' links the wallet data to the browser usage. Deleting the browser data will also affect the installed web app.");
   });
 
-  const readElectrumMainnet = localStorage.getItem("electrum-mainnet") ?? "";
-  if(readElectrumMainnet) electrumServerMainnet.value = readElectrumMainnet
+  try {
+    const readElectrumMainnet = localStorage.getItem("electrum-mainnet") ?? "";
+    if(readElectrumMainnet) electrumServerMainnet.value = JSON.parse(readElectrumMainnet);
+  } catch {;}
 
-  const readElectrumChipnet = localStorage.getItem("electrum-chipnet") ?? "";
-  if(readElectrumChipnet) electrumServerChipnet.value = readElectrumChipnet
+  try {
+    const readElectrumChipnet = localStorage.getItem("electrum-chipnet") ?? "";
+    if(readElectrumChipnet) electrumServerChipnet.value = JSON.parse(readElectrumChipnet);
+  } catch {;}
 
   const readChaingraph = localStorage.getItem("chaingraph") ?? "";
   if(readChaingraph) chaingraph.value = readChaingraph
@@ -201,6 +208,20 @@ export const useSettingsStore = defineStore('settingsStore', () => {
     });
   }
 
+  function createFallbackElectrumClient(network: "mainnet" | "chipnet") {
+    const servers = network === "mainnet" ? electrumServerMainnet.value : electrumServerChipnet.value;
+
+    const urls = servers.filter(server => server[1]).map(server => server[0]);
+
+    const fallback = ElectrumFallbackClient.FromHostUrls(ElectrumWebSocket, urls, { rank: true, clientOptions: {
+      sendKeepAliveIntervalInMilliSeconds: 15000,
+      disableBrowserConnectivityHandling: true,
+      disableBrowserVisibilityHandling: true,
+    } });
+
+    return new ElectrumNetworkProvider(fallback as unknown as ElectrumClient<ElectrumClientEvents>, network === "mainnet" ? "mainnet" : "testnet");
+  }
+
   return {
     currency,
     bchUnit,
@@ -227,5 +248,7 @@ export const useSettingsStore = defineStore('settingsStore', () => {
     setAutoApproveState,
     clearAutoApproveState,
     decrementAutoApproveRequest,
-    isAutoApproveValid  }
+    isAutoApproveValid,
+    createFallbackElectrumClient,
+  }
 })
