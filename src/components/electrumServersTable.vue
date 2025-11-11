@@ -30,7 +30,7 @@
     if(targetNetwork == "chipnet"){
       localStorage.setItem("electrum-chipnet", JSON.stringify(settingsStore.electrumServerChipnet));
     }
-    store.initializeWallet().then(getScores)
+    store.initializeWallet().then(() => setTimeout(getScores, 2500));
   }
 
 </script>
