@@ -109,6 +109,7 @@ export const useStore = defineStore('store', () => {
       (() => {
         let timeoutHandle: ReturnType<typeof setTimeout>
         wallet.value.provider.disconnect().catch(() => {/*ignore eventual disconnection errors as we do not care about them*/});
+        // @ts-ignore
         wallet.value.provider = settingsStore.createFallbackElectrumClient(network.value);
         Promise.race([wallet.value.provider.connect(),
           new Promise((_, reject) =>

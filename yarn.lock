@@ -82,7 +82,7 @@
   resolved "https://registry.yarnpkg.com/@bch-wc2/interfaces/-/interfaces-0.0.8.tgz#2f994aeaa370f2ca506f87fc23e0837e21b475d6"
   integrity sha512-gRt95azHVqoViGI4X3F1ObgTpYBh3//KaCHRBWSMJbAKNM09T+TA/h9kx9u9SZmE8otMtpFSy4awSHWHUQZmbg==
 
-"@bitauth/libauth@3.1.0-next.2", "@bitauth/libauth@^3.0.0", "@bitauth/libauth@^3.1.0-next.2":
+"@bitauth/libauth@3.1.0-next.2", "@bitauth/libauth@^3.0.0", "@bitauth/libauth@^3.1.0-next.2", "@bitauth/libauth@^3.1.0-next.8":
   version "3.1.0-next.2"
   resolved "https://registry.yarnpkg.com/@bitauth/libauth/-/libauth-3.1.0-next.2.tgz#121782b38774d9fba8226406db9b9af0c8d8e464"
   integrity sha512-XRtk9p8UHvtjSPS38rsfHXzaPHG5j9FpN4qHqqGLoAuZYy675PBiOy9zP6ah8lTnnIVaCFl2ekct8w0Hy1oefw==
@@ -868,12 +868,12 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@mainnet-cash/indexeddb-storage@^2.7.17":
-  version "2.7.17"
-  resolved "https://registry.yarnpkg.com/@mainnet-cash/indexeddb-storage/-/indexeddb-storage-2.7.17.tgz#fe3c0a341dce1e2a6e4bec1033767302af14d45d"
-  integrity sha512-QAzDJZzpi3N7yruFeXKa7Oj0xs6bDJybLMXGrqKmiD08jaeVZFiqZqN9wJxdLVaivDAvM64YFZZreo+0me82mw==
+"@mainnet-cash/indexeddb-storage@^2.7.25":
+  version "2.7.25"
+  resolved "https://registry.yarnpkg.com/@mainnet-cash/indexeddb-storage/-/indexeddb-storage-2.7.25.tgz#475df456180ba0caa6bc88bb61151de8f1a05445"
+  integrity sha512-9seLX4qUbgRp7h2By+WP012tKBpcqUeZwHzKrw5zOHw6M7uGKM+bvwJ550DSycp6hnt8oKlMW9SZ+H138FSFaA==
   dependencies:
-    mainnet-js "2.7.17"
+    mainnet-js "2.7.25"
 
 "@mainnet-pat/electrum-fallback-client@^4.1.11":
   version "4.1.11"
@@ -3952,11 +3952,6 @@ dotenv-expand@^11.0.6:
   dependencies:
     dotenv "^16.4.4"
 
-dotenv@^10.0.0:
-  version "10.0.0"
-  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-10.0.0.tgz#3d4227b8fb95f81096cdd2b66653fb2c7085ba81"
-  integrity sha512-rlBi9d8jpv9Sf1klPjNfFAuWDjKLwTIJJ/VxtoTwIR6hnZxcEOQCZg2oIL3MWBYw5GpUDKOEnND7LXTbIpQ03Q==
-
 dotenv@^16.4.4, dotenv@^16.4.5:
   version "16.4.5"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.4.5.tgz#cdd3b3b604cb327e286b4762e13502f717cb099f"
@@ -5720,18 +5715,15 @@ magic-string@^0.30.17:
   dependencies:
     "@jridgewell/sourcemap-codec" "^1.5.0"
 
-mainnet-js@2.7.17, mainnet-js@^2.7.17:
-  version "2.7.17"
-  resolved "https://registry.yarnpkg.com/mainnet-js/-/mainnet-js-2.7.17.tgz#ebd6c5f4de4e816646a5503484d01fcb48fc94ff"
-  integrity sha512-EvyhhAifdH86rRQUvw1wjDCEGAk+5tsYvWstiKR6kOSqhi1MAOCnQs6YNKASor0OKnU4jgnnfzYNK0HnYYPJEA==
+mainnet-js@2.7.25, mainnet-js@^2.7.25:
+  version "2.7.25"
+  resolved "https://registry.yarnpkg.com/mainnet-js/-/mainnet-js-2.7.25.tgz#9016b7b72578983ef0d3a36d9baa2e73eb9944ff"
+  integrity sha512-mP+rRrkbTC3YbLsqZNxjig67+51GApyq/g8zSLID278bHIr18IC2tMhEvdsEudcCyw0Mv79YbieluUZpmjbhGQ==
   dependencies:
     "@bch-wc2/interfaces" "^0.0.8"
-    "@bitauth/libauth" "^3.1.0-next.2"
+    "@bitauth/libauth" "^3.1.0-next.8"
     "@electrum-cash/network" "^4.1.3"
     "@scure/bip39" "^1.2.2"
-    buffer "^6.0.3"
-  optionalDependencies:
-    dotenv "^10.0.0"
 
 make-fetch-happen@^10.2.1:
   version "10.2.1"
