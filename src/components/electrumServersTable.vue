@@ -22,7 +22,7 @@
 
   function changeElectrumServer(targetNetwork: "mainnet" | "chipnet"){
     if(!store._wallet) throw new Error('No wallet set in global store');
-    store.changeView(1)
+    // store.changeView(1)
     store.resetWalletState()
     if(targetNetwork == "mainnet"){
       localStorage.setItem("electrum-mainnet", JSON.stringify(settingsStore.electrumServerMainnet));
@@ -30,7 +30,7 @@
     if(targetNetwork == "chipnet"){
       localStorage.setItem("electrum-chipnet", JSON.stringify(settingsStore.electrumServerChipnet));
     }
-    store.initializeWallet()
+    store.initializeWallet().then(getScores)
   }
 
 </script>
@@ -47,7 +47,10 @@
       </thead>
       <tbody>
         <tr v-for="server in props.servers" :key="server[0]">
-          <td>{{ server[0].replace('wss://','').replace(':50004','') }}</td>
+          <td>
+            <span v-if="scores.find((score) => server[0].includes(score[2].replace(':443','')))?.[1] === 0">▶ </span>
+            {{ server[0].replace('wss://','').replace(':50004','') }}
+          </td>
           <td>{{ scores.find((score) => server[0].includes(score[2].replace(':443','')))?.[0]?.toFixed(3) }}</td>
           <td>
             <input
