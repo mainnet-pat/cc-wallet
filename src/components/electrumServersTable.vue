@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { type ElectrumClientEvents } from '@electrum-cash/network';
-  import { type ElectrumFallbackClient } from '@mainnet-pat/electrum-fallback-client';
+  import { type Scores, type ElectrumFallbackClient } from '@mainnet-pat/electrum-fallback-client';
   import { ref } from 'vue';
   import { useSettingsStore } from '../stores/settingsStore';
   import { useStore } from '../stores/store';
@@ -13,12 +13,11 @@
     servers: Array<[string, boolean]>,
   }>()
 
-  const scores = ref<[number, number, string][]>([]);
-
-  function getScores() {
-    scores.value = (store.wallet.provider.electrum as unknown as ElectrumFallbackClient<ElectrumClientEvents>).scores;
+  const scores = ref<Scores>((store.wallet.provider.electrum as unknown as ElectrumFallbackClient<ElectrumClientEvents>).scores);
+  function setOnScoresCallback() {
+    (store.wallet.provider.electrum as unknown as ElectrumFallbackClient<ElectrumClientEvents>).onScores = ((scores_) => scores.value = scores_);
   }
-  getScores();
+  setOnScoresCallback();
 
   function changeElectrumServer(targetNetwork: "mainnet" | "chipnet"){
     if(!store._wallet) throw new Error('No wallet set in global store');
@@ -30,7 +29,7 @@
     if(targetNetwork == "chipnet"){
       localStorage.setItem("electrum-chipnet", JSON.stringify(settingsStore.electrumServerChipnet));
     }
-    store.initializeWallet().then(() => setTimeout(getScores, 2500));
+    store.initializeWallet().then(() => setOnScoresCallback());
   }
 
 </script>
@@ -48,7 +47,7 @@
       <tbody>
         <tr v-for="server in props.servers" :key="server[0]">
           <td>
-            <span v-if="scores.find((score) => server[0].includes(score[2].replace(':443','')))?.[1] === 0">▶ </span>
+            <span v-if="scores[0]?.[2].includes(server[0].replace('wss://','').replace(':50004',''))">▶ </span>
             {{ server[0].replace('wss://','').replace(':50004','') }}
           </td>
           <td>{{ scores.find((score) => server[0].includes(score[2].replace(':443','')))?.[0]?.toFixed(3) }}</td>
@@ -65,9 +64,6 @@
       <tfoot>
         <tr>
           <td colspan="3" style="text-align: center;">
-            <button class="button primary" @click="getScores()">
-              Refresh
-            </button>
             <button class="button primary" @click="() => changeElectrumServer(props.network)">
               Save
             </button>
