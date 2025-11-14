@@ -9,6 +9,7 @@ export const DefaultMainnetElectrumServers = [
   'wss://blackie.c3-soft.com:50004',
   'wss://electrum.imaginary.cash:50004',
   'wss://bch.imaginary.cash:50004',
+  'wss://offline.electrum.cash:50004',
 ]
 
 export const DefaultChipnetElectrumServers = [

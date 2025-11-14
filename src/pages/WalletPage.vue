@@ -23,6 +23,7 @@
   const { width } = useWindowSize();
   const isMobile = computed(() => width.value < 480)
   import { useQuasar } from 'quasar'
+import OfflineDetector from 'src/components/offlineDetector.vue'
   const $q = useQuasar()
 
   const props = defineProps<{
@@ -158,6 +159,7 @@
 </script>
 
 <template>
+  <OfflineDetector />
   <header>
     <img :src="settingsStore.darkMode? 'images/olando-wallet-logo.png' : 'images/olando-wallet-logo.png'" alt="CC-Wallet: a Bitcoin Cash Community Currency Wallet" style="max-height: 120px; max-width:95%" >
     <nav v-if="store.displayView" style="display: flex; justify-content: center; user-select: none;" class="tabs">

@@ -2,7 +2,7 @@ import { useWindowSize } from "@vueuse/core";
 import { Config, ElectrumNetworkProvider } from "mainnet-js";
 import { defineStore } from "pinia"
 import { type QRCodeAnimationName } from "src/interfaces/interfaces";
-import { ref } from 'vue'
+import { ref, type Ref } from 'vue'
 import { DefaultChipnetElectrumServers, DefaultMainnetElectrumServers } from "./config";
 import { ElectrumWebSocket } from '@electrum-cash/web-socket';
 import { ElectrumFallbackClient } from '@mainnet-pat/electrum-fallback-client';
@@ -19,6 +19,29 @@ const defaultFeaturedTokens = [
 const { width,height } = useWindowSize();
 const isDesktop = (process.env.MODE == "electron");
 const isMobileDevice = width.value / height.value < 1.5
+
+// checks and updates the electrum servers list based on the default list
+// useful when updating the app with new default servers
+const updateServers = (configServers: string[], ref: Ref<[string, boolean][]>) => {
+  // Sync electrumServerMainnet.value with DefaultMainnetElectrumServers
+  const defaultSet = new Set(configServers);
+  const currentServers = ref.value.map(([url]) => url);
+
+  // Add new servers from configServers if missing
+  configServers.forEach(server => {
+    if (!currentServers.includes(server)) {
+      ref.value.push([server, true]);
+    }
+  });
+
+  // Remove servers not present in configServers
+  ref.value = ref.value.filter(([url]) => defaultSet.has(url));
+
+  const anyEnabled = ref.value.some(([_, enabled]) => enabled);
+  if (!anyEnabled) {
+    ref.value = ref.value.map(([url]) => [url, true]);
+  }
+}
 
 export const useSettingsStore = defineStore('settingsStore', () => {
   // Global settings
@@ -111,12 +134,18 @@ export const useSettingsStore = defineStore('settingsStore', () => {
 
   try {
     const readElectrumMainnet = localStorage.getItem("electrum-mainnet") ?? "";
-    if(readElectrumMainnet) electrumServerMainnet.value = JSON.parse(readElectrumMainnet);
+    if(readElectrumMainnet) {
+      electrumServerMainnet.value = JSON.parse(readElectrumMainnet);
+      updateServers(DefaultMainnetElectrumServers, electrumServerMainnet);
+    }
   } catch {;}
 
   try {
     const readElectrumChipnet = localStorage.getItem("electrum-chipnet") ?? "";
-    if(readElectrumChipnet) electrumServerChipnet.value = JSON.parse(readElectrumChipnet);
+    if(readElectrumChipnet) {
+      electrumServerChipnet.value = JSON.parse(readElectrumChipnet);
+      updateServers(DefaultChipnetElectrumServers, electrumServerMainnet);
+    }
   } catch {;}
 
   const readChaingraph = localStorage.getItem("chaingraph") ?? "";

@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { type ElectrumClientEvents } from '@electrum-cash/network';
-  import { type Scores, type ElectrumFallbackClient } from '@mainnet-pat/electrum-fallback-client';
+  import { type Scores, type ElectrumFallbackClient, type ElectrumFallbackClientEvents } from '@mainnet-pat/electrum-fallback-client';
   import { ref } from 'vue';
   import { useSettingsStore } from '../stores/settingsStore';
   import { useStore } from '../stores/store';
@@ -13,11 +13,12 @@
     servers: Array<[string, boolean]>,
   }>()
 
-  const scores = ref<Scores>((store.wallet.provider.electrum as unknown as ElectrumFallbackClient<ElectrumClientEvents>).scores);
-  function setOnScoresCallback() {
-    (store.wallet.provider.electrum as unknown as ElectrumFallbackClient<ElectrumClientEvents>).onScores = ((scores_) => scores.value = scores_);
+  const scores = ref<Scores>((store.wallet.provider.electrum as unknown as ElectrumFallbackClient<ElectrumFallbackClientEvents>).scores);
+  console.log('Initial scores:', scores.value);
+  function subscribeToScoresEvent() {
+    (store.wallet.provider.electrum as unknown as ElectrumFallbackClient<ElectrumFallbackClientEvents>).on('rankScores', ((scores_) => scores.value = scores_));
   }
-  setOnScoresCallback();
+  subscribeToScoresEvent();
 
   function changeElectrumServer(targetNetwork: "mainnet" | "chipnet"){
     if(!store._wallet) throw new Error('No wallet set in global store');
@@ -29,7 +30,7 @@
     if(targetNetwork == "chipnet"){
       localStorage.setItem("electrum-chipnet", JSON.stringify(settingsStore.electrumServerChipnet));
     }
-    store.initializeWallet().then(() => setOnScoresCallback());
+    store.initializeWallet().then(() => subscribeToScoresEvent());
   }
 
 </script>
