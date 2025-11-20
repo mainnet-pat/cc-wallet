@@ -256,7 +256,7 @@ export const useStore = defineStore('store', () => {
     const newWallet = await walletClass.named(nameWallet);
     setWallet(newWallet);
     localStorage.setItem('network', newNetwork);
-    changeView(1);
+    // changeView(1);
   }
 
   async function initializeWalletConnect() {

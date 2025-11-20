@@ -242,7 +242,9 @@ export const useSettingsStore = defineStore('settingsStore', () => {
 
     const urls = servers.filter(server => server[1]).map(server => server[0]);
 
-    const fallback = ElectrumFallbackClient.FromHostUrls(ElectrumWebSocket, urls, { rank: true, clientOptions: {
+    const fallback = ElectrumFallbackClient.FromHostUrls(ElectrumWebSocket, urls, { rank: {
+      interval: 10000,
+    }, clientOptions: {
       sendKeepAliveIntervalInMilliSeconds: 15000,
       disableBrowserConnectivityHandling: true,
       disableBrowserVisibilityHandling: true,
