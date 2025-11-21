@@ -875,10 +875,10 @@
   dependencies:
     mainnet-js "2.7.25"
 
-"@mainnet-pat/electrum-fallback-client@^4.1.15":
-  version "4.1.15"
-  resolved "https://registry.yarnpkg.com/@mainnet-pat/electrum-fallback-client/-/electrum-fallback-client-4.1.15.tgz#13c791423b02e8c810df12b59f76084a9051f162"
-  integrity sha512-GyKrI9C8EpFW6Yk78Kz9YBDbF2gYx99SSL/2RTWewIvWoyyGHbqjEN8+1hCpokgBJsWNgf5zsRJZ+oGI99RaPQ==
+"@mainnet-pat/electrum-fallback-client@^4.1.16":
+  version "4.1.16"
+  resolved "https://registry.yarnpkg.com/@mainnet-pat/electrum-fallback-client/-/electrum-fallback-client-4.1.16.tgz#26e739cd650f3c74d23fc608366440081d7c027d"
+  integrity sha512-CyoHjrXu4BgDUNdrbxBXjNR+DT46mCCeE/YGgW5tms4b0bzewBGb+H3XI+ylX2C2MyBP6DsKCbfybNbeWkeYVg==
   dependencies:
     "@electrum-cash/debug-logs" "^1.0.0"
     "@electrum-cash/network" "^4.1.4"

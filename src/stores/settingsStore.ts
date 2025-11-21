@@ -244,6 +244,7 @@ export const useSettingsStore = defineStore('settingsStore', () => {
 
     const fallback = ElectrumFallbackClient.FromHostUrls(ElectrumWebSocket, urls, { rank: {
       interval: 10000,
+      threshold: 0.15,
     }, clientOptions: {
       sendKeepAliveIntervalInMilliSeconds: 15000,
       disableBrowserConnectivityHandling: true,
