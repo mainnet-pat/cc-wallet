@@ -94,7 +94,7 @@ export const useStore = defineStore('store', () => {
   }
 
   async function setWallet(newWallet: Wallet | TestNetWallet){
-    changeView(1);
+    // changeView(1);
     _wallet.value = newWallet;
     await initializeWallet();
   }

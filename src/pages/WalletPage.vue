@@ -84,6 +84,7 @@ import OfflineDetector from 'src/components/offlineDetector.vue'
     const walletClass = (readNetwork != 'chipnet')? Wallet : TestNetWallet;
     const initWallet = await walletClass.named(store.nameWallet);
     store.setWallet(initWallet);
+    store.changeView(1);
   }
   
   // check if session request in URL params passed through props
