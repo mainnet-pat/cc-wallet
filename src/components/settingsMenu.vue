@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import Toggle from '@vueform/toggle'
-  import { computed, ref } from 'vue'
+  import { computed, ref, onMounted, onUnmounted } from 'vue'
   import { Config, type BalanceResponse } from "mainnet-js"
   import { useStore } from '../stores/store'
   import { useSettingsStore } from '../stores/settingsStore'
@@ -54,6 +54,40 @@
 
   const isPwaMode = window.matchMedia('(display-mode: standalone)').matches;
   const platformString = isBrowser ? (isPwaMode ? 'installed web app' : 'browser') : (isCapacitor ? 'app' : 'application');
+
+  // dark developer dungeon cheat code keyboard input handling ("ddd")
+  const showDarkDeveloperDungeon = ref(false)
+  let count = 0;
+  async function d_key_pressed(e: KeyboardEvent) {
+    if (String.fromCharCode(e.keyCode) === 'd') {
+      count+=1;
+      console.log(String.fromCharCode(e.keyCode), " ", count);
+      if ( count >= 3 ) {
+        console.log("showing ddd");
+        showDarkDeveloperDungeon.value = !showDarkDeveloperDungeon.value;
+        count = 0;
+      }
+      setTimeout(() => { count = 0; }, 500);
+    }
+  }
+  async function d_mouse_clicked(e: MouseEvent) {
+    count+=1;
+    console.log("mouse", count);
+    if ( count >= 5 ) {
+      console.log("showing ddd");
+      showDarkDeveloperDungeon.value = !showDarkDeveloperDungeon.value;
+      count = 0;
+    }
+    setTimeout(() => { count = 0; }, 1500);
+  }
+  onMounted(() => {
+    window.addEventListener("keypress", d_key_pressed);
+    window.addEventListener("click", d_mouse_clicked);
+  }); 
+  onUnmounted(() => {
+    window.removeEventListener("keypress", d_key_pressed);
+    window.removeEventListener("click", d_mouse_clicked);
+  }); 
 
   async function calculateIndexedDBSizeMB() {
     const totalSize = await getElectrumCacheSize();
@@ -231,8 +265,8 @@ Are you sure you want to delete the wallet?`;
     </div>
 
     <div v-if="displaySettingsMenu != 0">
-      <div style="margin-bottom: 15px; cursor: pointer;" @click="() => displaySettingsMenu = 0">
-        ↲ All settings
+      <div style="margin-bottom: 15px; cursor: pointer;">
+        <input @click="() => displaySettingsMenu = 0" class="button" type="button" style="padding: 1rem 1.5rem; display: block;" value="↲ back to All settings">
       </div>
     </div>
 
@@ -283,9 +317,9 @@ Are you sure you want to delete the wallet?`;
       </div>
     </div>
 
-    <!-- Crypto Pro Options -->
+    <!-- Advanced Options -->
 
-    <div v-else-if="displaySettingsMenu == 5">
+    <div v-else-if="displaySettingsMenu == 4">
 
       <!-- Advanced Options -->
 
@@ -300,43 +334,34 @@ Are you sure you want to delete the wallet?`;
           Show Swap Button <Toggle v-model="selectedShowSwap" @change="toggleShowSwap" style="vertical-align: middle;display: inline-block;"/>
         </div>
 
-        <!--
-        <div style="margin-top:15px">
-          Enable mint NFTs <Toggle v-model="enableMintNfts" @change="changeMintNfts()" style="vertical-align: middle;display: inline-block;"/>
-        </div>
+      </fieldset>
 
-        <div style="margin-top:15px; margin-bottom: 15px">
-          Enable authchain resolution <Toggle v-model="enableAuthchains" @change="changeAuthchains()" style="vertical-align: middle;display: inline-block;"/>
-        </div>
+      <!-- Advanced Functions -->
 
-        <div style="margin-top: 15px; margin-bottom: 15px;">
-          Enable token-burn <Toggle v-model="selectedTokenBurn" @change="changeTokenBurn()" style="vertical-align: middle; display: inline-block;"/>
-        </div>
-        -->
+      <fieldset class="item">
+        <legend>Advanced Functions</legend>
 
         <div style="margin-top:15px;">
-          <label for="selectUnit">Select Bitcoin Cash unit:</label>
-          <select v-model="selectedUnit" @change="changeUnit()">
-            <option value="bch">BCH</option>
-            <option value="sat">satoshis</option>
-          </select>
-        </div>
-        
-        <div style="margin-top:15px; margin-bottom: 15px;">
-          <label for="selectUnit">Qr code animation:</label>
-          <select v-model="qrAnimation" @change="changeQrAnimation()">
-            <option value="MaterializeIn">MaterializeIn</option>
-            <option value="FadeInTopDown">FadeInTopDown</option>
-            <option value="FadeInCenterOut">FadeInCenterOut</option>
-            <option value="RadialRipple">RadialRipple</option>
-            <option value="RadialRippleIn">RadialRippleIn</option>
-            <option value="None">None</option>
-          </select>
+          <div v-if="isPwaMode" style="color: red">
+            Deleting the wallet data in the 'Installed web-app' will also delete the wallet from your browser!
+          </div>
+          <div v-if="!isPwaMode && settingsStore.hasInstalledPWA" style="color: red">
+            Deleting the wallet data from the browser will also remove the wallet from any 'Installed web-app'.
+          </div>
+          <input @click="confirmDeleteWallet()" type="button" value="Remove wallet from this browser" class="button error" style="display: block;">
         </div>
 
       </fieldset>
 
-      <!-- Network Settings -->
+    </div>
+
+    <!-- dark developer dungeon -->
+
+    <div v-else-if="displaySettingsMenu == 5">
+      <div>You entered the Dark Developer Dungeon - be here at your own risk.</div>
+      <div>You still have time to leave, but <b>this is your last chance</b>.</div>
+
+      <!-- DDD Network Settings -->
 
       <fieldset class="item">
         <legend>Network Settings</legend>
@@ -386,10 +411,51 @@ Are you sure you want to delete the wallet?`;
             <option v-if="store.network == 'chipnet'" value="https://cbch.loping.net/tx">cbch.loping.net</option>
           </select>
         </div>
-
       </fieldset>
 
-      <!-- Advanced Functions -->
+      <!-- DDD Advanced Options -->
+
+      <fieldset class="item">
+        <legend>Advanced Options</legend>
+
+        <!--
+        <div style="margin-top:15px">
+          Enable mint NFTs <Toggle v-model="enableMintNfts" @change="changeMintNfts()" style="vertical-align: middle;display: inline-block;"/>
+        </div>
+
+        <div style="margin-top:15px; margin-bottom: 15px">
+          Enable authchain resolution <Toggle v-model="enableAuthchains" @change="changeAuthchains()" style="vertical-align: middle;display: inline-block;"/>
+        </div>
+
+        <div style="margin-top: 15px; margin-bottom: 15px;">
+          Enable token-burn <Toggle v-model="selectedTokenBurn" @change="changeTokenBurn()" style="vertical-align: middle; display: inline-block;"/>
+        </div>
+        -->
+
+        <div style="margin-top:15px;">
+          <label for="selectUnit">Select Bitcoin Cash unit:</label>
+          <select v-model="selectedUnit" @change="changeUnit()">
+            <option value="bch">BCH</option>
+            <option value="sat">satoshis</option>
+          </select>
+        </div>
+        
+        <!--
+        <div style="margin-top:15px; margin-bottom: 15px;">
+          <label for="selectUnit">Qr code animation:</label>
+          <select v-model="qrAnimation" @change="changeQrAnimation()">
+            <option value="MaterializeIn">MaterializeIn</option>
+            <option value="FadeInTopDown">FadeInTopDown</option>
+            <option value="FadeInCenterOut">FadeInCenterOut</option>
+            <option value="RadialRipple">RadialRipple</option>
+            <option value="RadialRippleIn">RadialRippleIn</option>
+            <option value="None">None</option>
+          </select>
+        </div>
+        -->
+      </fieldset>
+
+      <!-- DDD Advanced Functions -->
 
       <fieldset class="item">
         <legend>Advanced Functions</legend>
@@ -401,19 +467,9 @@ Are you sure you want to delete the wallet?`;
           → UTXO Management <span v-if="utxosWithBchAndTokens?.length" style="color: orange">(important)</span>
         </div>
 
-        <div v-if="!isMobile" style="margin-top:15px; margin-bottom: 15px; cursor: pointer;" @click="() => store.changeView(6)">
+        <!--<div v-if="!isMobile" style="margin-top:15px; margin-bottom: 15px; cursor: pointer;" @click="() => store.changeView(6)">
           → Create New Token
-        </div>
-
-        <div style="margin-top:15px;">
-          <div v-if="isPwaMode" style="color: red">
-            Deleting the wallet data in the 'Installed web-app' will also delete the wallet from your browser!
-          </div>
-          <div v-if="!isPwaMode && settingsStore.hasInstalledPWA" style="color: red">
-            Deleting the wallet data from the browser will also remove the wallet from any 'Installed web-app'.
-          </div>
-          <input @click="confirmDeleteWallet()" type="button" value="Remove wallet from this browser" class="button error" style="display: block;">
-        </div>
+        </div>-->
 
         <div style="margin-top:15px; margin-bottom: 15px">
           Clear wallet history cache {{ isMobile? '' : 'from ' + platformString }}
@@ -428,7 +484,7 @@ Are you sure you want to delete the wallet?`;
         </div>
       </fieldset>
 
-    </div>
+     </div>
 
     <!-- main menu -->
 
@@ -441,8 +497,12 @@ Are you sure you want to delete the wallet?`;
         ↳ User options
       </div>
 
-      <div style="margin-bottom: 15px; cursor: pointer;" @click="() => displaySettingsMenu = 5">
-        ↳ Crypto Pro Options
+      <div style="margin-bottom: 15px; cursor: pointer;" @click="() => displaySettingsMenu = 4">
+        ↳ Advanced Options
+      </div>
+
+      <div v-show="showDarkDeveloperDungeon" style="margin-bottom: 15px; cursor: pointer;" @click="() => displaySettingsMenu = 5">
+        ↳ Dark Developer Dungeon
       </div>
 
     </div>
