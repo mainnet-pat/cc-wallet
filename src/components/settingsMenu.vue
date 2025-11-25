@@ -58,36 +58,35 @@
   // dark developer dungeon cheat code keyboard input handling ("ddd")
   const showDarkDeveloperDungeon = ref(false)
   let count = 0;
-  async function d_key_pressed(e: KeyboardEvent) {
-    if (String.fromCharCode(e.keyCode) === 'd') {
-      count+=1;
-      console.log(String.fromCharCode(e.keyCode), " ", count);
-      if ( count >= 3 ) {
-        console.log("showing ddd");
-        showDarkDeveloperDungeon.value = !showDarkDeveloperDungeon.value;
-        count = 0;
-      }
-      setTimeout(() => { count = 0; }, 500);
-    }
-  }
-  async function d_mouse_clicked(e: MouseEvent) {
-    count+=1;
-    console.log("mouse", count);
-    if ( count >= 5 ) {
-      console.log("showing ddd");
+  let timeoutId: ReturnType<typeof setTimeout>;
+  function handleSecretTrigger(threshold: number) {
+    clearTimeout(timeoutId);
+    count += 1;
+    if (count >= threshold) {
       showDarkDeveloperDungeon.value = !showDarkDeveloperDungeon.value;
       count = 0;
     }
-    setTimeout(() => { count = 0; }, 1500);
+    timeoutId = setTimeout(() => { count = 0; }, 500);
   }
+
+  function d_key_pressed(e: KeyboardEvent) {
+    if (String.fromCharCode(e.keyCode) === 'd') {
+      handleSecretTrigger(3);
+    }
+  }
+
+  function d_mouse_clicked() {
+    handleSecretTrigger(5);
+  }
+
   onMounted(() => {
     window.addEventListener("keypress", d_key_pressed);
     window.addEventListener("click", d_mouse_clicked);
-  }); 
+  });
   onUnmounted(() => {
     window.removeEventListener("keypress", d_key_pressed);
     window.removeEventListener("click", d_mouse_clicked);
-  }); 
+  });
 
   async function calculateIndexedDBSizeMB() {
     const totalSize = await getElectrumCacheSize();
