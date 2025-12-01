@@ -1,9 +1,11 @@
 <script setup lang="ts">
   import { ref } from 'vue';
   import { useStore } from '../stores/store';
+  import { useSettingsStore } from 'src/stores/settingsStore';
   import { onUnmounted } from 'vue';
 
   const store = useStore()
+  const settingsStore = useSettingsStore()
 
   const offline = ref<boolean>(window.navigator.onLine === false);
   const electrumFailure = ref<boolean>(false);
@@ -37,7 +39,7 @@
 </script>
 <template>
   <div v-if="offline" class="offline">Network offline</div>
-  <div v-else-if="electrumFailure" class="offline">Network providers do not respond</div>
+  <div v-else-if="electrumFailure" @click="() => { settingsStore.menuIndex = 5; store.changeView(5); }" class="offline" style="cursor: pointer;">Network providers do not respond. Go to <span style="text-decoration: underline; text-decoration-style: dashed;">settings.</span></div>
 </template>
 
 <style scoped>

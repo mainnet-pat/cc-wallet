@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import Toggle from '@vueform/toggle'
-  import { computed, ref, onMounted, onUnmounted } from 'vue'
+  import { computed, ref, onMounted, onUnmounted, watch } from 'vue'
   import { Config, type BalanceResponse } from "mainnet-js"
   import { useStore } from '../stores/store'
   import { useSettingsStore } from '../stores/settingsStore'
@@ -20,7 +20,10 @@
   const isCapacitor = (process.env.MODE == "capacitor");
   const applicationVersion = process.env.version
 
-  const displaySettingsMenu = ref(0);
+  const displaySettingsMenu = ref(settingsStore.menuIndex);
+  watch(displaySettingsMenu, newVal => settingsStore.menuIndex = newVal);
+  watch(() => settingsStore.menuIndex, newVal => displaySettingsMenu.value = newVal);
+
   const indexedDbCacheSizeMB = ref(undefined as undefined | number);
   const localStorageSizeMB = ref(undefined as undefined | number);
   
@@ -84,6 +87,7 @@
     window.addEventListener("click", d_mouse_clicked);
   });
   onUnmounted(() => {
+    settingsStore.menuIndex = 0;
     window.removeEventListener("keypress", d_key_pressed);
     window.removeEventListener("click", d_mouse_clicked);
   });

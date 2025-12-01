@@ -44,6 +44,8 @@ const updateServers = (configServers: string[], ref: Ref<[string, boolean][]>) =
 }
 
 export const useSettingsStore = defineStore('settingsStore', () => {
+  // settings menu index for navigation
+  const menuIndex = ref(0);
   // Global settings
   const currency = ref("usd" as ("usd" | "eur" | "chf" | "rub" | "aed" ));
   const bchUnit = ref("bch" as ("bch" | "sat"));
@@ -255,6 +257,7 @@ export const useSettingsStore = defineStore('settingsStore', () => {
   }
 
   return {
+    menuIndex,
     currency,
     bchUnit,
     explorerMainnet,
