@@ -4,8 +4,13 @@
   import tokenItemFT from './tokenItems/tokenItemFT.vue'
   import { useStore } from 'src/stores/store'
   import { useQuasar } from 'quasar'
+  import { useSettingsStore } from 'src/stores/settingsStore'
+  import { ref } from 'vue'
+
   const store = useStore()
+  const settingsStore = useSettingsStore()
   const $q = useQuasar()
+  const showAllTokens = ref(false);
   function copyToClipboard(copyText: string|undefined){
     if(!copyText) return
     navigator.clipboard.writeText(copyText);
@@ -40,9 +45,18 @@
   <div v-if="store.nrBcmrRegistries == undefined" style="text-align: center;">Loading tokendata ...</div>
   <div v-if="store.tokenList?.length == 0" style="text-align: center;"> No tokens in this wallet </div>
   <div v-if="store.nrBcmrRegistries != undefined">
-    <div v-for="tokenData in store.tokenList" :key="tokenData.tokenId.slice(0,6)">
+    <div v-for="tokenData in store.tokenList?.filter(token => settingsStore.featuredTokens.includes(token.tokenId))" :key="tokenData.tokenId.slice(0,6)">
       <tokenItemFT v-if="'amount' in tokenData" :tokenData="tokenData"/>
       <tokenItemNFT v-else :tokenData="tokenData"/>
+    </div>
+    <div v-if="store.tokenList?.filter(token => !settingsStore.featuredTokens.includes(token.tokenId)).length" style="margin: 10px; margin-top: 20px;">
+      <span @click="showAllTokens = !showAllTokens" style="cursor: pointer;">{{showAllTokens ? "▲ Hide" : "▼ Show"}} other tokens</span>
+      <div v-if="showAllTokens">
+        <div v-for="tokenData in store.tokenList?.filter(token => !settingsStore.featuredTokens.includes(token.tokenId))" :key="tokenData.tokenId.slice(0,6)">
+          <tokenItemFT v-if="'amount' in tokenData" :tokenData="tokenData"/>
+          <tokenItemNFT v-else :tokenData="tokenData"/>
+        </div>
+      </div>
     </div>
   </div>
 </template>
