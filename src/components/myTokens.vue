@@ -3,7 +3,7 @@
   import tokenItemNFT from './tokenItems/tokenItemNFT.vue'
   import tokenItemFT from './tokenItems/tokenItemFT.vue'
   import { useStore } from 'src/stores/store'
-  import { useQuasar } from 'quasar'
+  import { useQuasar, Notify } from 'quasar'
   import { useSettingsStore } from 'src/stores/settingsStore'
   import { ref } from 'vue'
 
@@ -20,6 +20,17 @@
       timeout : 1000,
       color: "grey-6"
     })
+  }
+
+  function showInfo() {
+    Notify.create({
+      message: `The following token can come from promotion activities or other sources in the BitcoinCash-World.&nbsp;You can send or remove a token to you list above, if you highlight them as „favorite" with the „Star-Icon".`,
+      color: "negative",
+      timeout: 10000,
+      actions: [
+        { icon: 'close', color: 'white', round: true },
+      ]
+    });
   }
 </script>
 
@@ -50,7 +61,7 @@
       <tokenItemNFT v-else :tokenData="tokenData"/>
     </div>
     <div v-if="store.tokenList?.filter(token => !settingsStore.featuredTokens.includes(token.tokenId)).length" style="margin: 10px; margin-top: 20px;">
-      <span @click="showAllTokens = !showAllTokens" style="cursor: pointer;">{{showAllTokens ? "▲ Hide" : "▼ Show"}} other tokens</span>
+      <span @click="showAllTokens = !showAllTokens" style="cursor: pointer;">{{showAllTokens ? "▲ Hide" : "▼ Show"}} other tokens</span><span style="margin-left: 1rem; color: orangered; font-weight: bold; cursor: pointer;" @click="showInfo">[info]</span>
       <div v-if="showAllTokens">
         <div v-for="tokenData in store.tokenList?.filter(token => !settingsStore.featuredTokens.includes(token.tokenId))" :key="tokenData.tokenId.slice(0,6)">
           <tokenItemFT v-if="'amount' in tokenData" :tokenData="tokenData"/>

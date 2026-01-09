@@ -269,7 +269,7 @@ Are you sure you want to delete the wallet?`;
 
     <div v-if="displaySettingsMenu != 0">
       <div style="margin-bottom: 15px; cursor: pointer;">
-        <input @click="() => displaySettingsMenu = 0" class="button" type="button" style="padding: 1rem 1.5rem; display: block;" value="↲ back to All settings">
+        <input @click="() => displaySettingsMenu = 0" class="button" type="button" style="padding: 0rem; margin: 0rem; display: block; background-color: transparent; color: var(--color-primary); font-size: xx-large; font-weight: bolder;" value="←">
       </div>
     </div>
 
@@ -279,11 +279,11 @@ Are you sure you want to delete the wallet?`;
         <input @click="toggleShowSeedphrase()" class="button primary" type="button" style="padding: 1rem 1.5rem; display: block;" 
           :value="displaySeedphrase? 'Hide seed phrase' : 'Show seed phrase'"
         >
-        <div v-if="displaySeedphrase" @click="copyToClipboard(store.wallet.mnemonic)" style="cursor: pointer;">
+        <div v-if="displaySeedphrase" @click="copyToClipboard(store.wallet.mnemonic)" style="margin-top: 2rem; cursor: pointer; font-size: large; font-weight: bold;">
           {{ store.wallet.mnemonic }}
         </div>
         <br>
-        <div style="margin-bottom:15px;">
+        <div style="margin-bottom:15px; font-size: small;">
           Derivation path of this wallet is 
           <span @click="copyToClipboard(store.wallet.derivationPath)" style="cursor: pointer;">
             {{ store.wallet.derivationPath }}
