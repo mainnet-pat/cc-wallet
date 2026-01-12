@@ -24,7 +24,7 @@
 
   function showInfo() {
     Notify.create({
-      message: `The following token can come from promotion activities or other sources in the BitcoinCash-World.&nbsp;You can send or remove a token to you list above, if you highlight them as „favorite" with the „Star-Icon".`,
+      message: `The following tokens can come from promotion activities or other sources in the BitcoinCash-World. You can send or remove a token to you list above, if you highlight them as „favorite" with the „Star-Icon".`,
       color: "negative",
       timeout: 10000,
       actions: [
