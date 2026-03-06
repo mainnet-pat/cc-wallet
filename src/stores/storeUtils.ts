@@ -3,6 +3,7 @@ import { cachedFetch } from "src/utils/cacheUtils";
 import type { Utxo } from "mainnet-js";
 import type { BcmrTokenMetadata, TokenList } from "src/interfaces/interfaces";
 import { getAllNftTokenBalances, getFungibleTokenBalances, getTokenUtxos } from "src/utils/utils";
+import { useSettingsStore } from 'src/stores/settingsStore';
 import { displayAndLogError } from "src/utils/errorHandling";
 import { BcmrIndexerResponseSchema } from "src/utils/zodValidation";
 import { parseNft, type NftParseInfo, type ParseResult } from "src/parsing/nftParsing"
@@ -14,8 +15,9 @@ import { i18n } from 'src/boot/i18n'
 const { t } = i18n.global
 
 export function tokenListFromUtxos(walletUtxos: Utxo[]) {
+  const settingsStore = useSettingsStore();
   const tokenUtxos = getTokenUtxos(walletUtxos);
-  const fungibleTokensResult = getFungibleTokenBalances(tokenUtxos);
+  const fungibleTokensResult = getFungibleTokenBalances(tokenUtxos, settingsStore.featuredTokens);
   const nftsResult = getAllNftTokenBalances(tokenUtxos);
   const arrayTokens: TokenList = [];
   for (const category of Object.keys(fungibleTokensResult)) {

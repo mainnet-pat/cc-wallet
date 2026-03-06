@@ -37,6 +37,7 @@
   // user options
   const selectedDarkMode = ref(settingsStore.darkMode);
   const confirmBeforeSending = ref(settingsStore.confirmBeforeSending);
+  const selectedWalletConnect = ref(settingsStore.walletConnect);
   const selectedShowSwap = ref(settingsStore.showCauldronSwap);
   const selectedShowCauldronFTValue = ref(settingsStore.showCauldronFTValue);
   const selectedTokenBurn = ref(settingsStore.tokenBurn);
@@ -216,6 +217,10 @@
     darkmodeTransition()
     selectedDarkMode.value ? document.body.classList.add("dark") : document.body.classList.remove("dark")
   }
+  function changeWalletConnect(){
+    settingsStore.walletConnect = selectedWalletConnect.value;
+    localStorage.setItem("walletConnect", selectedWalletConnect.value? "true" : "false");
+  }
   // work-around to not apply transitions for qr code scanning
   function darkmodeTransition() {
       document.body.classList.add('transition-enabled');
@@ -342,6 +347,10 @@
     <div v-else-if="settingsSection == 2">
       <div style="margin-bottom:15px;">
         {{ t('settings.userOptions.darkMode') }} <Toggle v-model="selectedDarkMode" @change="changeDarkMode()"/>
+      </div>
+
+      <div style="margin-top: 15px;">Enable WalletConnect
+        <Toggle v-model="selectedWalletConnect" @change="changeWalletConnect()"/>
       </div>
 
       <div style="margin-top:15px">

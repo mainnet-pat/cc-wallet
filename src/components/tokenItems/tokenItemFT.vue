@@ -3,6 +3,7 @@
   import { TokenSendRequest, type SendRequest, convert } from "mainnet-js"
   import { decodeCashAddress } from "@bitauth/libauth"
   import alertDialog from 'src/components/general/alertDialog.vue'
+  import swapDialog from './swapDialog.vue';
   import QrCodeDialog from '../qr/qrCodeScanDialog.vue';
   import TokenIcon from '../general/TokenIcon.vue';
   import type { TokenDataFT, BcmrTokenMetadata } from "src/interfaces/interfaces"
@@ -42,6 +43,7 @@
   const reservedSupply = ref(undefined as bigint | undefined);
   const showQrCodeDialog = ref(false);
   const activeAction = ref<'sending' | 'burning' | 'transferAuth' | null>(null);
+  const showSwapDialog = ref(false);
 
   tokenMetaData.value = store.bcmrRegistries?.[tokenData.value.category];
 
@@ -481,10 +483,8 @@
           <span @click="displayTokenInfo = !displayTokenInfo">
             <img class="icon" :src="settingsStore.darkMode? 'images/infoLightGrey.svg' : 'images/info.svg'"> {{ t('tokenItem.actions.info') }}
           </span>
-          <span v-if="settingsStore.showCauldronSwap && store.wallet.network == 'mainnet'" style="white-space: nowrap;">
-            <a :href="`https://app.cauldron.quest/swap/${tokenData.category}`" target="_blank" style="color: var(--font-color);">
-              <img class="icon" :src="settingsStore.darkMode? 'images/cauldronLightGrey.svg' : 'images/cauldron.svg'"> {{ t('tokenItem.actions.swap') }}
-            </a>
+          <span v-if="holdingsFiatValue !== null && settingsStore.showCauldronSwap && store.wallet.network == 'mainnet'" style="white-space: nowrap;" @click="showSwapDialog = true">
+            <img class="icon" :src="settingsStore.darkMode? 'images/cauldronLightGrey.svg' : 'images/cauldron.svg'"> {{ t('tokenItem.actions.swap') }}
           </span>
           <span v-if="settingsStore.tokenBurn && tokenData?.amount" @click="displayBurnFungibles = !displayBurnFungibles" style="white-space: nowrap;">
             <img class="icon" :src="settingsStore.darkMode? 'images/fireLightGrey.svg' : 'images/fire.svg'">
@@ -594,5 +594,8 @@
   </div>
   <div v-if="showQrCodeDialog">
     <QrCodeDialog @hide="() => showQrCodeDialog = false" @decode="qrDecode" :filter="qrFilter"/>
+  </div>
+  <div v-if="holdingsFiatValue !== null && showSwapDialog">
+    <swapDialog :token-balance="tokenData.amount" :token-id="tokenData.category" :token-metadata="tokenMetaData" @close-dialog="() => showSwapDialog = false"/>
   </div>
 </template>

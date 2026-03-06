@@ -1,4 +1,7 @@
 import { type RouteRecordRaw } from 'vue-router';
+import { Buffer } from "buffer/";
+// @ts-ignore
+window.Buffer = Buffer;
 
 const routes: RouteRecordRaw[] = [
   {
