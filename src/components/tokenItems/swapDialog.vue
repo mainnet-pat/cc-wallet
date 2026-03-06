@@ -192,8 +192,8 @@
   }
 
   const webSocket = new ElectrumWebSocket(
-    "rostrum.cauldron.quest",
-    50004,
+    "rostrum.riften.net",
+    443,
     true,
     30000,
   );

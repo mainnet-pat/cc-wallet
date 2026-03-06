@@ -71,11 +71,10 @@
     disabled.value = true;
     try {
       await deployContractFromAuthGuard({
+        wallet: store.wallet,
         provider: provider,
-        adminContract: adminMultisigContract,
         councilContract: councilMultisigContract,
-        deployerAddress: address,
-        deployerPriv: privKey,
+        adminContract: adminMultisigContract,
         olandoCategory: olandoCategory,
       });
     } catch (e) {
@@ -95,12 +94,11 @@
     try {
       const sigTemplate = new SignatureTemplate(store.wallet.privateKey, HashType.SIGHASH_ALL, SignatureAlgorithm.ECDSA);
       rawTxHex.value = await dissolveIssuanceFund({
-        address: address,
-        privKey: privKey,
+        wallet: store.wallet,
         provider: provider,
+        olandoCategory: olandoCategory,
         councilMultisigContract,
         adminMultisigContract,
-        olandoCategory: olandoCategory,
         signatures: [sigTemplate, Uint8Array.from(Array(71))],
         send: false,
       });
@@ -172,13 +170,12 @@
     try {
       const sigTemplate = new SignatureTemplate(store.wallet.privateKey, HashType.SIGHASH_ALL, SignatureAlgorithm.ECDSA);
       rawTxHex.value = await migrate({
-        address: address,
-        privKey: privKey,
         provider: provider,
-        councilMultisigContract,
         adminMultisigContract,
+        councilMultisigContract,
         newAdminMultisigContractAddress: newAdminMultisigContractAddress.value,
         newIssuanceFundContractAddress: newIssuanceFundContractAddress.value,
+        wallet: store.wallet,
         signatures: [sigTemplate, Uint8Array.from(Array(71))],
         olandoCategory: olandoCategory,
         send: false,
@@ -238,15 +235,12 @@
 
     try {
       const tokensBought = await investInIssuanceFund({
-        address: address,
-        privKey: privKey,
-        provider: provider,
         investAmountBch: investAmountValue,
-        adminMultisigContract: adminMultisigContract,
-        councilMultisigContract: councilMultisigContract,
-        olandoCategory: olandoCategory,
-        // @ts-ignore
+        provider: provider,
         wallet: store.wallet,
+        councilMultisigContract: councilMultisigContract,
+        adminMultisigContract: adminMultisigContract,
+        olandoCategory: olandoCategory,
         send: send,
       });
 
@@ -312,15 +306,12 @@
 
     try {
       await donate({
-        address: address,
-        privKey: privKey,
-        provider: provider,
-        donationTokenAmount: BigInt(olaAmount * 10**olandoDecimals), 
-        adminMultisigContract: adminMultisigContract,
-        councilMultisigContract: councilMultisigContract,
-        olandoCategory: olandoCategory,
-        // @ts-ignore
         wallet: store.wallet,
+        provider: provider,
+        olandoCategory: olandoCategory,
+        councilMultisigContract: councilMultisigContract,
+        adminMultisigContract: adminMultisigContract,
+        donationTokenAmount: BigInt(olaAmount * 10**olandoDecimals),
       });
 
       Notify.create({
@@ -439,8 +430,8 @@
   }
 
   const webSocket = new ElectrumWebSocket(
-    "rostrum.cauldron.quest",
-    50004,
+    "rostrum.riften.net",
+    443,
     true,
     30000,
   );
