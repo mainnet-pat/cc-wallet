@@ -104,7 +104,7 @@ export function getAllNftTokenBalances(tokenUtxos: Utxo[]){
   return result
 }
 
-export function getFungibleTokenBalances(tokenUtxos: Utxo[]){
+export function getFungibleTokenBalances(tokenUtxos: Utxo[], featuredTokens: string[]){
   const result:Record<string, bigint> = {};
   const fungiblesUtxos = tokenUtxos.filter((val) => val.token?.amount);
   for (const utxo of fungiblesUtxos) {
@@ -112,6 +112,13 @@ export function getFungibleTokenBalances(tokenUtxos: Utxo[]){
     const category = utxo.token.category;
     result[category] = (result[category] ?? 0n) + utxo.token.amount;
   }
+
+  for (const tokenId of featuredTokens) {
+    if (!result[tokenId]) {
+      result[tokenId] = 0n;
+    }
+  }
+
   return result
 }
 

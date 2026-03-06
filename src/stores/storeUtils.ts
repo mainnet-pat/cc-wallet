@@ -11,17 +11,19 @@ import { invokeExtensions } from "src/parsing/extensions/index"
 import { createElectrumAdapter } from "src/parsing/electrumAdapter"
 import type { IdentitySnapshot } from "src/parsing/bcmr-v2.schema"
 import { i18n } from 'src/boot/i18n'
+import { useSettingsStore } from 'src/stores/settingsStore'
 const { t } = i18n.global
+const settingsStore = useSettingsStore();
 
 export function tokenListFromUtxos(walletUtxos: Utxo[]) {
   const tokenUtxos = getTokenUtxos(walletUtxos);
-  const fungibleTokensResult = getFungibleTokenBalances(tokenUtxos);
+  const fungibleTokensResult = getFungibleTokenBalances(tokenUtxos, settingsStore.featuredTokens);
   const nftsResult = getAllNftTokenBalances(tokenUtxos);
   const arrayTokens: TokenList = [];
   for (const category of Object.keys(fungibleTokensResult)) {
     const fungibleTokenAmount = fungibleTokensResult[category]
     if(!fungibleTokenAmount) continue // should never happen
-    arrayTokens.push({ category, amount: fungibleTokenAmount });
+    arrayTokens.push({ category, amount: fungibleTokenAmount ?? 0n });
   }
   for (const category of Object.keys(nftsResult)) {
     const utxosNftCategory = tokenUtxos.filter((val) =>val.token?.category === category);

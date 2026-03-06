@@ -1,8 +1,9 @@
 <script setup lang="ts">
   import { ref, toRefs, computed, watch } from 'vue';
-  import { TokenSendRequest, type SendRequest, convert } from "mainnet-js"
+  import { convert, TokenSendRequest, type SendRequest } from "mainnet-js"
   import { decodeCashAddress } from "@bitauth/libauth"
   import alertDialog from 'src/components/general/alertDialog.vue'
+  import swapDialog from './swapDialog.vue';
   import QrCodeDialog from '../qr/qrCodeScanDialog.vue';
   import TokenIcon from '../general/TokenIcon.vue';
   import type { TokenDataFT, BcmrTokenMetadata } from "src/interfaces/interfaces"
@@ -52,6 +53,8 @@
   const tokenName = computed(() => {
     return tokenMetaData.value?.name;
   })
+
+  const showSwapDialog = ref(false);
 
   // Fiat value of fungible token holdings using Cauldron DEX price data
   const holdingsFiatValue = ref<number | null>(null);
@@ -456,11 +459,11 @@
             </div>
             <div style="word-break: break-all;" class="hide"></div>
           </div>
-          <div v-if="tokenData?.amount" class="tokenAmount">{{ t('tokenItem.amount') }}
+          <div class="tokenAmount">{{ t('tokenItem.amount') }}
             {{ numberFormatter.format(toAmountDecimals(tokenData?.amount)) }} {{ tokenMetaData?.token?.symbol }}
-            <span v-if="holdingsFiatValue !== null" style="font-size: smaller; color: grey; white-space: nowrap;">
-              ≈ {{ CurrencySymbols[settingsStore.currency] }}{{ holdingsFiatValue.toFixed(2) }}
-            </span>
+            <div v-if="holdingsFiatValue !== null" class="tokenAmount">
+              {{ CurrencySymbols[settingsStore.currency] }}{{ holdingsFiatValue.toFixed(2) }}
+            </div>
           </div>
         </div>
         <span v-if="settingsStore.showTokenVisibilityToggle" @click="store.toggleHidden(tokenData.category)" class="boxStarIcon" :title="settingsStore.hiddenTokens.includes(tokenData.category) ? t('tokenItem.visibility.unhideToken') : t('tokenItem.visibility.hideToken')">
@@ -481,10 +484,8 @@
           <span @click="displayTokenInfo = !displayTokenInfo">
             <img class="icon" :src="settingsStore.darkMode? 'images/infoLightGrey.svg' : 'images/info.svg'"> {{ t('tokenItem.actions.info') }}
           </span>
-          <span v-if="settingsStore.showCauldronSwap && store.wallet.network == 'mainnet'" style="white-space: nowrap;">
-            <a :href="`https://app.cauldron.quest/swap/${tokenData.category}`" target="_blank" style="color: var(--font-color);">
-              <img class="icon" :src="settingsStore.darkMode? 'images/cauldronLightGrey.svg' : 'images/cauldron.svg'"> {{ t('tokenItem.actions.swap') }}
-            </a>
+          <span v-if="holdingsFiatValue && settingsStore.showCauldronSwap && store.wallet?.network == 'mainnet'" style="white-space: nowrap;" @click="showSwapDialog = true">
+            <img class="icon" :src="settingsStore.darkMode? 'images/cauldronLightGrey.svg' : 'images/cauldron.svg'"> swap
           </span>
           <span v-if="settingsStore.tokenBurn && tokenData?.amount" @click="displayBurnFungibles = !displayBurnFungibles" style="white-space: nowrap;">
             <img class="icon" :src="settingsStore.darkMode? 'images/fireLightGrey.svg' : 'images/fire.svg'">
@@ -589,6 +590,9 @@
           </span>
           <input @click="transferAuth()" type="button" class="primaryButton" :value="activeAction === 'transferAuth' ? t('tokenItem.authTransfer.transferringButton') : t('tokenItem.authTransfer.transferButton')" style="margin-top: 10px;" :disabled="activeAction !== null">
         </div>
+      </div>
+      <div v-if="holdingsFiatValue && showSwapDialog">
+        <swapDialog :token-balance="tokenData.amount" :token-id="tokenData.category" :token-metadata="tokenMetaData" @close-dialog="() => showSwapDialog = false"/>
       </div>
     </fieldset>
   </div>
