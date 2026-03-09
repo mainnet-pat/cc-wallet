@@ -9,8 +9,8 @@ export const defaultWalletName = 'mywallet';
 export const walletConnectProjectId = '3fd234b8e2cd0e1da4bc08a0011bbf64';
 
 export const walletConnectMetadata = {
-  name: 'Cashonize',
-  description: 'Cashonize Bitcoin Cash Wallet',
-  url: 'https://cashonize.com',
-  icons: ['https://cashonize.com/icons/favicon-128x128.png'],
+  name: 'OlandoWallet',
+  description: 'Olando BCH Community Wallet',
+  url: 'https://olando.cash/',
+  icons: ['https://olando.cash/favicon.ico'],
 };

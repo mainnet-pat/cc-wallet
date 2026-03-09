@@ -86,7 +86,7 @@ export async function createNewWallet(name: string): Promise<WalletOperationResu
     // Update store state
     store.activeWalletName = trimmedName;
     localStorage.setItem('activeWalletName', trimmedName);
-    store.setWallet(mainnetWallet);
+    await store.setWallet(mainnetWallet);
 
     // Refresh available wallets list
     await store.refreshAvailableWallets();
@@ -159,7 +159,7 @@ export async function importWallet(params: ImportWalletParams): Promise<WalletOp
     // Update store state
     store.activeWalletName = trimmedName;
     localStorage.setItem('activeWalletName', trimmedName);
-    store.setWallet(mainnetWallet);
+    await store.setWallet(mainnetWallet);
 
     // Refresh available wallets list
     await store.refreshAvailableWallets();
@@ -211,7 +211,7 @@ export async function createNewHDWallet(name: string): Promise<WalletOperationRe
 
     store.activeWalletName = trimmedName;
     localStorage.setItem('activeWalletName', trimmedName);
-    store.setWallet(mainnetWallet);
+    await store.setWallet(mainnetWallet);
 
     // Set wallet type BEFORE initializeWallet (which validates type matches)
     settingsStore.setWalletType(trimmedName, 'hd');
@@ -273,7 +273,7 @@ export async function importHDWallet(params: ImportWalletParams): Promise<Wallet
 
     store.activeWalletName = trimmedName;
     localStorage.setItem('activeWalletName', trimmedName);
-    store.setWallet(mainnetWallet);
+    await store.setWallet(mainnetWallet);
 
     // Set wallet type BEFORE initializeWallet (which validates type matches)
     settingsStore.setWalletType(trimmedName, 'hd');

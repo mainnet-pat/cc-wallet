@@ -4,7 +4,9 @@
 @import '@vueform/toggle/themes/default.css';
 
 :root {
-  --color-primary: #0ac18f;
+  --color-primary: #2aa9e1;
+  --color-bch: #0ac18e;
+  --color-red-text: #ff9900;
   --toggle-height: 1.7rem;
 }
 
@@ -30,6 +32,23 @@ body.dark {
   --font-color: #f5f5f5;
   --color-grey: #ccc;
   --color-darkGrey: #777;
+  /* background image */
+  background: url('../images/olando_bg.jpg');
+  background-size: auto 100%;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-color: black;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  /* backdrop-filter: brightness(1.5); */
+}
+@media (min-width: 1201px) {
+  body.dark {
+    background-size: 100% auto; /* Scales width to 100% of viewport, height proportional */
+  }
+
 }
 .transition-enabled {
   transition:
@@ -48,6 +67,11 @@ nav div {
   cursor: pointer;
   border-bottom: 2px solid var(--color-lightGrey);
 }
+nav div:hover {
+}
+nav > .bold {
+  font-weight: bold;
+}
 b {
   font-weight: 700;
 }
@@ -56,6 +80,9 @@ a,
   text-decoration: none;
   color: hsla(160, 100%, 37%, 1);
   transition: 0.4s;
+}
+.olando a {
+  color: var(--color-primary);
 }
 img {
   -webkit-user-drag: none;
@@ -96,7 +123,7 @@ img {
 .sendCurrencyInput {
   position: relative;
   width: 50%;
-  margin-left: 5px;
+  /* margin-left: 5px; */
 }
 .fillInMaxBch {
   margin-left: 5px;
@@ -132,7 +159,8 @@ input[type='number'] {
 }
 .tokenBaseInfo {
   width: 100%;
-  display: flex;
+  padding-left: 20px;
+  display: block;
   align-items: center;
 }
 .tokenIcon {
@@ -157,11 +185,16 @@ input[type='number'] {
 .tokenAmount {
   margin-left: 30px;
   max-width: 240px;
+  font-size: large;
+  font-weight: bold;
+}
+.olando .tokenAmount {
+  color: var(--color-primary)
 }
 .addressInputFtSend {
-  margin-right: 14px;
-  width: 50%;
+  width: 100%;
   display: flex;
+  gap: 0.5rem;
 }
 .addressInputNftSend {
   margin-right: 14px;
@@ -170,15 +203,20 @@ input[type='number'] {
   gap: 0.5rem;
 }
 .actionBar {
-  margin-top: 15px;
+  margin-top: 10px;
   margin-bottom: 5px;
 }
 .inputGroup {
   margin: 0 0 8px;
   display: flex;
+  gap: 0.5em;
+}
+.actionBar {
+  padding-top: 5px;
+  border-top: 1px solid grey;
 }
 .actionBar span {
-  margin: 0 20px;
+  margin: 0 15px;
   cursor: pointer;
 }
 .actionBar :first-of-type {
@@ -191,6 +229,7 @@ input[type='number'] {
 .sendTokenAmount {
   display: flex;
   width: 50%;
+  gap: 0.5rem;
 }
 .showChildNfts {
   position: relative;
@@ -316,8 +355,10 @@ body.dark .wallet-name-styled {
   }
   .sendCurrencyInput {
     position: relative;
-    width: 140px;
-    margin-left: 5px;
+    display: flex;
+    width: 100%;
+    margin-left: 0px;
+    margin-bottom: 5px;
   }
   .fillInMaxBch {
     padding: 1rem 1.5rem;

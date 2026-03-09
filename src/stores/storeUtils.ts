@@ -22,7 +22,6 @@ export function tokenListFromUtxos(walletUtxos: Utxo[]) {
   const arrayTokens: TokenList = [];
   for (const category of Object.keys(fungibleTokensResult)) {
     const fungibleTokenAmount = fungibleTokensResult[category]
-    if(!fungibleTokenAmount) continue // should never happen
     arrayTokens.push({ category, amount: fungibleTokenAmount ?? 0n });
   }
   for (const category of Object.keys(nftsResult)) {

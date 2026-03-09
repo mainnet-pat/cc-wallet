@@ -185,19 +185,20 @@ export const useStore = defineStore('store', () => {
   // setWallet is a simple wrapper "set" function for the internal _wallet in the store.
   // It adds the configured electrum network provider on the wallet depending on the network.
   // Call initializeWallet() afterwards to actually connect to the electrum client and to fetch initial data.
-  function setWallet(newWallet: WalletType){
-    if(newWallet.network == NetworkType.Mainnet){
-      const connectionMainnet = new Connection("mainnet", `wss://${settingsStore.electrumServerMainnet}:50004`)
-      // @ts-ignore currently no other way to set a specific provider
-      newWallet.provider = connectionMainnet.networkProvider as ElectrumNetworkProvider
-    }
-    if(newWallet.network == NetworkType.Testnet){
-      const connectionChipnet = new Connection("testnet", `wss://${settingsStore.electrumServerChipnet}:50004`)
-      // @ts-ignore currently no other way to set a specific provider
-      newWallet.provider = connectionChipnet.networkProvider as ElectrumNetworkProvider
-    }
+  async function setWallet(newWallet: WalletType){
+    // if(newWallet.network == NetworkType.Mainnet){
+    //   const connectionMainnet = new Connection("mainnet", `wss://${settingsStore.electrumServerMainnet}:50004`)
+    //   // @ts-ignore currently no other way to set a specific provider
+    //   newWallet.provider = connectionMainnet.networkProvider as ElectrumNetworkProvider
+    // }
+    // if(newWallet.network == NetworkType.Testnet){
+    //   const connectionChipnet = new Connection("testnet", `wss://${settingsStore.electrumServerChipnet}:50004`)
+    //   // @ts-ignore currently no other way to set a specific provider
+    //   newWallet.provider = connectionChipnet.networkProvider as ElectrumNetworkProvider
+    // }
     _wallet.value?.stop().catch(() => {});
     _wallet.value = newWallet;
+    await initializeWallet();
   }
 
   async function initializeWallet() {
@@ -226,20 +227,22 @@ export const useStore = defineStore('store', () => {
       // wrapped the logic in an IIFE to avoid error bubbling up
       // otherwise this can cause the router to error (and UI to fail) in offline mode
       let electrumConnectionPromise: Promise<unknown>
-      (() => {
+      await (async () => {
         let timeoutHandle: ReturnType<typeof setTimeout>
-        const electrumServer = network.value == 'mainnet' ? settingsStore.electrumServerMainnet : settingsStore.electrumServerChipnet
-        electrumConnectionPromise = Promise.race([
+        wallet.value.provider.disconnect().catch(() => {/*ignore eventual disconnection errors as we do not care about them*/});
+        // @ts-ignore
+        wallet.value.provider = settingsStore.createFallbackElectrumClient(network.value);
+        await Promise.race([
           wallet.value.provider.connect(),
           new Promise((_, reject) =>
             (timeoutHandle = setTimeout(() => {
-              reject(new Error("ELECTRUM_CONNECT_TIMEOUT"));
-            }, 3000))
+              reject(new Error(`Unable to connect to Electrum server '${wallet.value.provider.electrum.hostIdentifier}'`));
+            }, 30000))
           )
         ]).finally(() => clearTimeout(timeoutHandle))
         .catch(error => {
           failedToConnectElectrum = true;
-          displayAndLogError(new Error(t('store.errors.unableToConnectElectrum', { server: electrumServer })))
+          displayAndLogError(new Error(t('store.errors.unableToConnectElectrum', { server: wallet.value.provider.electrum.hostIdentifier })))
           // still log the original error for debugging
           console.error("Electrum connect error:", error)
         });
@@ -247,8 +250,6 @@ export const useStore = defineStore('store', () => {
       console.time('initialize walletconnect and cashconnect');
       await Promise.all([initializeWalletConnect(), initializeCashConnect()]);
       console.timeEnd('initialize walletconnect and cashconnect');
-      // wait until the electrumConnectionPromise is resolved
-      await electrumConnectionPromise;
       if (initialization !== currentInitialization) return;
       // if electrum connection failed, cancel the rest of initialization
       if(failedToConnectElectrum) return
@@ -476,7 +477,7 @@ export const useStore = defineStore('store', () => {
     // set new wallet
     const walletClass = await getWalletClass(activeWalletName.value, newNetwork);
     const newWallet = await walletClass.named(activeWalletName.value);
-    setWallet(newWallet);
+    await setWallet(newWallet);
     if (awaitWalletInitialization) {
       await initializeWallet();
     } else {
@@ -520,7 +521,7 @@ export const useStore = defineStore('store', () => {
     activeWalletName.value = walletName;
     localStorage.setItem('activeWalletName', walletName);
     resetWalletState();
-    setWallet(newWallet);
+    await setWallet(newWallet);
     changeView(1);
     // fire-and-forget - don't await so UI is responsive
     void initializeWallet();

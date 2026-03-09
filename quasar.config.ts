@@ -224,7 +224,7 @@ export default defineConfig((ctx) => {
       builder: {
         // https://www.electron.build/configuration/configuration
         
-        appId: 'com.cashonize.wallet',
+        appId: 'cash.olando.wallet',
         nsis: {
           createDesktopShortcut: "always",
           differentialPackage: false

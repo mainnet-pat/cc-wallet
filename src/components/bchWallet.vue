@@ -275,62 +275,60 @@
 
 <template>
   <fieldset style="margin-top: 20px; padding-top: 2rem; padding-bottom: 1rem; max-width: 75rem; margin: auto 10px;">
-    <div style="font-size: 1.2em">
-      {{ t('wallet.balance', { currency: currencyDisplayShortName }) }}
-      <span style="color: hsla(160, 100%, 37%, 1);">{{ displayCurrencyBalance }}</span>
-    </div>
-    <span>
+    <div style="text-align: center;">
       {{ t('wallet.balance', { currency: bchDisplayNetwork }) }}
-      <span style="color: hsla(160, 100%, 37%, 1);">
+      <span style="color: var(--color-bch);">
         {{ balanceInBchUnit !== undefined ? numberFormatter.format(balanceInBchUnit) + displayUnitLong : "" }}
       </span>
-    </span>
-    <div style="word-break: break-all;">
-      {{ t('wallet.address', { network: bchDisplayNetwork }) }}
-      <span @click="() => copyToClipboard(store.wallet.getDepositAddress())" style="cursor:pointer;">
-        <span class="depositAddr">{{ store.wallet.getDepositAddress() }} </span>
-        <img class="copyIcon" src="images/copyGrey.svg">
+
+      <span style="color: var(--color-bch); font-size:smaller; opacity: 70%">
+        ({{ displayCurrencyBalance }})
       </span>
-    </div>
-    <div style="word-break: break-all;">
-      {{ t('wallet.tokenAddress') }}
-      <span @click="() => copyToClipboard(store.wallet.getTokenDepositAddress())" style="cursor:pointer;">
-        <span class="depositAddr">{{ store.wallet.getTokenDepositAddress() }}</span>
-        <img class="copyIcon" src="images/copyGrey.svg">
-      </span>
-    </div>
-    <qr-code ref="qrCodeRef" :contents="addressQrcode" @click="copyToClipboard(addressQrcode)" class="qr-code" @codeRendered="animateQrCode">
-      <img :src="displayBchQr? 'images/bch-icon.png':'images/tokenicon.png'" slot="icon" /> <!-- eslint-disable-line -->
-    </qr-code>
-    <div style="text-align: center;">
-      <div class="switchAddressButton icon" @click="switchAddressTypeQr()">⇄
+
+      <qr-code :contents="store.wallet.getDepositAddress()" @click="copyToClipboard(addressQrcode)" class="qr-code"
+        style="cursor:pointer; display: block; width: 230px; height: 230px; margin: 5px auto 5px auto; background-color: #fff;"
+      >
+        <img src="images/bch-icon.png" slot="icon" /> <!-- eslint-disable-line -->
+      </qr-code>
+
+      <div style="word-break: break-all; text-align: center; font-size: 8pt">
+        <span @click="() => copyToClipboard(store.wallet.getDepositAddress())" style="cursor:pointer;">
+          <span class="depositAddr">{{ store.wallet.getDepositAddress() ?? "" }} </span>
+          <img class="copyIcon" src="images/copyGrey.svg">
+        </span>
       </div>
     </div>
     <div>
       {{ t('wallet.send', { network: bchDisplayNetwork }) }}
-      <div style="display: flex; gap: 0.5rem;">
-        <input v-model="destinationAddr" @input="parseAddrParams()" :placeholder="t('wallet.addressPlaceholder')" name="addressInput">
-        <button v-if="settingsStore.qrScan" @click="() => showQrCodeDialog = true" style="padding: 12px">
+      <div class="inputGroup">
+        <div class="addressInputFtSend">
+          <span style="width: 100%; position: relative;">
+            <input v-model="destinationAddr" @input="parseAddrParams()" placeholder="address" name="addressInput">
+          </span>
+          <button v-if="settingsStore.qrScan" @click="() => showQrCodeDialog = true" style="padding: 12px">
             <img src="images/qrscan.svg" />
-        </button>
+          </button>
+        </div>
       </div>
-      <span class="sendAmountGroup">
-        <span style="position: relative; width: 50%;">
+      <span class="inputGroup">
+        <span class="sendCurrencyInput">
           <input v-model="bchSendAmount" @input="setCurrencyAmount()" type="number" :placeholder="t('wallet.amountPlaceholder')" name="currencyInput">
           <i class="input-icon" style="color: black;">{{ bchDisplayUnit }}</i>
         </span>
         <span class="sendCurrencyInput">
           <input v-model="currencySendAmount" @input="setBchAmount()" type="number" :placeholder="t('wallet.amountPlaceholder')" name="bchAmountInput">
           <i class="input-icon" style="color: black;">
-            {{`${currencyDisplayShortName} ${CurrencySymbols[settingsStore.currency]}`}}
+            {{(store.network == "mainnet"? "" : "t") + `${CurrencyShortNames[settingsStore.currency]}`}}
           </i>
         </span>
-            <button @click="useMaxBchAmount()" class="fillInMaxBch">{{ t('wallet.max') }}</button>
       </span>
       <div v-if="(maxAmountToSendInBchUnit ?? 0) < (bchSendAmount ?? 0)" style="color: red;">{{ t('wallet.notEnoughBch') }}</div>
 
     </div>
-    <input @click="sendBch()" type="button" class="primaryButton" :value="isSending ? t('common.status.sending') : t('common.actions.send')" :disabled="isSending" style="margin-top: 8px;">
+    <div style="display:flex;">
+      <input @click="sendBch()" type="button" class="primaryButton" value="Send" style="background-color:var(--color-bch);">
+      <button @click="useMaxBchAmount()" class="fillInMaxBch" style="margin-left: auto">max</button>
+    </div>
   </fieldset>
   <div v-if="showQrCodeDialog">
     <QrCodeDialog @hide="() => showQrCodeDialog = false" @decode="qrDecode" :filter="qrFilter"/>

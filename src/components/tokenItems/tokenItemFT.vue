@@ -14,7 +14,7 @@
   import { useSettingsStore } from 'src/stores/settingsStore'
   import { caughtErrorToString } from 'src/utils/errorHandling'
   import { calculateTokenFiatValue } from 'src/utils/cauldronApi'
-  import { CurrencySymbols } from 'src/interfaces/interfaces'
+  import { CurrencyShortNames, CurrencySymbols } from 'src/interfaces/interfaces'
   import { useQuasar } from 'quasar'
   import { useI18n } from 'vue-i18n'
   const $q = useQuasar()
@@ -22,6 +22,7 @@
   const settingsStore = useSettingsStore()
   const { t } = useI18n()
   import { useWindowSize } from '@vueuse/core'
+import { olandoCategory } from 'src/olando';
   const { width } = useWindowSize();
   const isMobile = computed(() => width.value < 480)
 
@@ -35,6 +36,7 @@
   const displayAuthTransfer = ref(false);
   const displayTokenInfo = ref(false);
   const tokenSendAmount = ref("");
+  const fiatSendAmount = ref("");
   const destinationAddr = ref("");
   const burnAmountFTs = ref("");
   const reservedSupplyInput = ref("")
@@ -191,6 +193,24 @@
     const targetState = tokenSend? tokenSendAmount : burnAmountFTs;
     targetState.value = numberFormatter.format(amountTokens);
   }
+  function setCurrencyAmount() {
+    if (tokenSendAmount.value === "") {
+      fiatSendAmount.value = "";
+      return;
+    }
+    const decimals = tokenMetaData.value?.token?.decimals ?? 0;
+    const newFiatValue = Number(tokenSendAmount.value.replace(/,/g, '')) * (holdingsFiatValue.value ?? 0) / (Number(tokenData.value.amount) /  (10 ** decimals))
+    fiatSendAmount.value = numberFormatter.format(Number(newFiatValue.toFixed(2)));
+  }
+  function setTokenAmount() {
+    if (fiatSendAmount.value === "") {
+      tokenSendAmount.value = "";
+      return;
+    }
+    const decimals = tokenMetaData.value?.token?.decimals ?? 0;
+    const newTokenValue =  (Number(tokenData.value.amount) /  (10 ** decimals)) * Number(fiatSendAmount.value.replace(/,/g, '')) / (holdingsFiatValue?.value ?? 0);
+    tokenSendAmount.value = numberFormatter.format(Number(newTokenValue));
+  }
   async function sendTokens(){
     if (activeAction.value) return;
     activeAction.value = 'sending';
@@ -205,6 +225,8 @@
       const amountTokensInt = typeof amountTokensNumber == "number" ? BigInt(Math.round(amountTokensNumber)): BigInt(amountTokensNumber)
       const amountSentFormatted = numberFormatter.format(toAmountDecimals(amountTokensInt))
       if(amountTokensInt > tokenData.value.amount) throw(t('tokenItem.errors.insufficientBalance'));
+
+      destinationAddr.value = destinationAddr.value.split('?')[0] || destinationAddr.value;
       if(!destinationAddr.value.startsWith("bitcoincash:") && !destinationAddr.value.startsWith("bchtest:")){
         const networkPrefix = store.network == 'mainnet' ? "bitcoincash:" : "bchtest:"
         destinationAddr.value = networkPrefix + destinationAddr.value
@@ -438,7 +460,7 @@
 <template>
   <div class="item">
     <fieldset style="position: relative;">
-      <div class="tokenInfo">
+      <div class="tokenInfo" :class="{olando: ( tokenData.category === olandoCategory )}">
         <TokenIcon
           class="tokenIcon"
           :token-id="tokenData.category"
@@ -446,19 +468,6 @@
           :size="48"
         />
         <div class="tokenBaseInfo">
-          <div class="tokenBaseInfo1">
-            <div v-if="tokenName">{{ t('tokenItem.name') }} {{ tokenName }}</div>
-            <div style="word-break: break-all;">
-              {{ t('tokenItem.tokenId') }}
-              <span @click="copyToClipboard(tokenData.category)">
-                <span class="category" style="cursor: pointer;">
-                  {{ !isMobile ? `${tokenData.category.slice(0, 20)}...${tokenData.category.slice(-8)}` :  `${tokenData.category.slice(0, 10)}...${tokenData.category.slice(-8)}`}}
-                </span>
-                <img class="copyIcon" src="images/copyGrey.svg">
-              </span>
-            </div>
-            <div style="word-break: break-all;" class="hide"></div>
-          </div>
           <div class="tokenAmount">{{ t('tokenItem.amount') }}
             {{ numberFormatter.format(toAmountDecimals(tokenData?.amount)) }} {{ tokenMetaData?.token?.symbol }}
             <div v-if="holdingsFiatValue !== null" class="tokenAmount">
@@ -497,7 +506,16 @@
           </span>
         </div>
         <div v-if="displayTokenInfo" class="tokenAction">
-          <div></div>
+          <div v-if="tokenName">Name: {{ tokenName }}</div>
+          <div style="word-break: break-all;">
+            TokenId: 
+            <span @click="copyToClipboard(tokenData.category)">
+              <span class="tokenId" style="cursor: pointer;">
+                {{ !isMobile ? `${tokenData.category.slice(0, 8)}...${tokenData.category.slice(-8)}` :  `${tokenData.category.slice(0, 10)}...${tokenData.category.slice(-8)}`}}
+              </span>
+              <img class="copyIcon" src="images/copyGrey.svg">
+            </span>
+          </div>
           <div v-if="tokenMetaData?.description" class="indentText"> {{ t('tokenItem.info.tokenDescription') }} {{ tokenMetaData.description }} </div>
           <div v-if="tokenData.amount && tokenMetaData">
             {{ t('tokenItem.info.numberOfDecimals') }} {{ tokenMetaData?.token?.decimals ?? 0 }}
@@ -506,7 +524,7 @@
             {{ t('tokenItem.info.tokenWebLink') }}
             <a :href="tokenMetaData.uris.web" target="_blank">{{ tokenMetaData.uris.web }}</a>
           </div>
-          <div>
+          <!-- <div>
             {{ t('tokenItem.info.maxSupply') }}
             <span v-if="totalSupplyFT">
               {{ totalSupplyFT!= MAX_SUPPLY_FTS ?
@@ -515,8 +533,8 @@
                 : t('tokenItem.info.openEnded')
               }}
             </span><span v-else>...</span>
-          </div>
-          <div>
+          </div> -->
+          <!-- <div>
             {{ t('tokenItem.info.circulatingSupply') }}
             <span v-if="totalSupplyFT && reservedSupply != undefined">
               {{ numberFormatter.format(toAmountDecimals(totalSupplyFT - reservedSupply)) +
@@ -527,7 +545,7 @@
                 :""
               }}
             </span><span v-else>...</span>
-          </div>
+          </div> -->
           <div>
             <a style="color: var(--font-color); cursor: pointer;" :href="'https://tokenexplorer.cash/?tokenId=' + tokenData.category" target="_blank">
               {{ t('tokenItem.info.seeDetailsOnExplorer') }} <img :src="settingsStore.darkMode? 'images/external-link-grey.svg' : 'images/external-link.svg'" style="vertical-align: sub;"/>
@@ -546,7 +564,7 @@
                 <img src="images/qrscan.svg" />
               </button>
             </div>
-            <div class="sendTokenAmount">
+            <!-- <div class="sendTokenAmount">
               <span style="width: 100%; position: relative;">
                 <input v-model="tokenSendAmount" :placeholder="t('tokenItem.sendTokens.amountPlaceholder')" name="tokenAmountInput">
                 <i class="input-icon" style="width: min-content; padding-right: 15px; color: black;">
@@ -554,10 +572,29 @@
                 </i>
               </span>
               <button @click="maxTokenAmount(true)" style="color: black;">{{ t('tokenItem.actions.max') }}</button>
-            </div>
+            </div> -->
           </div>
-          <input @click="sendTokens()" type="button" class="primaryButton" :value="activeAction === 'sending' ? t('tokenItem.sendTokens.sendingButton') : t('tokenItem.sendTokens.sendButton')" :disabled="activeAction !== null">
+          <div class="inputGroup">
+            <span class="sendCurrencyInput">
+              <input v-model="tokenSendAmount" @input="setCurrencyAmount()" placeholder="amount" name="tokenAmountInput">
+              <i class="input-icon" style="width: min-content; padding-right: 15px; color: black;">
+                {{ tokenMetaData?.token?.symbol ?? "tokens" }}
+              </i>
+            </span>
+            <span class="sendCurrencyInput">
+              <input v-model="fiatSendAmount" @input="setTokenAmount()" placeholder="amount" name="fiatAmountInput">
+              <i class="input-icon" style="color: black;">
+                {{"" + `${CurrencyShortNames[settingsStore.currency]}`}}
+              </i>
+            </span> 
+          </div>
+          <div style="display:flex;">
+            <input @click="sendTokens()" type="button" class="primaryButton" value="Send">
+            <button @click="maxTokenAmount(true); setCurrencyAmount();" style="color: black; margin-left: auto">max</button>
+          </div>
         </div>
+
+        <!-- burn -->
         <div v-if="displayBurnFungibles" class="tokenAction">
           <div>{{ t('tokenItem.burn.description') }}</div>
           <div style="display: flex">
@@ -571,6 +608,8 @@
           </div>
           <input @click="burnFungibles()" type="button" :value="activeAction === 'burning' ? t('tokenItem.burn.burningButton') : t('tokenItem.burn.burnButton')" class="button error" style="margin-top: 10px;" :disabled="activeAction !== null">
         </div>
+
+        <!-- auth transfer -->
         <div v-if="displayAuthTransfer" class="tokenAction">
           {{ t('tokenItem.authTransfer.description') }} <br>
           <i18n-t keypath="tokenItem.authTransfer.dedicatedWalletNote" tag="span">

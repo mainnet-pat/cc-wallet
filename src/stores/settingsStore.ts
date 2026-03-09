@@ -1,15 +1,19 @@
 import { useWindowSize } from "@vueuse/core";
-import { Config } from "mainnet-js";
+import { Config, ElectrumNetworkProvider } from "mainnet-js";
 import { defineStore } from "pinia"
-import { ref } from 'vue'
+import { type Ref, ref } from 'vue'
 import { BitpayRatesSchema, CoinGeckoRatesSchema, CoinbaseRatesSchema } from "src/utils/zodValidation";
 import type { QRCodeAnimationName, DateFormat, ExchangeRateProvider, Currency } from "src/interfaces/interfaces";
 import { CurrencySymbols } from "src/interfaces/interfaces";
 import { defaultWalletName } from "./constants";
 import { i18n } from 'src/boot/i18n'
+import { DefaultChipnetElectrumServers, DefaultMainnetElectrumServers } from "./config";
+import { ElectrumWebSocket } from '@electrum-cash/web-socket';
+import { ElectrumFallbackClient } from '@mainnet-pat/electrum-fallback-client';
+import { type ElectrumClientEvents, type ElectrumClient } from '@electrum-cash/network';
 const { t } = i18n.global
 
-const defaultExplorerMainnet = "https://blockchair.com/bitcoin-cash/transaction";
+const defaultExplorerMainnet = "https://explorer.salemkode.com/tx";
 const defaultExplorerChipnet = "https://chipnet.chaingraph.cash/tx";
 const defaultElectrumMainnet = "electrum.imaginary.cash"
 const defaultElectrumChipnet = "chipnet.bch.ninja"
@@ -23,21 +27,46 @@ const { width,height } = useWindowSize();
 const isDesktop = (process.env.MODE == "electron");
 const isMobileDevice = width.value / height.value < 1.5
 
+
+// checks and updates the electrum servers list based on the default list
+// useful when updating the app with new default servers
+const updateServers = (configServers: string[], ref: Ref<[string, boolean][]>) => {
+  // Sync electrumServerMainnet.value with DefaultMainnetElectrumServers
+  const defaultSet = new Set(configServers);
+  const currentServers = ref.value.map(([url]) => url);
+
+  // Add new servers from configServers if missing
+  configServers.forEach(server => {
+    if (!currentServers.includes(server)) {
+      ref.value.push([server, true]);
+    }
+  });
+
+  // Remove servers not present in configServers
+  ref.value = ref.value.filter(([url]) => defaultSet.has(url));
+
+  const anyEnabled = ref.value.some(([_, enabled]) => enabled);
+  if (!anyEnabled) {
+    ref.value = ref.value.map(([url]) => [url, true]);
+  }
+}
+
 export const useSettingsStore = defineStore('settingsStore', () => {
   // Settings in settings menu
+  const settingsSection = ref(0);
   const locale = ref("en");
   const currency = ref<Currency>("usd");
   const bchUnit = ref("bch" as ("bch" | "sat"));
   const explorerMainnet = ref(defaultExplorerMainnet);
   const explorerChipnet = ref(defaultExplorerChipnet);
-  const electrumServerMainnet = ref(defaultElectrumMainnet);
-  const electrumServerChipnet = ref(defaultElectrumChipnet);
+  const electrumServerMainnet = ref<[string, boolean][]>(DefaultMainnetElectrumServers.map(server => [server, true]));
+  const electrumServerChipnet = ref<[string, boolean][]>(DefaultChipnetElectrumServers.map(server => [server, true]));
   const chaingraph = ref(defaultChaingraph);
   const ipfsGateway = ref(defaultIpfsGateway);
-  const darkMode  = ref(false);
+  const darkMode  = ref(true);
   const tokenBurn = ref(false);
-  const showCauldronSwap = ref(false);
-  const walletConnect = ref(true);
+  const showCauldronSwap = ref(true);
+  const walletConnect = ref(false);
   const showCauldronFTValue = ref(true);
   const qrScan = ref(true);
   const qrAnimation = ref("MaterializeIn" as QRCodeAnimationName | 'None')
@@ -129,7 +158,7 @@ export const useSettingsStore = defineStore('settingsStore', () => {
   if(readQrAnimation) qrAnimation.value = readQrAnimation as QRCodeAnimationName | 'None';
 
   const readDarkMode = localStorage.getItem("darkMode");
-  if(readDarkMode == "true"){
+  if(readDarkMode !== "false"){
     document.body.classList.add("dark");
     darkMode.value = true;
   }
@@ -182,11 +211,21 @@ export const useSettingsStore = defineStore('settingsStore', () => {
     alert("Using Cashonize as an 'Installed Web app' links the wallet data to the browser usage. Deleting the browser data will also affect the installed web app.");
   });
 
-  const readElectrumMainnet = localStorage.getItem("electrum-mainnet") ?? "";
-  if(readElectrumMainnet) electrumServerMainnet.value = readElectrumMainnet
+  try {
+    const readElectrumMainnet = localStorage.getItem("electrum-mainnet") ?? "";
+    if(readElectrumMainnet) {
+      electrumServerMainnet.value = JSON.parse(readElectrumMainnet);
+      updateServers(DefaultMainnetElectrumServers, electrumServerMainnet);
+    }
+  } catch {;}
 
-  const readElectrumChipnet = localStorage.getItem("electrum-chipnet") ?? "";
-  if(readElectrumChipnet) electrumServerChipnet.value = readElectrumChipnet
+  try {
+    const readElectrumChipnet = localStorage.getItem("electrum-chipnet") ?? "";
+    if(readElectrumChipnet) {
+      electrumServerChipnet.value = JSON.parse(readElectrumChipnet);
+      updateServers(DefaultChipnetElectrumServers, electrumServerMainnet);
+    }
+  } catch {;}
 
   const readChaingraph = localStorage.getItem("chaingraph") ?? "";
   if(readChaingraph) chaingraph.value = readChaingraph
@@ -413,7 +452,33 @@ export const useSettingsStore = defineStore('settingsStore', () => {
     });
   }
 
+  function createFallbackElectrumClient(network: "mainnet" | "chipnet") {
+    const servers = network === "mainnet" ? electrumServerMainnet.value : electrumServerChipnet.value;
+
+    const urls = servers.filter(server => server[1]).map(server => server[0]);
+
+    const fallback = ElectrumFallbackClient.FromHostUrls(ElectrumWebSocket, urls, { rank: {
+      interval: 10000,
+      threshold: 0.15,
+    }, clientOptions: {
+      sendKeepAliveIntervalInMilliSeconds: 15000,
+      disableBrowserConnectivityHandling: true,
+      disableBrowserVisibilityHandling: true,
+    } });
+    fallback.connectTimeout = 5000;
+    fallback.clients.forEach(client => {
+      (client.socketOrHostname as ElectrumWebSocket).reconnectionOptions = {
+        ...(client.socketOrHostname as ElectrumWebSocket).reconnectionOptions,
+        disableBrowserConnectivityHandling: true,
+        disableBrowserVisibilityHandling: true,
+      }
+    });
+
+    return new ElectrumNetworkProvider(fallback as unknown as ElectrumClient<ElectrumClientEvents>, network === "mainnet" ? "mainnet" : "testnet");
+  }
+
   return {
+    settingsSection,
     locale,
     currency,
     bchUnit,
@@ -457,5 +522,7 @@ export const useSettingsStore = defineStore('settingsStore', () => {
     setAutoApproveState,
     clearAutoApproveState,
     decrementAutoApproveRequest,
-    isAutoApproveValid  }
+    isAutoApproveValid,
+    createFallbackElectrumClient,
+  }
 })

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+  import { olandoSymbol } from 'src/olando'
   import walletOnboardingView from 'src/components/walletOnboarding.vue'
   import addWalletView from 'src/components/settings/addWallet.vue'
   import bchWalletView from 'src/components/bchWallet.vue'
@@ -7,6 +8,7 @@
   import settingsMenu from 'src/components/settingsMenu.vue'
   import connectDappView from 'src/components/connectDapp.vue'
   import createTokensView from 'src/components/settings/createTokens.vue'
+  import investOla from 'src/components/investOla.vue'
   import utxoManagement from 'src/components/settings/utxoManagement.vue'
   import sweepPrivateKey from 'src/components/settings/sweepPrivateKey.vue'
   import hdAddressesView from 'src/components/settings/hdAddresses.vue'
@@ -17,6 +19,7 @@
   import { namedWalletExistsInDb, getAllWalletsWithNetworkInfo } from 'src/utils/dbUtils'
   import { useStore } from 'src/stores/store'
   import { useSettingsStore } from 'src/stores/settingsStore'
+  import OfflineDetector from 'src/components/offlineDetector.vue'
   const store = useStore()
   const settingsStore = useSettingsStore()
   import { useWindowSize } from '@vueuse/core'
@@ -36,6 +39,14 @@
   const wifToSweep = ref(undefined as undefined|string);
 
   DefaultProvider.servers.chipnet = ["wss://chipnet.bch.ninja:50004"];
+  const readNetwork = localStorage.getItem('network') || 'mainnet';
+  if (readNetwork === 'mainnet') {
+    // @ts-ignore
+    globalThis["BCH"] = settingsStore.createFallbackElectrumClient("mainnet");
+  } else {
+    // @ts-ignore
+    globalThis["tBCH"] = settingsStore.createFallbackElectrumClient("chipnet");
+  }
 
   // The currentView and its viewSpecificProps are computed based on 'store.displayView'
   // and passed to a dynamic component wrapped in KeepAlive to preserve state.
@@ -54,6 +65,7 @@
       case 8: return sweepPrivateKey;
       case 9: return addWalletView;
       case 10: return hdAddressesView;
+      case 11: return investOla;
       default: return walletOnboardingView; // undefined or 0 shows onboarding
     }
   });
@@ -94,7 +106,7 @@
     const readNetwork = localStorage.getItem('network') ?? 'mainnet';
     const walletClass = await store.getWalletClass(walletToLoad, readNetwork);
     const initWallet = await walletClass.named(walletToLoad);
-    store.setWallet(initWallet);
+    await store.setWallet(initWallet);
     store.changeView(1);
     // fire-and-forget promise does not wait on full wallet initialization
     void store.initializeWallet();
@@ -182,15 +194,17 @@
 </script>
 
 <template>
+  <OfflineDetector />
   <header>
-    <img :src="settingsStore.darkMode? 'images/cashonize-logo-dark.png' : 'images/cashonize-logo.png'" alt="Cashonize: a Bitcoin Cash Wallet" style="height: 85px;" >
+    <img :src="settingsStore.darkMode? 'images/olando-wallet-logo.png' : 'images/olando-wallet-logo.png'" alt="Olando: a Bitcoin Cash Wallet" style="max-height: 80px; max-width:95%" >
     <nav v-if="store.displayView" style="display: flex; justify-content: center; user-select: none;" class="tabs">
-      <div @click="store.changeView(1)" :class="{ active: store.displayView == 1 }"> {{ isMobile ? "Wallet" : "BchWallet" }} </div>
-      <div v-if="width > 570 && store.wallet.walletType === 'hd'" @click="store.changeView(10)" :class="{ active: store.displayView == 10 }"> Addresses </div>
-      <div @click="store.changeView(2)" :class="{ active: store.displayView == 2 }"> {{ isMobile ? "Tokens" : "MyTokens" }} </div>
-      <div @click="store.changeView(3)" :class="{ active: store.displayView == 3 }"> {{ isMobile ? "History" : "TxHistory" }} </div>
+      <div @click="store.changeView(1)" class="bold" :class="{ active: store.displayView == 1 }"> {{ isMobile ? "BCH" : "BCH" }} </div>
+      <!-- <div v-if="width > 570 && store.wallet.walletType === 'hd'" @click="store.changeView(10)" :class="{ active: store.displayView == 10 }"> Addresses </div> -->
+      <div @click="store.changeView(2)" class="bold" :class="{ active: store.displayView == 2 }"> {{ isMobile ? olandoSymbol : olandoSymbol }} </div>
+      <div @click="store.changeView(11)" :class="{ active: store.displayView == 11 }"> {{ isMobile ? "Buy" : "Buy" }} </div>
+      <div @click="store.changeView(3)" :class="{ active: store.displayView == 3 }"> {{ isMobile ? "History" : "History" }} </div>
       <div v-if="settingsStore.walletConnect" @click="store.changeView(4)" v-bind:style="store.displayView == 4 ? {color: 'var(--color-primary'} : ''">{{isMobile?  "Connect" : "WalletConnect"}}</div>
-      <div @click="store.changeView(5)" style="width: max-content; position: relative;">
+      <div @click="() => {store.changeView(5); settingsStore.settingsSection = 0; }" style="width: max-content; position: relative;">
         <img style="vertical-align: text-bottom;" :src="store.displayView == 5 ? 'images/settingsGreen.svg' : (
           settingsStore.darkMode? 'images/settingsLightGrey.svg' : 'images/settings.svg')">
         <span v-if="showNotificationIcon" class="notification-dot"></span>

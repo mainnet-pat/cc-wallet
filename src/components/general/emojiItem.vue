@@ -10,7 +10,7 @@ const emojiSrc = (() => {switch (props.emoji) {
     case '⏳':
       return `./emoji-icons/hourglass.svg`;
     case '❌':
-      return `./emoji-icons/cross.svg`;
+      return `./emoji-icons/redcross.svg`;
     case '⚠️':
       return `./emoji-icons/warning.svg`;
     case '💚':

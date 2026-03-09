@@ -7,10 +7,12 @@
   import tokenItemFT from './tokenItems/tokenItemFT.vue'
   import { useStore } from 'src/stores/store'
   import { useSettingsStore } from 'src/stores/settingsStore'
+  import { Notify, useQuasar } from 'quasar'
 
   const store = useStore()
   const settingsStore = useSettingsStore()
   const { t } = useI18n()
+  const $q = useQuasar()
 
   const showOptions = ref(false)
   const searchQuery = ref('')
@@ -49,9 +51,50 @@
     settingsStore.tokenDisplayFilter = filter as typeof settingsStore.tokenDisplayFilter;
     localStorage.setItem("tokenDisplayFilter", filter);
   }
+
+  const showAllTokens = ref(false);
+  function copyToClipboard(copyText: string|undefined){
+    if(!copyText) return
+    void navigator.clipboard.writeText(copyText);
+    $q.notify({
+      message: "Copied!",
+      icon: 'info',
+      timeout : 1000,
+      color: "grey-6"
+    })
+  }
+
+  function showInfo() {
+    Notify.create({
+      message: `The following tokens can come from promotion activities or other sources in the BitcoinCash-World. You can send or remove a token to you list above, if you highlight them as „favorite" with the „Star-Icon".`,
+      color: "negative",
+      timeout: 10000,
+      actions: [
+        { icon: 'close', color: 'white', round: true },
+      ]
+    });
+  }
 </script>
 
 <template>
+  <div style="word-break: break-all; text-align: center;">
+    Token receiving address:
+  </div>
+  <qr-code
+    @click="() => copyToClipboard(store.wallet?.getTokenDepositAddress())" 
+    id="qrCode" 
+    :contents="store.wallet?.getTokenDepositAddress()" 
+    style="cursor:pointer; display: block; width: 230px; height: 230px; margin: 5px auto 5px auto; background-color: #fff;"
+  >
+    <img src="images/olando-small.png" slot="icon" /> <!-- eslint-disable-line -->
+  </qr-code>
+  <div style="word-break: break-all; text-align: center; font-size: 8pt">
+    <span @click="() => copyToClipboard(store.wallet?.getTokenDepositAddress())" style="cursor:pointer;">
+      <span class="depositAddr">{{ store.wallet?.getTokenDepositAddress() ?? "" }}</span>
+      <img class="copyIcon" src="images/copyGrey.svg">
+    </span>
+  </div>
+
   <div v-if="store.bcmrRegistries == undefined" style="text-align: center;">{{ t('tokens.loading') }}</div>
 
   <div v-else>
@@ -99,9 +142,19 @@
     <div v-else-if="searchFilteredTokenList?.length == 0" style="text-align: center;">
       {{ t('tokens.noMatch') }}
     </div>
-    <div v-for="tokenData in searchFilteredTokenList" :key="tokenData.category">
+    <div v-for="tokenData in searchFilteredTokenList?.filter(token => settingsStore.featuredTokens.includes(token.category))" :key="tokenData.category">
       <tokenItemFT v-if="'amount' in tokenData" :tokenData="tokenData"/>
       <tokenItemNFT v-else :tokenData="tokenData"/>
+    </div>
+
+    <div v-if="store.tokenList?.filter(token => !settingsStore.featuredTokens.includes(token.category)).length" style="margin: 10px; margin-top: 20px;">
+      <span @click="showAllTokens = !showAllTokens" style="cursor: pointer;">{{showAllTokens ? "▲ Hide" : "▼ Show"}} other tokens</span><span style="margin-left: 1rem; color: orangered; font-weight: bold; cursor: pointer;" @click="showInfo">[info]</span>
+      <div v-if="showAllTokens">
+        <div v-for="tokenData in searchFilteredTokenList?.filter(token => !settingsStore.featuredTokens.includes(token.category))" :key="tokenData.category.slice(0,6)">
+          <tokenItemFT v-if="'amount' in tokenData" :tokenData="tokenData"/>
+          <tokenItemNFT v-else :tokenData="tokenData"/>
+        </div>
+      </div>
     </div>
   </div>
 </template>

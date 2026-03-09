@@ -114,9 +114,9 @@
         <div class="tx-header tx-row">
           <div class="tx-cell"></div>
           <div class="tx-cell">{{ t('history.columns.date') }}</div>
-          <div class="tx-cell">{{ t('history.columns.amount') }}</div>
-          <div class="tx-cell balance-header" v-if="!hideBalance">{{ t('history.columns.balance') }}</div>
-          <div class="tx-cell tokens-header">{{ t('history.columns.tokens') }}</div>
+          <div class="tx-cell">BCH</div>
+          <!-- <div class="tx-cell balance-header" v-if="!hideBalance">{{ t('history.columns.balance') }}</div> -->
+          <div class="tx-cell tokens-header">Token</div>
         </div>
         <div class="tx-body">
           <div
@@ -129,36 +129,35 @@
 
             <div class="tx-cell status-cell"><EmojiItem :emoji="transaction.timestamp ? '✅' : '⏳'" :size-px="isMobile ? 14 : 16" style="vertical-align: sub;"/> </div>
 
-            <div class="tx-cell" v-if="isMobile">
-              <div v-if="transaction.timestamp" style="line-height: 1.3">
-                <div>{{ formatTimestamp(transaction.timestamp, settingsStore.dateFormat, true) }}</div>
-                <div>{{ formatTime(transaction.timestamp) }}</div>
+            <div class="tx-cell">
+              <div v-if="transaction.timestamp" style="line-height: 1.3;">
+                <div>{{ formatTimestamp(transaction.timestamp, settingsStore.dateFormat, true).replaceAll('/','-') }}</div>
+                <div style="font-size: smaller; opacity:70%">{{ formatTime(transaction.timestamp) }}</div>
               </div>
               <div v-else>{{ t('history.pending') }}</div>
             </div>
-            <div class="tx-cell" v-else>{{ formatTimestamp(transaction.timestamp, settingsStore.dateFormat) }}</div>
 
             <div class="tx-cell value" :class="{ 'negative': transaction.valueChange < 0 }">
               {{ `${transaction.valueChange > 0 ? '+' : '' }${(transaction.valueChange / 100_000_000).toLocaleString("en-US", {minimumFractionDigits: 5, maximumFractionDigits: 5})}`}}
               {{ hideUnit ? "" : bchDisplayUnit }}
-              <div v-if="settingsStore.showFiatValueHistory && exchangeRate !== undefined">
-                ({{`${transaction.valueChange > 0 ? '+' : '' }` + formatFiatAmount(exchangeRate * transaction.valueChange / 100_000_000, settingsStore.currency)}})
+              <div v-if="settingsStore.showFiatValueHistory && exchangeRate !== undefined" style="font-size: smaller; opacity:70%">
+                {{`${transaction.valueChange > 0 ? '+' : '' }` + formatFiatAmount(exchangeRate * transaction.valueChange / 100_000_000, settingsStore.currency)}}
               </div>
             </div>
 
-            <div class="tx-cell value" v-if="!hideBalance">
+            <!-- <div class="tx-cell value" v-if="!hideBalance">
               {{ (transaction.balance / 100_000_000).toLocaleString("en-US", {minimumFractionDigits: 5, maximumFractionDigits: 5}) }}
               {{ hideUnit ? "" : bchDisplayUnit }}
               <div v-if="settingsStore.showFiatValueHistory && exchangeRate !== undefined">
                 ~{{formatFiatAmount(exchangeRate * transaction.balance / 100_000_000, settingsStore.currency) }}
               </div>
-            </div>
+            </div> -->
 
             <div class="tx-cell tokenChange">
                <!-- Tokens like BADGER have both fungibles and NFTs with the same category in user wallets -->
               <div class="tokenChangeItem" v-for="tokenChange in transaction.tokenAmountChanges" :key="tokenChange.category">
                 <span v-if="tokenChange.amount !== 0n || tokenChange.nftAmount == 0n">
-                  <span v-if="tokenChange.amount > 0n" class="value">+{{
+                  <span v-if="tokenChange.amount >= 0n" class="value">+{{
                     (Number(tokenChange.amount) / 10**(store.bcmrRegistries?.[tokenChange.category]?.token.decimals ?? 0)).toLocaleString("en-US") }}
                   </span>
                   <span v-else class="value negative">
@@ -267,7 +266,7 @@
 
 .tx-row {
   display: grid;
-  grid-template-columns: 45px 1fr 1fr 1fr minmax(120px, 220px);
+  grid-template-columns: 45px 1fr 1fr 1fr;
   min-width: 550px;
   align-items: center;
   cursor: pointer;
@@ -298,7 +297,7 @@
   background-color: var(--color-background-soft);
 }
 .tx-body .tx-row.dark.even {
-  background-color: #232326;
+  background-color: #00000040;
 }
 
 .tx-body {
@@ -323,7 +322,7 @@
   white-space: nowrap;
 }
 .negative {
-  color: rgb(188, 30, 30);
+  color: var(--color-red-text)
 }
 body.dark .negative {
   color: #ef9a9a;
