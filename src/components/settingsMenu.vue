@@ -38,6 +38,7 @@
   const selectedUnit = ref(settingsStore.bchUnit);
   const qrAnimation = ref(settingsStore.qrAnimation);
   const dateFormat = ref(settingsStore.dateFormat);
+  watch(() => settingsStore.dateFormat, newVal => dateFormat.value = newVal);
   const selectedExplorer = ref(store.explorerUrl);
   // user options
   const selectedDarkMode = ref(settingsStore.darkMode);
@@ -739,6 +740,7 @@
         <label for="dateFormat">{{ t('settings.localization.dateFormat') }}</label>
         <select v-model="dateFormat" @change="changeDateFormat()">
           <option value="DD/MM/YY">DD/MM/YY</option>
+          <option value="DD.MM.YY">DD.MM.YY</option>
           <option value="MM/DD/YY">MM/DD/YY</option>
           <option value="YY-MM-DD">YY-MM-DD</option>
         </select>

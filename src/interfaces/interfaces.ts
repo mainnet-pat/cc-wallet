@@ -29,7 +29,7 @@ export const CurrencyShortNames = {
 
 export type Currency = keyof typeof CurrencySymbols;
 
-export type DateFormat = "DD/MM/YY" | "MM/DD/YY" | "YY-MM-DD";
+export type DateFormat = "DD/MM/YY" | "MM/DD/YY" | "YY-MM-DD" | "DD.MM.YY";
 
 export type ExchangeRateProvider = "default" | "bitpay" | "coingecko" | "coinbase";
 

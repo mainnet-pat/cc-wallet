@@ -71,6 +71,9 @@ export function formatTimestamp(timestamp: number | undefined, dateFormat: DateF
     case 'YY-MM-DD':
       dateStr = `${year}-${month}-${day}`;
       break;
+    case 'DD.MM.YY':
+      dateStr = `${day}.${month}.${year}`;
+      break;
     default: // DD/MM/YY
       dateStr = `${day}/${month}/${year}`;
   }

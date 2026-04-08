@@ -242,7 +242,7 @@ export const useSettingsStore = defineStore('settingsStore', () => {
   if(readAuthchains) authchains.value = readAuthchains == "true";
 
   const readDateFormat = localStorage.getItem("dateFormat");
-  if(readDateFormat && (readDateFormat=="DD/MM/YY" || readDateFormat=="MM/DD/YY" || readDateFormat=="YY-MM-DD")) {
+  if(readDateFormat && (readDateFormat=="DD/MM/YY" || readDateFormat=="MM/DD/YY" || readDateFormat=="YY-MM-DD" || readDateFormat=="DD.MM.YY")) {
     dateFormat.value = readDateFormat;
   }
 

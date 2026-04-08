@@ -16,6 +16,11 @@
     locale.value = value
     settingsStore.locale = value
     localStorage.setItem('locale', value)
+
+    if (value === 'de') {
+      settingsStore.dateFormat = 'DD.MM.YY'
+      localStorage.setItem('dateFormat', 'DD.MM.YY')
+    }
   }
 </script>
 
