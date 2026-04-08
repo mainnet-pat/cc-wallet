@@ -83,12 +83,12 @@
   <div>
     <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 15px;">
       <span>{{ t('seedPhraseInput.label') }}</span>
-      <label class="word-count-option">
+      <!-- <label class="word-count-option">
         <input type="radio" :value="12" v-model="seedWordCount" @change="changeSeedWordCount(12)"> {{ t('seedPhraseInput.words12') }}
       </label>
       <label class="word-count-option">
         <input type="radio" :value="24" v-model="seedWordCount" @change="changeSeedWordCount(24)"> {{ t('seedPhraseInput.words24') }}
-      </label>
+      </label> -->
     </div>
     <div class="seed-words-grid">
       <div v-for="(_, index) in seedWords" :key="index" class="seed-word-input">
