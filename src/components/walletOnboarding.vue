@@ -115,10 +115,10 @@
           <h3 style="margin-bottom: 0;">{{ t('onboarding.welcome.title') }}</h3>
           <LanguageSelector class="language-selector" style="width: 124px;" />
         </div>
-        <p style="color: grey; margin-bottom: 20px;">
+        <!-- <p style="color: grey; margin-bottom: 20px;">
           {{ t('onboarding.welcome.description') }}
-        </p>
-        <div class="features-list">
+        </p> -->
+        <!-- <div class="features-list">
           <div class="feature-item">
             <span class="feature-icon">✓</span>
             <span>{{ t('onboarding.welcome.featureSendReceive') }}</span>
@@ -131,7 +131,7 @@
             <span class="feature-icon">✓</span>
             <span>{{ t('onboarding.welcome.featureOpenSource') }}</span>
           </div>
-        </div>
+        </div> -->
       </div>
       <hr style="margin: 25px 0;">
       <div style="margin: 20px 0;">

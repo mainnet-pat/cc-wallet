@@ -69,7 +69,7 @@
   },
   "onboarding": {
     "welcome": {
-      "title": "Bienvenido a Cashonize",
+      "title": "Bienvenido a Olando",
       "description": "Una billetera de Bitcoin Cash fácil de usar, con enfoque en CashTokens y dApps de BCH.",
       "featureSendReceive": "Envía y recibe BCH y CashTokens",
       "featureWalletConnect": "Conéctate a dApps mediante WalletConnect",
