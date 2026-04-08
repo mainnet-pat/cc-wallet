@@ -113,7 +113,7 @@
       <div style="margin-bottom: 25px;">
         <div class="welcome-header">
           <h3 style="margin-bottom: 0;">{{ t('onboarding.welcome.title') }}</h3>
-          <LanguageSelector class="language-selector" style="width: 124px;" />
+          <!-- <LanguageSelector class="language-selector" style="width: 124px;" /> -->
         </div>
         <!-- <p style="color: grey; margin-bottom: 20px;">
           {{ t('onboarding.welcome.description') }}

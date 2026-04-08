@@ -70,7 +70,7 @@ export const useSettingsStore = defineStore('settingsStore', () => {
   const showCauldronFTValue = ref(true);
   const qrScan = ref(true);
   const qrAnimation = ref("MaterializeIn" as QRCodeAnimationName | 'None')
-  const dateFormat = ref<DateFormat>("DD/MM/YY");
+  const dateFormat = ref<DateFormat>("DD.MM.YY");
   const confirmBeforeSending = ref(false); // consider changing default to true
   const exchangeRateProvider = ref<ExchangeRateProvider>("default");
   // developer settings

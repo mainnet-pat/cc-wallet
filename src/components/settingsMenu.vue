@@ -717,10 +717,10 @@
       <walletsOverview />
     </div>
     <div v-else-if="settingsSection == 6">
-      <div style="margin-bottom:15px;">
+      <!-- <div style="margin-bottom:15px;">
         <label>{{ t('settings.localization.language') }}</label>
         <LanguageSelector />
-      </div>
+      </div> -->
 
       <div style="margin-bottom:15px">
         <label for="selectCurrency">{{ t('settings.localization.currency') }}</label>
