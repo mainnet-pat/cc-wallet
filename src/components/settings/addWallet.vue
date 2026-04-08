@@ -161,13 +161,13 @@
       </div>
       <div style="margin-bottom: 15px;">
         <seedPhraseInput v-model="seedPhrase" v-model:isValid="seedPhraseValid" />
-        <div style="margin-top: 15px;">
+        <!-- <div style="margin-top: 15px;">
           <label>{{ t('addWallet.derivationPath.label') }} </label>
           <select v-model="selectedDerivationPath">
             <option value="standard">{{ DERIVATION_PATHS.standard.parent }} ({{ t('addWallet.derivationPath.standard') }})</option>
             <option value="bitcoindotcom">{{ DERIVATION_PATHS.bitcoindotcom.parent }} ({{ t('addWallet.derivationPath.bitcoindotcom') }})</option>
           </select>
-        </div>
+        </div> -->
         <input
           @click="importWallet()"
           class="button primary"

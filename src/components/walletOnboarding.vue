@@ -211,13 +211,13 @@
             {{ t('onboarding.walletType.singleAddressNote') }}
           </div>
         </div>
-        <div style="margin-bottom: 20px;">
+        <!-- <div style="margin-bottom: 20px;">
           <span>{{ t('onboarding.derivationPath.label') }} </span>
           <select v-model="selectedDerivationPath">
             <option value="standard">{{ DERIVATION_PATHS.standard.parent }} ({{ t('onboarding.derivationPath.standard') }})</option>
             <option value="bitcoindotcom">{{ DERIVATION_PATHS.bitcoindotcom.parent }} ({{ t('onboarding.derivationPath.bitcoindotcom') }})</option>
           </select>
-        </div>
+        </div> -->
         <input @click="importWallet()" class="button primary" type="button" :value="t('onboarding.import.submitButton')" style="margin-bottom: 15px;">
       </div>
     </div>
