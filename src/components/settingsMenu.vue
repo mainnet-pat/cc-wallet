@@ -359,17 +359,13 @@
 
     <backupWallet v-if="settingsSection == 1" />
     <div v-else-if="settingsSection == 2">
-      <!-- <div style="margin-bottom:15px;">
+      <div style="margin-bottom:15px;">
         {{ t('settings.userOptions.darkMode') }} <Toggle v-model="selectedDarkMode" @change="changeDarkMode()"/>
-      </div> -->
+      </div>
 
       <!-- <div style="margin-bottom:15px;">
         Enable WalletConnect <Toggle v-model="selectedWalletConnect" @change="changeWalletConnect()"/>
       </div> -->
-
-      <div v-if="settingsStore.getWalletType(store.activeWalletName) === 'hd'" style="margin-bottom: 15px; cursor: pointer;" @click="() => settingsSection = 10">
-        → {{ t('settings.menu.hdAddresses') }}
-      </div>
       
       <div style="margin-top:15px">
         <label for="selectUnit">Select fiat currency:</label>
@@ -382,12 +378,12 @@
         </select>
       </div>
 
-      <!-- <div style="margin-top:15px">
+      <div style="margin-top:15px">
         {{ t('settings.userOptions.confirmPayments') }} <Toggle v-model="confirmBeforeSending" @change="toggleConfirmBeforeSending"/>
         <div style="font-size: smaller; color: grey;">
           {{ t('settings.userOptions.confirmPaymentsHint') }}
         </div>
-      </div> -->
+      </div>
 
       <!-- <div style="margin-top:15px">
         {{ t('settings.userOptions.showCauldronSwap') }} <Toggle v-model="selectedShowSwap" @change="toggleShowSwap"/>
@@ -554,6 +550,10 @@
     <div v-else-if="settingsSection == 3">
       <fieldset class="item">
         <legend>Advanced Options</legend>
+
+        <div v-if="settingsStore.getWalletType(store.activeWalletName) === 'hd'" style="margin-bottom: 15px; cursor: pointer;" @click="() => settingsSection = 10">
+          → {{ t('settings.menu.hdAddresses') }}
+        </div>
 
         <div style="margin-bottom:15px;">
           Enable WalletConnect <Toggle v-model="selectedWalletConnect" @change="changeWalletConnect()"/>
@@ -794,9 +794,9 @@
         ↳ {{ t('settings.menu.localization') }}
       </div>
 
-      <!-- <div style="margin-bottom: 15px; cursor: pointer;" @click="() => settingsSection = 3">
+      <div style="margin-bottom: 15px; cursor: pointer;" @click="() => settingsSection = 3">
         ↳ {{ t('settings.menu.advancedSettings') }}
-      </div> -->
+      </div>
 
       <!-- <div style="margin-bottom: 15px; cursor: pointer;" @click="() => settingsSection = 4">
         ↳ {{ t('settings.menu.developerSettings') }}
