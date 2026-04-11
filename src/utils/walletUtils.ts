@@ -209,12 +209,13 @@ export async function createNewHDWallet(name: string): Promise<WalletOperationRe
     const walletId = mainnetWallet.toDbString().replace("mainnet", "testnet");
     await TestNetHDWallet.replaceNamed(trimmedName, walletId);
 
+    // Set wallet type BEFORE setWallet (which calls initializeWallet and validates type)
+    settingsStore.setWalletType(trimmedName, 'hd');
+
     store.activeWalletName = trimmedName;
     localStorage.setItem('activeWalletName', trimmedName);
     await store.setWallet(mainnetWallet);
 
-    // Set wallet type BEFORE initializeWallet (which validates type matches)
-    settingsStore.setWalletType(trimmedName, 'hd');
     settingsStore.setWalletCreatedAt(trimmedName);
 
     await store.refreshAvailableWallets();
@@ -271,12 +272,13 @@ export async function importHDWallet(params: ImportWalletParams): Promise<Wallet
 
     const mainnetWallet = await HDWallet.named(trimmedName);
 
+    // Set wallet type BEFORE setWallet (which calls initializeWallet and validates type)
+    settingsStore.setWalletType(trimmedName, 'hd');
+
     store.activeWalletName = trimmedName;
     localStorage.setItem('activeWalletName', trimmedName);
     await store.setWallet(mainnetWallet);
 
-    // Set wallet type BEFORE initializeWallet (which validates type matches)
-    settingsStore.setWalletType(trimmedName, 'hd');
     settingsStore.setBackupStatus(trimmedName, 'imported');
     settingsStore.setWalletCreatedAt(trimmedName);
 

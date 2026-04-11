@@ -487,7 +487,6 @@
     if (notification.method === "cauldron.contract.subscribe") {
       poolsCallback(notification.params);
     } else if (notification.method === "blockchain.address.subscribe") {
-      console.log(333)
       void subscribeCallback(notification.params);
     }
   });

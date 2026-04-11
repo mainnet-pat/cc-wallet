@@ -229,9 +229,9 @@ export const useStore = defineStore('store', () => {
       let electrumConnectionPromise: Promise<unknown>
       await (async () => {
         let timeoutHandle: ReturnType<typeof setTimeout>
-        wallet.value.provider.disconnect().catch(() => {/*ignore eventual disconnection errors as we do not care about them*/});
-        // @ts-ignore
-        wallet.value.provider = settingsStore.createFallbackElectrumClient(network.value);
+        // wallet.value.provider.disconnect().catch(() => {/*ignore eventual disconnection errors as we do not care about them*/});
+        // // @ts-ignore
+        // wallet.value.provider = settingsStore.createFallbackElectrumClient(network.value);
         await Promise.race([
           wallet.value.provider.connect(),
           new Promise((_, reject) =>
