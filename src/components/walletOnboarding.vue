@@ -26,7 +26,7 @@
   const seedPhrase = ref('');
   const seedPhraseValid = ref(false);
   const selectedDerivationPath = ref<DerivationPathType>("standard");
-  const walletType = ref<'single' | 'hd'>('single');
+  const walletType = ref<'single' | 'hd'>('hd');
 
   // Preferences - initialize from settingsStore (which reads from localStorage/system preferences)
   const selectedCurrency = ref<Currency>(settingsStore.currency);
@@ -156,7 +156,7 @@
       <!-- Create mode -->
       <div v-if="mode === 'create'">
         <legend>{{ t('onboarding.create.title') }}</legend>
-        <div style="margin: 20px 0;">
+        <!-- <div style="margin: 20px 0;">
           <label for="walletName" style="display: block; margin-bottom: 8px;">{{ t('onboarding.walletName.label') }}</label>
           <input
             v-model="walletName"
@@ -165,8 +165,8 @@
             :placeholder="t('onboarding.walletName.placeholder')"
             style="padding: 8px; min-width: 200px;"
           >
-        </div>
-        <div style="margin: 15px 0;">
+        </div> -->
+        <!-- <div style="margin: 15px 0;">
           <label style="display: block; margin-bottom: 8px;">{{ t('onboarding.walletType.label') }}</label>
           <select v-model="walletType" style="padding: 8px; min-width: 200px;">
             <option value="single">{{ t('onboarding.walletType.single') }}</option>
@@ -175,7 +175,24 @@
           <div style="margin-top: 5px;">
             {{ walletType === 'hd' ? t('onboarding.walletType.hdDescription') : t('onboarding.walletType.singleDescription') }}
           </div>
+        </div> -->
+
+        <div style="margin: 15px 0;">
+          <!-- <label style="display: block; margin-bottom: 8px;">{{ t('onboarding.walletType.label') }}</label> -->
+          <!-- <select v-model="walletType" style="padding: 8px; min-width: 200px;">
+            <option value="single">{{ t('onboarding.walletType.single') }}</option>
+            <option value="hd">{{ t('onboarding.walletType.hd') }}</option>
+          </select> -->
+          <!-- <div style="margin-top: 5px;">
+            {{ walletType === 'hd' ? t('onboarding.walletType.hdDescription') : t('onboarding.walletType.singleDescription') }}
+          </div> -->
+
+          <label style="display: block; margin-bottom: 8px;">Wallet type created: HDWallet</label>
+          <div style="margin-top: 5px; margin-left: 1.5rem;">
+            HDWallet uses a new address for each transaction. Better privacy, but requires selecting an address when connecting to dApps.
+          </div>
         </div>
+
         <div style="font-size: smaller; color: grey; margin: 10px 0;">
           {{ t('onboarding.create.seedPhraseNote') }}
         </div>
@@ -185,7 +202,7 @@
       <!-- Import mode -->
       <div v-else>
         <legend>{{ t('onboarding.import.title') }}</legend>
-        <div style="margin: 20px 0;">
+        <!-- <div style="margin: 20px 0;">
           <label for="walletNameImport" style="display: block; margin-bottom: 8px;">{{ t('onboarding.walletName.label') }}</label>
           <input
             v-model="walletName"
@@ -194,11 +211,11 @@
             :placeholder="t('onboarding.walletName.placeholder')"
             style="padding: 8px; min-width: 200px;"
           >
-        </div>
+        </div> -->
         <div style="margin: 20px 0;">
           <seedPhraseInput v-model="seedPhrase" v-model:isValid="seedPhraseValid" />
         </div>
-        <div style="margin: 15px 0;">
+        <!-- <div style="margin: 15px 0;">
           <label style="display: block; margin-bottom: 8px;">{{ t('onboarding.walletType.label') }}</label>
           <select v-model="walletType" style="padding: 8px; min-width: 200px;">
             <option value="single">{{ t('onboarding.walletType.single') }}</option>
@@ -210,7 +227,7 @@
           <div v-if="walletType === 'single'" style="margin-top: 5px; font-size: smaller; color: grey;">
             {{ t('onboarding.walletType.singleAddressNote') }}
           </div>
-        </div>
+        </div> -->
         <!-- <div style="margin-bottom: 20px;">
           <span>{{ t('onboarding.derivationPath.label') }} </span>
           <select v-model="selectedDerivationPath">

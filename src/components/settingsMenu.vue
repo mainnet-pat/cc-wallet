@@ -366,6 +366,10 @@
       <!-- <div style="margin-bottom:15px;">
         Enable WalletConnect <Toggle v-model="selectedWalletConnect" @change="changeWalletConnect()"/>
       </div> -->
+
+      <div v-if="settingsStore.getWalletType(store.activeWalletName) === 'hd'" style="margin-bottom: 15px; cursor: pointer;" @click="() => settingsSection = 10">
+        → {{ t('settings.menu.hdAddresses') }}
+      </div>
       
       <div style="margin-top:15px">
         <label for="selectUnit">Select fiat currency:</label>
@@ -619,6 +623,21 @@
 
       <!-- DDD Network Settings -->
 
+      <hr style="margin-top: 2rem;" />
+
+      <div style="margin-bottom: 15px;">
+        {{ t('settings.currentWallet') }} <span class="wallet-name-styled">{{ store.activeWalletName }}</span>
+      </div>
+
+      <div style="margin-bottom: 15px; cursor: pointer;" @click="() => settingsSection = 4">
+        ↳ {{ t('settings.menu.manageWallets') }}
+        <span style="color: grey; font-size: smaller;">
+          ({{ store.availableWallets.length }} {{ store.availableWallets.length === 1 ? t('common.wallet') : t('common.wallets') }})
+        </span>
+      </div>
+
+      <hr style="margin-bottom: 2rem;" />
+
       <fieldset class="item">
         <legend>Network Settings</legend>
         <div>
@@ -751,24 +770,21 @@
     </div>
     <!-- settingsSection === 0: main settings menu -->
     <div v-else>
-      <div style="margin-bottom: 15px;">
-        {{ t('settings.currentWallet') }} <span class="wallet-name-styled">{{ store.activeWalletName }}</span>
-      </div>
 
-      <div v-if="settingsStore.getWalletType(store.activeWalletName) === 'hd'" style="margin-bottom: 15px; cursor: pointer;" @click="() => settingsSection = 10">
+      <!-- <div v-if="settingsStore.getWalletType(store.activeWalletName) === 'hd'" style="margin-bottom: 15px; cursor: pointer;" @click="() => settingsSection = 10">
         → {{ t('settings.menu.hdAddresses') }}
-      </div>
+      </div> -->
 
       <div style="margin-bottom: 15px; cursor: pointer;" @click="() => settingsSection = 1">
         ↳ {{ t('settings.menu.backupWallet') }} <span v-if="settingsStore.getBackupStatus(store.activeWalletName) === 'none'" style="color: var(--color-primary)">{{ t('settings.menu.important') }}</span>
       </div>
 
-      <div style="margin-bottom: 15px; cursor: pointer;" @click="() => settingsSection = 4">
+      <!-- <div style="margin-bottom: 15px; cursor: pointer;" @click="() => settingsSection = 4">
         ↳ {{ t('settings.menu.manageWallets') }}
         <span style="color: grey; font-size: smaller;">
           ({{ store.availableWallets.length }} {{ store.availableWallets.length === 1 ? t('common.wallet') : t('common.wallets') }})
         </span>
-      </div>
+      </div> -->
 
       <div style="margin-bottom: 15px; cursor: pointer;" @click="() => settingsSection = 2">
         ↳ {{ t('settings.menu.userOptions') }}
