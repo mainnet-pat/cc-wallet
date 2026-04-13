@@ -72,7 +72,7 @@ export const proposeTrade = async ({
   const exlab = new ExchangeLab();
   let indexedPools = {active: []} as ActivePoolsResult;
   if (activePools === undefined) {
-    const indexedPoolsResponse = await fetch(`https://indexer.cauldron.quest/cauldron/pool/active/?token=${nonNativeTokenId}`);
+    const indexedPoolsResponse = await fetch(`https://indexer.riften.net/cauldron/pool/active/?token=${nonNativeTokenId}`);
     indexedPools = await indexedPoolsResponse.json() as ActivePoolsResult;
   } else {
     indexedPools = activePools;

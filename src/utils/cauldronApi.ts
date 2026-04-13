@@ -1,7 +1,7 @@
 import { CauldronValueLockedSchema } from "./zodValidation";
 import { cachedFetch } from "./cacheUtils";
 
-const CAULDRON_INDEXER_URL = "https://indexer.cauldron.quest";
+const CAULDRON_INDEXER_URL = "https://indexer.riften.net";
 const MIN_LIQUIDITY_SATS = 100_000_000; // 1 BCH minimum
 const CAULDRON_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
