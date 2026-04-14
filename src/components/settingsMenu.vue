@@ -636,6 +636,11 @@
         </span>
       </div>
 
+      <div style="margin-bottom:15px;">
+        <label>{{ t('settings.localization.language') }}</label>
+        <LanguageSelector />
+      </div>
+
       <hr style="margin-bottom: 2rem;" />
 
       <fieldset class="item">
