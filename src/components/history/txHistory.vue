@@ -129,16 +129,16 @@
 
             <div class="tx-cell status-cell"><EmojiItem :emoji="transaction.timestamp ? '✅' : '⏳'" :size-px="isMobile ? 14 : 16" style="vertical-align: sub;"/> </div>
 
-            <div class="tx-cell">
+            <div class="tx-cell value">
               <div v-if="transaction.timestamp" style="line-height: 1.3;">
-                <div>{{ formatTimestamp(transaction.timestamp, settingsStore.dateFormat, true).replaceAll('/','-') }}</div>
-                <div style="font-size: smaller; opacity:70%">{{ formatTime(transaction.timestamp) }}</div>
+                <div>{{ new Date(transaction.timestamp * 1000).toLocaleDateString(undefined, { month: '2-digit', day: "2-digit", year: "numeric" }).replaceAll('/','-') }}</div>
+                <div style="font-size: smaller; opacity:70%">{{new Date(transaction.timestamp * 1000).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }) }}</div>
               </div>
               <div v-else>{{ t('history.pending') }}</div>
             </div>
 
             <div class="tx-cell value" :class="{ 'negative': transaction.valueChange < 0 }">
-              {{ `${transaction.valueChange > 0 ? '+' : '' }${(transaction.valueChange / 100_000_000).toLocaleString("en-US", {minimumFractionDigits: 5, maximumFractionDigits: 5})}`}}
+              {{ `${transaction.valueChange > 0 ? '+' : '' }${(transaction.valueChange / 100_000_000).toLocaleString("en-US", {minimumFractionDigits: 8, maximumFractionDigits: 8})}`}}
               {{ hideUnit ? "" : bchDisplayUnit }}
               <div v-if="settingsStore.showFiatValueHistory && exchangeRate !== undefined" style="font-size: smaller; opacity:70%">
                 {{`${transaction.valueChange > 0 ? '+' : '' }` + formatFiatAmount(exchangeRate * transaction.valueChange / 100_000_000, settingsStore.currency)}}
@@ -290,14 +290,18 @@
 
 .tx-cell.tokens-header {
   text-align: right;
-  padding-right: 40px;
+  padding-right: 5px;
 }
 
-.tx-body .tx-row.even {
+.tx-body .tx-row.odd {
   background-color: var(--color-background-soft);
 }
+.tx-body .tx-row.dark.odd {
+  background-color: #ffffff40;
+}
+
 .tx-body .tx-row.dark.even {
-  background-color: #00000040;
+  background-color: #ffffff40;
 }
 
 .tx-body {
@@ -323,9 +327,6 @@
 }
 .negative {
   color: var(--color-red-text)
-}
-body.dark .negative {
-  color: #ef9a9a;
 }
 
 .tokenChange {

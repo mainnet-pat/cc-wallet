@@ -6,7 +6,7 @@
 :root {
   --color-primary: #2aa9e1;
   --color-bch: #0ac18e;
-  --color-red-text: #ff9900;
+  --color-red-text: rgb(255, 153, 0);
   --toggle-height: 1.7rem;
 }
 
