@@ -557,16 +557,31 @@
 
         <div style="margin-bottom:15px;">
           Enable WalletConnect <Toggle v-model="selectedWalletConnect" @change="changeWalletConnect()"/>
+          <span class="info-badge">?
+            <q-tooltip anchor="top middle" self="bottom middle" :offset="[0, 8]" style="font-size: large;">
+              WalletConnect allows you to connect your wallet to decentralized applications (dApps) by scanning a QR code or pasting a connection link.
+            </q-tooltip>
+          </span>
         </div>
 
         <div style="margin-top:15px">
           {{ t('settings.userOptions.showCauldronSwap') }} <Toggle v-model="selectedShowSwap" @change="toggleShowSwap"/>
+          <span class="info-badge">?
+            <q-tooltip anchor="top middle" self="bottom middle" :offset="[0, 8]" style="font-size: large;">
+              Shows swap button on wallet for quick swap between BCH and OLA
+            </q-tooltip>
+          </span>
         </div>
       </fieldset>
 
       <fieldset class="item">
         <legend>Advanced Functions</legend>
         <div style="margin-top:15px;">{{ t('settings.advanced.deleteAllWallets', { platform: platformString }) }}
+          <span class="info-badge">?
+            <q-tooltip anchor="top middle" self="bottom middle" :offset="[0, 8]" style="font-size: large;">
+              Wallet will only be removed from browser cache. The wallet and its values will remain to exist.
+            </q-tooltip>
+          </span>
           <div v-if="isPwaMode" style="color: red">
             {{ t('settings.advanced.pwaDeleteWarning') }}
           </div>
@@ -844,5 +859,19 @@
 <style scoped>
 .nowrap {
   white-space: nowrap;
+}
+.info-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid var(--color-grey, #ccc);
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  vertical-align: middle;
+  margin-left: 8px;
 }
 </style>
