@@ -11,7 +11,7 @@
   import { caughtErrorToString } from 'src/utils/errorHandling'
   import { onBeforeUnmount, ref, watch } from 'vue'
   import { ExchangeRate, type TestNetWallet, type Wallet } from 'mainnet-js'
-  import { CurrencyShortNames, type WalletType } from 'src/interfaces/interfaces'
+  import { CurrencyShortNames, CurrencySymbols, type WalletType } from 'src/interfaces/interfaces'
   import { useSettingsStore } from 'src/stores/settingsStore'
 
   const store = useStore()
@@ -595,8 +595,9 @@
             <input :disabled="disabled" v-model="investAmountBch" @input="(event: Event) => investAmountChange(event)" style="width: 100%;" placeholder="Amount BCH" type="number" />
             <input :disabled="disabled" @click="() => investMaxClick()" type="button" class="primaryButton" value="max" style="padding:12px;">
           </div>
-          <div v-if="exchangeRate" style="display: flex; flex-direction: row; gap: 2rem;">
-            <input :disabled="disabled" v-model="investAmountCurrency" @input="(event: Event) => investCurrencyAmountChange(event)" style="width: 100%; background-color: rgba(255, 255, 255, 0.5);" :placeholder="`Amount ${CurrencyShortNames[settingsStore.currency]}`" type="number" />
+          <div v-if="exchangeRate" style="display: flex; flex-direction: row; align-items: center; gap: 2rem;">
+            <input :disabled="disabled" v-model="investAmountCurrency" @input="(event: Event) => investCurrencyAmountChange(event)" class="fiat-input" :placeholder="`Amount ${CurrencyShortNames[settingsStore.currency]}`" type="number" />
+            <span class="fiat-icon">{{ CurrencySymbols[settingsStore.currency] }}</span>
           </div>
           <div style="display: flex; flex-direction: column; align-items: center;">
             <span style="margin-bottom: 1rem;">{{ issuanceContractStats?.cauldronTradeAdjustedTokenAmount ?? 0n > 0n ? `You will receive ${(Number(issuanceContractStats!.cauldronTradeAdjustedTokenAmount) / 10**2).toLocaleString("en-US")} ${olandoSymbol} ` : '' }}</span>
@@ -727,5 +728,22 @@
     color: white;
     border: 1px solid #ccc;
     padding: 3px
+  }
+  .fiat-input {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+  .fiat-icon {
+    min-width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+  }
+  body.dark .fiat-icon {
+    border: 1px solid rgba(255, 255, 255, 0.3);
   }
 </style>

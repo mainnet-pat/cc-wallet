@@ -1,15 +1,24 @@
 <script setup lang="ts">
   import { ref, watch, computed, onBeforeUnmount } from 'vue';
   import { useStore } from 'src/stores/store';
-  import { type BcmrTokenMetadata } from 'src/interfaces/interfaces';
+  import { useSettingsStore } from 'src/stores/settingsStore';
+  import { CurrencyShortNames, CurrencySymbols, type BcmrTokenMetadata } from 'src/interfaces/interfaces';
   import { type ActivePoolEntry, type ActivePoolsResult, broadcastTrade, fundProposedTrade, NATIVE_BCH_TOKEN_ID, proposeTrade, type RostrumCauldronContractSubscribeResponse, type TradeProposal } from 'src/utils/cauldron';
 
   import { ElectrumClient, type RPCParameter } from "@electrum-cash/network";
   import { ElectrumWebSocket } from "@electrum-cash/web-socket";
-  import { type TestNetWallet, type Wallet } from 'mainnet-js';
+  import { ExchangeRate, type TestNetWallet, type Wallet } from 'mainnet-js';
   import { caughtErrorToString } from 'src/utils/errorHandling';
 
   const store = useStore();
+  const settingsStore = useSettingsStore();
+
+  const exchangeRate = ref<number | undefined>(undefined);
+  async function fetchExchangeRate() {
+    exchangeRate.value = await ExchangeRate.get(settingsStore.currency, true);
+  }
+  void fetchExchangeRate();
+  watch(() => settingsStore.currency, () => void fetchExchangeRate());
 
   const props = defineProps<{
     tokenBalance: bigint;
@@ -31,6 +40,23 @@
   const swapButtonDisabled = ref(true);
   const tradeProposal = ref(undefined as undefined | TradeProposal);
   const statusMessage = ref(" ");
+  const amountACurrency = ref("");
+  const amountBCurrency = ref("");
+  let syncingFromCurrency = false;
+
+  function bchToCurrency(bchStr: string): string {
+    if (!exchangeRate.value) return "";
+    const bch = Number(bchStr);
+    if (!bch || bch <= 0) return "";
+    return (bch * exchangeRate.value).toFixed(2);
+  }
+
+  function currencyToBch(currencyStr: string): string {
+    if (!exchangeRate.value) return "";
+    const val = Number(currencyStr);
+    if (!val || val <= 0) return "";
+    return (val / exchangeRate.value).toFixed(8);
+  }
 
   function swapAssets() {
     const assetAValue = assetA.value;
@@ -41,6 +67,10 @@
     const amountBValue = amountB.value;
     amountA.value = amountBValue;
 
+    const currAValue = amountACurrency.value;
+    amountACurrency.value = amountBCurrency.value;
+    amountBCurrency.value = currAValue;
+
     amountAChange({ target: { value: amountBValue } } as unknown as Event).catch(() => {});
   }
 
@@ -50,6 +80,12 @@
       if (amountAValue === 0) {
         return;
       }
+
+      // sync currency field for side A if it's BCH (skip if edit came from currency input)
+      if (assetA.value === NATIVE_BCH_TOKEN_ID && !syncingFromCurrency) {
+        amountACurrency.value = bchToCurrency((event.target as HTMLInputElement).value);
+      }
+
       const tradeResult = await proposeTrade({
         supplyTokenId: assetA.value,
         demandTokenId: assetB.value,
@@ -60,6 +96,11 @@
 
       amountB.value = (Number(tradeResult.summary.demand) / 10 ** decimalsB.value).toFixed(decimalsB.value);
 
+      // sync currency field for side B if it's BCH (skip if edit came from currency input)
+      if (assetB.value === NATIVE_BCH_TOKEN_ID && !syncingFromCurrency) {
+        amountBCurrency.value = bchToCurrency(amountB.value);
+      }
+
       if (assetB.value === NATIVE_BCH_TOKEN_ID && tradeResult.summary.demand < 1000) {
         throw Error("Receiving BCH amount too low");
       }
@@ -69,7 +110,7 @@
       }
 
       if (assetA.value === NATIVE_BCH_TOKEN_ID && amountAValue > Number(store.balance ?? 0n)) {
-        throw Error("Insufficient balance");
+        throw Error("Swap not possible, you have too few BCH");
       }
 
       statusMessage.value = `Price impact: ${(tradeResult.priceImpact * 100).toFixed(2)}%`;
@@ -90,6 +131,12 @@
       if (amountBValue === 0) {
         return;
       }
+
+      // sync currency field for side B if it's BCH (skip if edit came from currency input)
+      if (assetB.value === NATIVE_BCH_TOKEN_ID && !syncingFromCurrency) {
+        amountBCurrency.value = bchToCurrency((event.target as HTMLInputElement).value);
+      }
+
       const tradeResult = await proposeTrade({
         supplyTokenId: assetA.value,
         demandTokenId: assetB.value,
@@ -100,8 +147,21 @@
 
       amountA.value = (Number(tradeResult.summary.supply) / 10 ** decimalsA.value).toFixed(decimalsA.value);
 
+      // sync currency field for side A if it's BCH (skip if edit came from currency input)
+      if (assetA.value === NATIVE_BCH_TOKEN_ID && !syncingFromCurrency) {
+        amountACurrency.value = bchToCurrency(amountA.value);
+      }
+
       if (assetA.value === NATIVE_BCH_TOKEN_ID && tradeResult.summary.supply < 1000) {
         throw Error("BCH amount too low");
+      }
+
+      if (assetA.value === NATIVE_BCH_TOKEN_ID && Number(tradeResult.summary.supply) > Number(store.balance ?? 0n)) {
+        throw Error("Swap not possible, you have too few BCH");
+      }
+
+      if (assetB.value === NATIVE_BCH_TOKEN_ID && tradeResult.summary.supply > props.tokenBalance) {
+        throw Error("Swap not possible, you have too few tokens");
       }
 
       statusMessage.value = `Price impact: ${(tradeResult.priceImpact * 100).toFixed(2)}%`;
@@ -122,12 +182,34 @@
       if (satBalance < 10000) {
         return;
       }
-      amountA.value = String((satBalance - 10000) / 1e8);
-      amountAChange({ target: { value: String((satBalance - 10000) / 1e8) } } as unknown as Event).catch(() => {});
+      const bchValue = String((satBalance - 10000) / 1e8);
+      amountA.value = bchValue;
+      amountACurrency.value = bchToCurrency(bchValue);
+      amountAChange({ target: { value: bchValue } } as unknown as Event).catch(() => {});
     } else {
       amountA.value = String(Number(props.tokenBalance) / 10 ** decimalsA.value);
       amountAChange({ target: { value: String(Number(props.tokenBalance) / 10 ** decimalsA.value) } } as unknown as Event).catch(() => {});
     }
+  }
+
+  function amountACurrencyChange(event: Event) {
+    const currencyVal = (event.target as HTMLInputElement).value;
+    const bchVal = currencyToBch(currencyVal);
+    amountA.value = bchVal || "0";
+    syncingFromCurrency = true;
+    amountAChange({ target: { value: bchVal || "0" } } as unknown as Event)
+      .catch(() => {})
+      .finally(() => { syncingFromCurrency = false; });
+  }
+
+  function amountBCurrencyChange(event: Event) {
+    const currencyVal = (event.target as HTMLInputElement).value;
+    const bchVal = currencyToBch(currencyVal);
+    amountB.value = bchVal || "0";
+    syncingFromCurrency = true;
+    amountBChange({ target: { value: bchVal || "0" } } as unknown as Event)
+      .catch(() => {})
+      .finally(() => { syncingFromCurrency = false; });
   }
 
   function onFocus(event: Event) {
@@ -152,7 +234,8 @@
       const tradeTxList = await fundProposedTrade({wallet: store.wallet as Wallet | TestNetWallet, tradeProposal: tradeProposal.value});
 
       await broadcastTrade(store.wallet as Wallet | TestNetWallet, tradeTxList);
-      statusMessage.value = "Swapped!";
+      showIcon.value = false;
+      return;
     } catch (e) {
       statusMessage.value = caughtErrorToString(e);
       console.log(e);
@@ -239,12 +322,20 @@
               <input @click="() => maxClick()" type="button" id="max" class="primaryButton" value="max" style="padding:12px; margin-left: 1rem;">
               <img :src="assetAIcon as any" style="border-radius: 50%; width: 32px; height: 32px; margin-left: 16px;" />
             </div>
+            <div v-if="exchangeRate && assetA === NATIVE_BCH_TOKEN_ID" style="display: flex; align-items: center;">
+              <input v-model="amountACurrency" @input="(event: Event) => amountACurrencyChange(event)" @focus="onFocus" class="fiat-input" :placeholder="`Amount ${CurrencyShortNames[settingsStore.currency]}`" type="number" />
+              <span class="fiat-icon">{{ CurrencySymbols[settingsStore.currency] }}</span>
+            </div>
             <div style="display: flex; width: 100%; justify-content: center;">
                <div @click="swapAssets" class="flip" style="font-weight: bolder; font-size: 48px; width: 72px; text-align: center; cursor: pointer;">↓</div>
             </div>
             <div style="display: flex; align-items: center;">
               <input v-model="amountB" @input="(event: Event) => amountBChange(event)" @focus="onFocus" style="width: 100%;" placeholder="Amount" />
               <img :src="assetBIcon as any" style="border-radius: 50%; width: 32px; height: 32px; margin-left: 16px;" />
+            </div>
+            <div v-if="exchangeRate && assetB === NATIVE_BCH_TOKEN_ID" style="display: flex; align-items: center;">
+              <input v-model="amountBCurrency" @input="(event: Event) => amountBCurrencyChange(event)" @focus="onFocus" class="fiat-input" :placeholder="`Amount ${CurrencyShortNames[settingsStore.currency]}`" type="number" />
+              <span class="fiat-icon">{{ CurrencySymbols[settingsStore.currency] }}</span>
             </div>
 
             <input @click="swapClick" :disabled="swapButtonDisabled" type="button" id="swap" class="primaryButton" value="Swap" style="margin: auto;">
@@ -266,5 +357,23 @@
 }
 .flip:hover {
   transform: rotate(180deg);
+}
+.fiat-input {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+.fiat-icon {
+  min-width: 32px;
+  height: 32px;
+  margin-left: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+}
+body.dark .fiat-icon {
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 </style>
