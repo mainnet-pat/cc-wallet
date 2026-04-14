@@ -3,18 +3,29 @@
   import { ElectrumNetworkProvider, HashType, Network, SignatureAlgorithm, SignatureTemplate, type Utxo } from 'cashscript'
   import { deployContractFromAuthGuard, dissolveIssuanceFund, investInIssuanceFund, getIssuanceContract, addMultisigSignature, donate, migrate, MaxTokenSupply } from 'olando'
   import { Notify } from 'quasar'
-  import { adminPubkeys, getAdminMultisig2of3Contract, getCouncilMultisig2of3Contract, olandoCategory, olandoName, olandoSymbol, olandoDecimals, type RostrumUtxo, getContractState } from 'src/olando'
+  import { adminPubkeys, getAdminMultisig2of3Contract, getCouncilMultisig2of3Contract, olandoCategory, olandoSymbol, olandoDecimals, type RostrumUtxo, getContractState } from 'src/olando'
   import { useStore } from 'src/stores/store'
   import { type ActivePoolsResult, type RostrumCauldronContractSubscribeResponse, type ActivePoolEntry } from 'src/utils/cauldron'
   import { ElectrumClient, type RPCParameter } from "@electrum-cash/network";
   import { ElectrumWebSocket } from "@electrum-cash/web-socket";
   import { caughtErrorToString } from 'src/utils/errorHandling'
-  import { onBeforeUnmount, ref, watch, watchEffect } from 'vue'
-  import { type TestNetWallet, type Wallet } from 'mainnet-js'
-  import { type WalletType } from 'src/interfaces/interfaces'
+  import { onBeforeUnmount, ref, watch } from 'vue'
+  import { ExchangeRate, type TestNetWallet, type Wallet } from 'mainnet-js'
+  import { CurrencyShortNames, type WalletType } from 'src/interfaces/interfaces'
+  import { useSettingsStore } from 'src/stores/settingsStore'
 
   const store = useStore()
+  const settingsStore = useSettingsStore()
+
+  const exchangeRate = ref<number | undefined>(undefined);
+  async function fetchExchangeRate() {
+    exchangeRate.value = await ExchangeRate.get(settingsStore.currency, true);
+  }
+  void fetchExchangeRate();
+  watch(() => settingsStore.currency, () => void fetchExchangeRate());
+
   const investAmountBch = ref(""); //ref("0");
+  const investAmountCurrency = ref("");
   const investButtonDisabled = ref(false);
   const investStatusMessage = ref(" ");
   const estimatedTokensBought = ref(0n);
@@ -307,8 +318,12 @@
     if (satBalance < 50000n) {
       return;
     }
-    investAmountBch.value = String((Number(satBalance) - 50000) / 1e8);
-    investAmountChange({ target: { value: String((Number(satBalance) - 50000) / 1e8) } } as unknown as Event);
+    const bchValue = (Number(satBalance) - 50000) / 1e8;
+    investAmountBch.value = String(bchValue);
+    if (exchangeRate.value) {
+      investAmountCurrency.value = (bchValue * exchangeRate.value).toFixed(2);
+    }
+    investAmountChange({ target: { value: String(bchValue) } } as unknown as Event);
   };
 
   function investAmountChange(event: Event) {
@@ -316,14 +331,22 @@
       investButtonDisabled.value = true;
       investStatusMessage.value = ` `;
       const balance = store.balance ?? 0n;
-      const investAmountValue = Math.floor(Number((event.target as HTMLInputElement).value) * 10 ** 8);
+      const bchValue = Number((event.target as HTMLInputElement).value);
+      const investAmountValue = Math.floor(bchValue * 10 ** 8);
+
+      // sync currency field
+      if (exchangeRate.value && bchValue > 0) {
+        investAmountCurrency.value = (bchValue * exchangeRate.value).toFixed(2);
+      } else {
+        investAmountCurrency.value = "";
+      }
+
       if (investAmountValue < 0.001 * 10 ** 8) {
         investStatusMessage.value = `Buy amount too low`;
         return;
       }
       if (investAmountValue > Number(balance) - 50000) {
-        investStatusMessage.value = `Buy amount exceeds available BCH balance`;
-
+        investStatusMessage.value = `Swap not possible, you have too few BCH`;
         return;
       }
 
@@ -334,6 +357,40 @@
       if (message === "Nothing available to trade.") {
         message = "No pools for this token on Cauldron";
       }
+      investButtonDisabled.value = true;
+    }
+  };
+
+  function investCurrencyAmountChange(event: Event) {
+    try {
+      investButtonDisabled.value = true;
+      investStatusMessage.value = ` `;
+
+      if (!exchangeRate.value) return;
+
+      const currencyValue = Number((event.target as HTMLInputElement).value);
+      if (!currencyValue || currencyValue <= 0) {
+        investAmountBch.value = "";
+        return;
+      }
+
+      const bchValue = currencyValue / exchangeRate.value;
+      investAmountBch.value = bchValue.toFixed(8);
+
+      const balance = store.balance ?? 0n;
+      const investAmountSats = Math.floor(bchValue * 10 ** 8);
+
+      if (investAmountSats < 0.001 * 10 ** 8) {
+        investStatusMessage.value = `Buy amount too low`;
+        return;
+      }
+      if (investAmountSats > Number(balance) - 50000) {
+        investStatusMessage.value = `Swap not possible, you have too few BCH`;
+        return;
+      }
+
+      investButtonDisabled.value = false;
+    } catch (e) {
       investButtonDisabled.value = true;
     }
   };
@@ -537,6 +594,9 @@
             <!--<div>BCH to spend</div>-->
             <input :disabled="disabled" v-model="investAmountBch" @input="(event: Event) => investAmountChange(event)" style="width: 100%;" placeholder="Amount BCH" type="number" />
             <input :disabled="disabled" @click="() => investMaxClick()" type="button" class="primaryButton" value="max" style="padding:12px;">
+          </div>
+          <div v-if="exchangeRate" style="display: flex; flex-direction: row; gap: 2rem;">
+            <input :disabled="disabled" v-model="investAmountCurrency" @input="(event: Event) => investCurrencyAmountChange(event)" style="width: 100%; background-color: rgba(255, 255, 255, 0.5);" :placeholder="`Amount ${CurrencyShortNames[settingsStore.currency]}`" type="number" />
           </div>
           <div style="display: flex; flex-direction: column; align-items: center;">
             <span style="margin-bottom: 1rem;">{{ issuanceContractStats?.cauldronTradeAdjustedTokenAmount ?? 0n > 0n ? `You will receive ${(Number(issuanceContractStats!.cauldronTradeAdjustedTokenAmount) / 10**2).toLocaleString("en-US")} ${olandoSymbol} ` : '' }}</span>
