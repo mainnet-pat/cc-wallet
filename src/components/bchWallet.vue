@@ -277,11 +277,11 @@
   <fieldset style="margin-top: 20px; padding-top: 2rem; padding-bottom: 1rem; max-width: 75rem; margin: auto 10px;">
     <div style="text-align: center;">
       {{ t('wallet.balance', { currency: bchDisplayNetwork }) }}
-      <span style="color: var(--color-bch);">
+      <span style="color: var(--color-primary); font-weight: bold;">
         {{ balanceInBchUnit !== undefined ? numberFormatter.format(balanceInBchUnit) + displayUnitLong : "" }}
       </span>
 
-      <span style="color: var(--color-bch); font-size:smaller; opacity: 70%">
+      <span style="color: var(--color-primary); opacity: 70%">
         ({{ displayCurrencyBalance }})
       </span>
 
@@ -305,8 +305,8 @@
           <span style="width: 100%; position: relative;">
             <input v-model="destinationAddr" @input="parseAddrParams()" placeholder="address" name="addressInput">
           </span>
-          <button v-if="settingsStore.qrScan" @click="() => showQrCodeDialog = true" style="padding: 12px">
-            <img src="images/qrscan.svg" />
+          <button v-if="settingsStore.qrScan" @click="() => showQrCodeDialog = true" style="padding: 6px">
+            <img src="images/qrscan.svg" style="width: 24px; height: 24px;" />
           </button>
         </div>
       </div>
