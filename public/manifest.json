@@ -1,6 +1,6 @@
 {
-  "name": "Cashonize",
-  "short_name": "Cashonize",
+  "name": "Olando Wallet",
+  "short_name": "Olando Wallet",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
