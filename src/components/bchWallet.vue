@@ -291,7 +291,7 @@
         <img src="images/bch-icon.png" slot="icon" /> <!-- eslint-disable-line -->
       </qr-code>
 
-      <div style="word-break: break-all; text-align: center; font-size: 8pt">
+      <div style="word-break: break-all; text-align: center; font-size: 8pt; padding: 1.5em 0">
         <span @click="() => copyToClipboard(store.wallet.getDepositAddress())" style="cursor:pointer;">
           <span class="depositAddr">{{ store.wallet.getDepositAddress() ?? "" }} </span>
           <img class="copyIcon" src="images/copyGrey.svg">
@@ -326,7 +326,7 @@
 
     </div>
     <div style="display:flex;">
-      <input @click="sendBch()" type="button" class="primaryButton" value="Send" style="background-color:var(--color-bch);">
+      <input @click="sendBch()" type="button" class="primaryButton" value="Send" style="background-color:var(--color-primary);">
       <button @click="useMaxBchAmount()" class="fillInMaxBch" style="margin-left: auto">max</button>
     </div>
   </fieldset>

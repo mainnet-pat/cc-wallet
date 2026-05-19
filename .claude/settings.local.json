@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(yarn dev *)",
+      "Bash(which node *)",
+      "Read(//home/michael/.nvm/versions/node/**)",
+      "Read(//usr/local/bin/**)",
+      "Bash(~/.nvm/versions/node/v24.15.0/bin/yarn --version)",
+      "Bash(export PATH=\"$HOME/.nvm/versions/node/v24.15.0/bin:$PATH\")",
+      "Bash(yarn quasar *)",
+      "Bash(yarn install *)",
+      "Bash(which yarn *)",
+      "Read(//usr/bin/**)",
+      "Bash(npx quasar *)"
+    ]
+  }
+}

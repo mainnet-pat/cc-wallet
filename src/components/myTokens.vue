@@ -88,7 +88,7 @@
   >
     <img src="images/olando-small.png" slot="icon" /> <!-- eslint-disable-line -->
   </qr-code>
-  <div style="word-break: break-all; text-align: center; font-size: 8pt">
+  <div style="word-break: break-all; text-align: center; font-size: 8pt; padding: 1.5em 0">
     <span @click="() => copyToClipboard(store.wallet?.getTokenDepositAddress())" style="cursor:pointer;">
       <span class="depositAddr">{{ store.wallet?.getTokenDepositAddress() ?? "" }}</span>
       <img class="copyIcon" src="images/copyGrey.svg">

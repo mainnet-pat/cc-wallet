@@ -1,20 +1,20 @@
 ![Cashonize Banner](https://github.com/cashonize/cashonize-wallet/assets/53938059/fd6b8244-76ba-4d3d-9b84-c757e0fb0e21)
 
-## Cashonize: a Bitcoin Cash Wallet
+## Olando: a OLA Wallet
 
-**Cashonize is an easy-to-use, multi-platform Bitcoin Cash wallet** <br>
-Cashonize supports CashTokens and WalletConnect which makes it an ideal wallet for using dapps on BCH. <br>
-Currently Cashonize is available as a webwallet, a desktop application (for Windows & Linux), an Android APK and an Installable web app. <br>
+**Olando is an easy-to-use, multi-platform Bitcoin Cash wallet** <br>
+Olando supports CashTokens and WalletConnect which makes it an ideal wallet for using dapps on BCH. <br>
+Currently Olando is available as a webwallet, a desktop application (for Windows & Linux), an Android APK and an Installable web app. <br>
 
 ### The wallet for you?
 
-Because of its minimalist design, Cashonize is a user-friendly wallet, even for inexperienced users.
-Cashonize has an easy-to-understand transaction preview screen for WalletConnect and CashConnect, empowering users before signing DeFi transactions.
-Further, Cashonize nicely groups and displays your NFTs, making it ideal for NFT collectors.
+Because of its minimalist design, Olando is a user-friendly wallet, even for inexperienced users.
+Olando has an easy-to-understand transaction preview screen for WalletConnect and CashConnect, empowering users before signing DeFi transactions.
+Further, Olando nicely groups and displays your NFTs, making it ideal for NFT collectors.
 
-Cashonize has multi-wallet support with both single-address and HD wallet options. HD wallets use a new address for each transaction, providing basic privacy for everyday payments.
+Olando has multi-wallet support with both single-address and HD wallet options. HD wallets use a new address for each transaction, providing basic privacy for everyday payments.
 
-Cashonize does not currently support password or pin locked wallets and encrypted seed phrases.
+Olando does not currently support password or pin locked wallets and encrypted seed phrases.
 
 ### Features
 
@@ -38,16 +38,16 @@ Cashonize does not currently support password or pin locked wallets and encrypte
 
 📱 Android apk: https://github.com/cashonize/cashonize-wallet/releases
 
-🌐 Webwallet: [cashonize.com](cashonize.com) 
+🌐 Webwallet: [cashonize.com](cashonize.com)
 
-📲 Installable Web App: Look for the **Add to Home Screen / Install** setting in your browser on [cashonize.com](cashonize.com) 
+📲 Installable Web App: Look for the **Add to Home Screen / Install** setting in your browser on [cashonize.com](cashonize.com)
 
 ⚠️ [cashonize.com](cashonize.com) is the only correct URL for the webwallet <br>
 **Note:** webwallets are great for convenience, but downloaded applications are more secure. (Installable web apps share the same security model as webwallets)
 
-## Local development 
+## Local development
 
-</> For local development check out the [developer instructions](./development.md).
+</> For local development check out the [developer instructions](./developmvent.md).
 
 ## Special Thanks to
 
@@ -63,5 +63,5 @@ Also a thank you to users reporting bugs: samrock5000, Stockleezy and Steve Thur
 
 ## Historic version
 
-🪦 Before Cashonize became a Vue-Typescript application built with Quasar, it was a vanilla JS project. <br>
+🪦 Before Olando became a Vue-Typescript application built with Quasar, it was a vanilla JS project. <br>
 You can find the legacy codebase [here](https://github.com/cashonize/wallet).

@@ -104,12 +104,15 @@ img {
   vertical-align: text-bottom;
 }
 .copyIcon {
-  vertical-align: text-bottom;
-  margin-bottom: 1px;
-  margin-left: 5px;
+  vertical-align: middle;
+  margin-left: 6px;
+  width: 22px;
+  height: 22px;
+  filter: brightness(0) saturate(100%) invert(55%) sepia(60%) saturate(650%) hue-rotate(172deg) brightness(92%) contrast(88%);
 }
 .copyIcon:hover {
   cursor: pointer;
+  filter: brightness(0) saturate(100%) invert(59%) sepia(72%) saturate(681%) hue-rotate(163deg) brightness(101%) contrast(88%);
 }
 .depositAddr,
 .category {
