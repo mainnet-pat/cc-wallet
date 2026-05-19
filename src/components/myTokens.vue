@@ -124,7 +124,7 @@
 
     <div v-if="store.tokenList?.filter(token => !settingsStore.featuredTokens.includes(token.category)).length" style="margin: 10px; margin-top: 20px;">
       <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-        <span @click="showAllTokens = !showAllTokens" style="cursor: pointer;">{{showAllTokens ? "▲ Hide" : "▼ Show"}} other tokens</span><span style="margin-left: 1rem; color: orangered; font-weight: bold; cursor: pointer;" @click="showInfo">[info]</span>
+        <span @click="showAllTokens = !showAllTokens" style="cursor: pointer;">{{showAllTokens ? "▲ Hide" : "▼ Show"}} other tokens</span><span style="margin-left: 1rem; color: var(--color-primary); font-weight: bold; cursor: pointer;" @click="showInfo">[info]</span>
         <span class="options-toggle" @click="showOptions = !showOptions">
           {{ t('tokens.options') }}
           <img
