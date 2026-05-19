@@ -18,7 +18,12 @@
       "Bash(gh auth *)",
       "Bash(ssh -T git@github.com)",
       "Bash(ls ~/.ssh/*.pub 2>/dev/null)",
-      "Read(//home/michael/.ssh/**)"
+      "Read(//home/michael/.ssh/**)",
+      "Bash(ssh-keygen -t ed25519 -C \"mr474hf@gmail.com\" -f ~/.ssh/id_ed25519 -N \"\")",
+      "Bash(ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null && ssh -T git@github.com 2>&1)"
+    ],
+    "additionalDirectories": [
+      "/home/michael/.ssh"
     ]
   }
 }
