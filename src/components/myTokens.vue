@@ -27,8 +27,15 @@
   }
 
   // Listener added/removed on KeepAlive activate/deactivate so it only applies while this view is active.
-  onActivated(() => document.addEventListener('keydown', handleCtrlF));
-  onDeactivated(() => document.removeEventListener('keydown', handleCtrlF));
+  let fiatInterval: ReturnType<typeof setInterval> | undefined;
+  onActivated(() => {
+    document.addEventListener('keydown', handleCtrlF);
+    fiatInterval = setInterval(() => void store.fetchCauldronPricesForTokens(), 60000);
+  });
+  onDeactivated(() => {
+    document.removeEventListener('keydown', handleCtrlF);
+    clearInterval(fiatInterval);
+  });
 
   const isSearchActive = computed(() => searchQuery.value.trim().length > 0);
 

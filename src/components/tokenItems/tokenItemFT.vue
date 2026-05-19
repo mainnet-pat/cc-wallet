@@ -60,6 +60,7 @@ import { olandoCategory } from 'src/olando';
 
   // Fiat value of fungible token holdings using Cauldron DEX price data
   const holdingsFiatValue = ref<number | null>(null);
+  const lastRateUpdate = ref<string>('');
 
   // Watch for changes in the relevant data and recalculate fiat value
   // Note: could be a computed if BCH exchange rate was available synchronously
@@ -80,6 +81,7 @@ import { olandoCategory } from 'src/olando';
       try {
         const bchRate = await convert(1, 'bch', settingsStore.currency);
         holdingsFiatValue.value = calculateTokenFiatValue(tokenData.value.amount, poolPriceData, bchRate);
+        lastRateUpdate.value = (() => { const d = new Date(); return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; })();
       } catch {
         holdingsFiatValue.value = null;
       }
@@ -470,9 +472,9 @@ import { olandoCategory } from 'src/olando';
         <div class="tokenBaseInfo">
           <div class="tokenAmount">{{ t('tokenItem.amount') }}
             {{ numberFormatter.format(toAmountDecimals(tokenData?.amount)) }} {{ tokenMetaData?.token?.symbol }}
-            <div v-if="holdingsFiatValue !== null" class="tokenAmount">
-              {{ CurrencySymbols[settingsStore.currency] }}{{ holdingsFiatValue.toFixed(2) }}
-            </div>
+            <span v-if="holdingsFiatValue !== null" class="tokenAmount" style="white-space: nowrap;">
+              {{ CurrencySymbols[settingsStore.currency] }}{{ holdingsFiatValue.toFixed(2) }}<span v-if="lastRateUpdate" style="font-weight: normal; opacity: 70%;"> (Last Update: {{ lastRateUpdate }})</span>
+            </span>
           </div>
         </div>
         <span v-if="settingsStore.showTokenVisibilityToggle" @click="store.toggleHidden(tokenData.category)" class="boxStarIcon" :title="settingsStore.hiddenTokens.includes(tokenData.category) ? t('tokenItem.visibility.unhideToken') : t('tokenItem.visibility.hideToken')">
