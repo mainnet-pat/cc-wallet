@@ -20,7 +20,11 @@
       "Bash(ls ~/.ssh/*.pub 2>/dev/null)",
       "Read(//home/michael/.ssh/**)",
       "Bash(ssh-keygen -t ed25519 -C \"mr474hf@gmail.com\" -f ~/.ssh/id_ed25519 -N \"\")",
-      "Bash(ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null && ssh -T git@github.com 2>&1)"
+      "Bash(ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null && ssh -T git@github.com 2>&1)",
+      "Bash(node_modules/.bin/vue-tsc --noEmit)",
+      "Read(//home/michael/.var/app/com.vscodium.codium/data/node/**)",
+      "Read(//usr/**)",
+      "Bash(/home/michael/.nvm/versions/node/v24.15.0/bin/node node_modules/.bin/vue-tsc --noEmit)"
     ],
     "additionalDirectories": [
       "/home/michael/.ssh"

@@ -115,6 +115,7 @@
         <span v-if="isSearchActive" class="search-match-suffix"> ({{ t('tokens.searchMatches', { count: searchFilteredTokenList?.length ?? 0 }) }})</span>
       </span>
       <span v-if="isSearchActive" class="search-match-mobile">{{ t('tokens.searchMatches', { count: searchFilteredTokenList?.length ?? 0 }) }}</span>
+      <input ref="searchInputRef" v-model="searchQuery" type="text" :placeholder="t('tokens.searchPlaceholder')" class="search-input">
     </div>
 
     <!-- Token list -->
@@ -140,7 +141,6 @@
             :src="settingsStore.darkMode ? 'images/chevron-square-down-lightGrey.svg' : 'images/chevron-square-down.svg'"
           >
         </span>
-        <input ref="searchInputRef" v-model="searchQuery" type="text" :placeholder="t('tokens.searchPlaceholder')" class="search-input">
       </div>
       <!-- Options panel -->
       <div v-if="showOptions" class="options-panel" :class="{ dark: settingsStore.darkMode }">
