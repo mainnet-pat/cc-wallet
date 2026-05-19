@@ -310,7 +310,7 @@
 
         <q-card-section>
           <div style="display: flex; justify-content: center;padding-left:20px;padding-right:20px;">
-            <div class="text-h4">Swap {{ tokenMetadata?.name || `${tokenId.slice(0, 8)}...${tokenId.slice(64-8)}` }}</div>
+            <div class="text-h4">Swap <span style="text-transform: uppercase;">{{ tokenMetadata?.name || `${tokenId.slice(0, 8)}...${tokenId.slice(64-8)}` }}</span></div>
           </div>
         </q-card-section>
 
