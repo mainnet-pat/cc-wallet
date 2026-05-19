@@ -98,7 +98,7 @@
   <div v-if="store.bcmrRegistries == undefined" style="text-align: center;">{{ t('tokens.loading') }}</div>
 
   <div v-else>
-    <!-- Options toggle row -->
+    <!-- Token count row -->
     <div v-if="store.tokenList?.length" class="filter-row">
       <span :class="{ 'hide-mobile': isSearchActive }">
         <span v-if="settingsStore.tokenDisplayFilter === 'favoritesOnly'">{{ t('tokens.favoriteCount', { count: store.filteredTokenList?.length ?? 0 }) }}</span>
@@ -108,31 +108,6 @@
         <span v-if="isSearchActive" class="search-match-suffix"> ({{ t('tokens.searchMatches', { count: searchFilteredTokenList?.length ?? 0 }) }})</span>
       </span>
       <span v-if="isSearchActive" class="search-match-mobile">{{ t('tokens.searchMatches', { count: searchFilteredTokenList?.length ?? 0 }) }}</span>
-      <span class="options-toggle" @click="showOptions = !showOptions">
-        {{ t('tokens.options') }}
-        <img
-          class="icon"
-          :class="{ 'expanded': showOptions }"
-          :src="settingsStore.darkMode ? 'images/chevron-square-down-lightGrey.svg' : 'images/chevron-square-down.svg'"
-        >
-      </span>
-      <input ref="searchInputRef" v-model="searchQuery" type="text" :placeholder="t('tokens.searchPlaceholder')" class="search-input">
-    </div>
-
-    <!-- Options panel (collapsed by default) -->
-    <div v-if="store.tokenList?.length && showOptions" class="options-panel" :class="{ dark: settingsStore.darkMode }">
-      <div class="option-item">
-        <label for="filterTokens">{{ t('tokens.filter.label') }}</label>
-        <select v-model="settingsStore.tokenDisplayFilter" @change="setFilter(($event.target as HTMLSelectElement).value)" name="filterTokens">
-          <option value="default">{{ t('tokens.filter.default') }}</option>
-          <option value="favoritesOnly">{{ t('tokens.filter.favoritesOnly') }}</option>
-          <option value="all">{{ t('tokens.filter.all') }}</option>
-          <option value="hiddenOnly">{{ t('tokens.filter.hiddenOnly') }}</option>
-        </select>
-      </div>
-      <div class="option-item">
-        {{ t('tokens.editVisibility') }} <Toggle v-model="settingsStore.showTokenVisibilityToggle"/>
-      </div>
     </div>
 
     <!-- Token list -->
@@ -148,7 +123,33 @@
     </div>
 
     <div v-if="store.tokenList?.filter(token => !settingsStore.featuredTokens.includes(token.category)).length" style="margin: 10px; margin-top: 20px;">
-      <span @click="showAllTokens = !showAllTokens" style="cursor: pointer;">{{showAllTokens ? "▲ Hide" : "▼ Show"}} other tokens</span><span style="margin-left: 1rem; color: orangered; font-weight: bold; cursor: pointer;" @click="showInfo">[info]</span>
+      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+        <span @click="showAllTokens = !showAllTokens" style="cursor: pointer;">{{showAllTokens ? "▲ Hide" : "▼ Show"}} other tokens</span><span style="margin-left: 1rem; color: orangered; font-weight: bold; cursor: pointer;" @click="showInfo">[info]</span>
+        <span class="options-toggle" @click="showOptions = !showOptions">
+          {{ t('tokens.options') }}
+          <img
+            class="icon"
+            :class="{ 'expanded': showOptions }"
+            :src="settingsStore.darkMode ? 'images/chevron-square-down-lightGrey.svg' : 'images/chevron-square-down.svg'"
+          >
+        </span>
+        <input ref="searchInputRef" v-model="searchQuery" type="text" :placeholder="t('tokens.searchPlaceholder')" class="search-input">
+      </div>
+      <!-- Options panel -->
+      <div v-if="showOptions" class="options-panel" :class="{ dark: settingsStore.darkMode }">
+        <div class="option-item">
+          <label for="filterTokens">{{ t('tokens.filter.label') }}</label>
+          <select v-model="settingsStore.tokenDisplayFilter" @change="setFilter(($event.target as HTMLSelectElement).value)" name="filterTokens">
+            <option value="default">{{ t('tokens.filter.default') }}</option>
+            <option value="favoritesOnly">{{ t('tokens.filter.favoritesOnly') }}</option>
+            <option value="all">{{ t('tokens.filter.all') }}</option>
+            <option value="hiddenOnly">{{ t('tokens.filter.hiddenOnly') }}</option>
+          </select>
+        </div>
+        <div class="option-item">
+          {{ t('tokens.editVisibility') }} <Toggle v-model="settingsStore.showTokenVisibilityToggle"/>
+        </div>
+      </div>
       <div v-if="showAllTokens">
         <div v-for="tokenData in searchFilteredTokenList?.filter(token => !settingsStore.featuredTokens.includes(token.category))" :key="tokenData.category.slice(0,6)">
           <tokenItemFT v-if="'amount' in tokenData" :tokenData="tokenData"/>
