@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ref, computed, watch, shallowRef } from 'vue'
+  import { ref, computed, watch, shallowRef, onActivated, onDeactivated } from 'vue'
   import { convert, ExchangeRate } from 'mainnet-js'
   import { decodeCashAddress } from "@bitauth/libauth"
   import alertDialog from 'src/components/general/alertDialog.vue'
@@ -25,11 +25,16 @@
 
   // Prefetch exchange rate for the selected fiat currency
   const exchangeRate = ref<number | undefined>(undefined);
+  const lastRateUpdate = ref<string>('');
   async function fetchExchangeRate() {
     exchangeRate.value = await ExchangeRate.get(settingsStore.currency, true);
+    lastRateUpdate.value = (() => { const d = new Date(); return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; })();
   }
   void fetchExchangeRate();
   watch(() => settingsStore.currency, () => void fetchExchangeRate());
+  let rateInterval: ReturnType<typeof setInterval> | undefined;
+  onActivated(() => { rateInterval = setInterval(() => void fetchExchangeRate(), 60000); });
+  onDeactivated(() => clearInterval(rateInterval));
 
   // reactive state
   const displayBchQr = ref(true);
@@ -281,8 +286,8 @@
         {{ balanceInBchUnit !== undefined ? numberFormatter.format(balanceInBchUnit) + displayUnitLong : "" }}
       </span>
 
-      <span style="color: var(--color-primary); opacity: 70%">
-        ({{ displayCurrencyBalance }})
+      <span style="color: var(--color-primary); opacity: 70%; font-weight: normal;">
+        ({{ displayCurrencyBalance }}<span v-if="lastRateUpdate"> &nbsp;Last Update: {{ lastRateUpdate }}</span>)
       </span>
 
       <qr-code :contents="store.wallet.getDepositAddress()" @click="copyToClipboard(addressQrcode)" class="qr-code"
