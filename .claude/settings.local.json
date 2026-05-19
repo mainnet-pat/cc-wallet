@@ -11,7 +11,8 @@
       "Bash(yarn install *)",
       "Bash(which yarn *)",
       "Read(//usr/bin/**)",
-      "Bash(npx quasar *)"
+      "Bash(npx quasar *)",
+      "Bash(git remote *)"
     ]
   }
 }
