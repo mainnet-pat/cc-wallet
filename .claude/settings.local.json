@@ -12,7 +12,13 @@
       "Bash(which yarn *)",
       "Read(//usr/bin/**)",
       "Bash(npx quasar *)",
-      "Bash(git remote *)"
+      "Bash(git remote *)",
+      "Bash(git branch *)",
+      "Bash(git push *)",
+      "Bash(gh auth *)",
+      "Bash(ssh -T git@github.com)",
+      "Bash(ls ~/.ssh/*.pub 2>/dev/null)",
+      "Read(//home/michael/.ssh/**)"
     ]
   }
 }
