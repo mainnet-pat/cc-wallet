@@ -367,6 +367,16 @@
         Enable WalletConnect <Toggle v-model="selectedWalletConnect" @change="changeWalletConnect()"/>
       </div> -->
       
+      <div style="margin-bottom: 15px;">
+        <label for="dateFormat">{{ t('settings.localization.dateFormat') }}</label>
+        <select v-model="dateFormat" @change="changeDateFormat()">
+          <option value="DD/MM/YY">DD/MM/YY</option>
+          <option value="DD.MM.YY">DD.MM.YY</option>
+          <option value="MM/DD/YY">MM/DD/YY</option>
+          <option value="YY-MM-DD">YY-MM-DD</option>
+        </select>
+      </div>
+
       <div style="margin-top:15px">
         <label for="selectUnit">Select fiat currency:</label>
         <select v-model="selectedCurrency" @change="changeCurrency()">
@@ -812,9 +822,9 @@
         ↳ {{ t('settings.menu.userOptions') }}
       </div>
 
-      <div style="margin-bottom: 15px; cursor: pointer;" @click="() => settingsSection = 6">
+      <!-- <div style="margin-bottom: 15px; cursor: pointer;" @click="() => settingsSection = 6">
         ↳ {{ t('settings.menu.localization') }}
-      </div>
+      </div> -->
 
       <div style="margin-bottom: 15px; cursor: pointer;" @click="() => settingsSection = 3">
         ↳ {{ t('settings.menu.advancedSettings') }}
