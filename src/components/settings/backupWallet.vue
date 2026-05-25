@@ -222,7 +222,7 @@
       <button @click="verifyBackup" class="button primary" style="margin-top: 15px;">{{ t('backupWallet.verification.verifyButton') }}</button>
     </div>
 
-    <div class="derivation-section">
+    <!-- <div class="derivation-section">
       <div class="derivation-label">
         {{ t('backupWallet.derivationPath.label') }}
         <span class="derivation-note">({{ derivationPathNote }})</span>
@@ -231,7 +231,7 @@
         <span class="derivation-path">{{ walletDerivationPath }}</span>
         <img class="copyIcon" src="images/copyGrey.svg">
       </div>
-    </div>
+    </div> -->
 
     <!-- Persistent Storage (browser only) -->
     <div v-if="isBrowser && persistentStorageSupported" class="persistent-storage-section">

@@ -4,11 +4,8 @@ import { translations, defaultLocale } from 'src/i18n';
 
 function getInitialLocale(): string {
   const stored = localStorage.getItem('locale');
-  if (stored) return stored;
-  // Only use browser language if it's a supported locale
-  const browserLang = navigator.language?.split('-')[0] ?? '';
-  const supportedLocales = Object.keys(translations);
-  return supportedLocales.includes(browserLang) ? browserLang : defaultLocale;
+  if (stored && Object.keys(translations).includes(stored)) return stored;
+  return defaultLocale;
 }
 
 export const i18n = createI18n({

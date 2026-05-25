@@ -131,7 +131,7 @@
 
             <div class="tx-cell value">
               <div v-if="transaction.timestamp" style="line-height: 1.3;">
-                <div>{{ new Date(transaction.timestamp * 1000).toLocaleDateString(undefined, { month: '2-digit', day: "2-digit", year: "numeric" }).replaceAll('/','-') }}</div>
+                <div>{{ formatTimestamp(transaction.timestamp, settingsStore.dateFormat, true) }}</div>
                 <div style="font-size: smaller; opacity:70%">{{new Date(transaction.timestamp * 1000).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }) }}</div>
               </div>
               <div v-else>{{ t('history.pending') }}</div>

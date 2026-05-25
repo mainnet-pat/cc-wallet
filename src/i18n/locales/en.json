@@ -833,7 +833,7 @@
       "darkMode": "Dark mode",
       "confirmPayments": "Confirm payments before sending",
       "confirmPaymentsHint": "Ask for confirmation after clicking send (recommended)",
-      "showCauldronSwap": "Show Cauldron Swap Button",
+      "showCauldronSwap": "Show Swap Button",
       "showCauldronFTValue": "Show fiat value for fungible tokens",
       "showCauldronFTValueHint": "Display fiat value for fungible tokens with at least 1 BCH liquidity on Cauldron DEX",
       "enableTokenBurn": "Enable token-burn",
