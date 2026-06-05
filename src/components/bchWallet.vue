@@ -219,7 +219,7 @@
       $q.dialog({
         component: alertDialog,
         componentProps: {
-          alertInfo: { message: alertMessage, txid: txId } 
+          alertInfo: { message: alertMessage, txid: txId }
         }
       })
       $q.notify({
@@ -279,16 +279,25 @@
 
 
 <template>
-  <fieldset style="margin-top: 20px; padding-top: 2rem; padding-bottom: 1rem; max-width: 75rem; margin: auto 10px;">
-    <div style="text-align: center;">
-      {{ t('wallet.balance', { currency: bchDisplayNetwork }) }}
-      <span style="color: var(--color-primary); font-weight: bold;">
-        {{ balanceInBchUnit !== undefined ? numberFormatter.format(balanceInBchUnit) + displayUnitLong : "" }}
-      </span>
+  <div class="bch-balance-section">
+    {{ t('wallet.balance', { currency: bchDisplayNetwork }) }}
+    <span style="color: var(--color-primary); font-weight: bold;">
+      {{ balanceInBchUnit !== undefined ? numberFormatter.format(balanceInBchUnit) + displayUnitLong : "" }}
+    </span>
 
-      <span style="color: var(--color-primary); opacity: 70%; font-weight: normal;">
-        ({{ displayCurrencyBalance }}<span v-if="lastRateUpdate"> &nbsp;Last Update: {{ lastRateUpdate }}</span>)
-      </span>
+    <span class="wallet-balance-fiat" style="">
+      ({{ displayCurrencyBalance }})
+    </span>
+
+
+    <span class="wallet-last-update" v-if="lastRateUpdate"> &nbsp;last update: {{ lastRateUpdate }}</span>
+
+  </div>
+  <fieldset style="margin-top: 20px; padding-top: 1rem; padding-bottom: 1rem; max-width: 75rem; margin: auto 10px;">
+    <div style="text-align: center;">
+      <div class="wallet-receive-title">
+        <span>{{ t('wallet.receive', { network: bchDisplayNetwork }) }}</span>
+      </div>
 
       <qr-code :contents="store.wallet.getDepositAddress()" @click="copyToClipboard(addressQrcode)" class="qr-code"
         style="cursor:pointer; display: block; width: 230px; height: 230px; margin: 5px auto 5px auto; background-color: #fff;"
@@ -305,7 +314,7 @@
     </div>
     <div>
       {{ t('wallet.send', { network: bchDisplayNetwork }) }}
-      <div class="inputGroup">
+      <div class="inputGroup small-bottom-margin">
         <div class="addressInputFtSend">
           <span style="width: 100%; position: relative;">
             <input v-model="destinationAddr" @input="parseAddrParams()" placeholder="address" name="addressInput">

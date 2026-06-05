@@ -129,6 +129,7 @@
     "address": "{network} address:",
     "tokenAddress": "Token address:",
     "send": "Send {network}:",
+    "receive": "Receive {network}:",
     "addressPlaceholder": "address",
     "amountPlaceholder": "amount",
     "max": "max",
