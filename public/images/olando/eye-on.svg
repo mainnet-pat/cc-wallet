@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Ebene_1" data-name="Ebene 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28.35 28.35">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+        stroke: #36a9e1;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 2.5px;
+      }
+    </style>
+  </defs>
+  <circle class="cls-1" cx="14.04" cy="15.17" r="2.82"/>
+  <path class="cls-1" d="M2.37,15.17s5.23-6.22,11.67-6.22,11.67,6.22,11.67,6.22c0,0-5.23,6.22-11.67,6.22S2.37,15.17,2.37,15.17Z"/>
+  <line class="cls-1" x1="25.34" y1="8.88" x2="23.26" y2="11.86"/>
+  <line class="cls-1" x1="21.09" y1="6.66" x2="19.84" y2="10.08"/>
+  <line class="cls-1" x1="16.39" y1="5.35" x2="16.08" y2="8.98"/>
+  <line class="cls-1" x1="11.51" y1="5.28" x2="12.14" y2="8.86"/>
+  <line class="cls-1" x1="6.81" y1="7.06" x2="8.34" y2="10.36"/>
+  <line class="cls-1" x1="2.74" y1="9.57" x2="5.08" y2="12.36"/>
+</svg>

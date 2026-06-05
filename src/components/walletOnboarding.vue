@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ref } from "vue"
+  import { ref, onMounted } from "vue"
   import Toggle from '@vueform/toggle'
   import { Config } from "mainnet-js"
   import { useQuasar } from 'quasar'
@@ -9,6 +9,8 @@
   import { useSettingsStore } from 'src/stores/settingsStore'
   import seedPhraseInput from './general/seedPhraseInput.vue'
   import LanguageSelector from './general/LanguageSelector.vue'
+  import LightboxPopup from './general/lightbox-popup.vue'
+  import type { LightboxButton } from './general/lightbox-popup.vue'
   import { createNewWallet as createWallet, importWallet as importWalletUtil, createNewHDWallet, importHDWallet, DERIVATION_PATHS } from 'src/utils/walletUtils'
   import type { DerivationPathType } from 'src/utils/walletUtils'
   import type { Currency } from 'src/interfaces/interfaces'
@@ -33,9 +35,43 @@
   const selectedDarkMode = ref(settingsStore.darkMode);
   const confirmBeforeSending = ref(true); // default in settingsStore is false, but we want true for new users
 
+  const showCreateInfoPopup = ref(false);
+
+  async function createAndFinish() {
+    showCreateInfoPopup.value = false;
+
+    // Apply and persist defaults
+    if (!localStorage.getItem("darkMode")) {
+      localStorage.setItem("darkMode", "true");
+      settingsStore.darkMode = true;
+      document.body.classList.add("dark");
+    }
+    if (!localStorage.getItem("confirmBeforeSending")) {
+      localStorage.setItem("confirmBeforeSending", "true");
+      settingsStore.confirmBeforeSending = true;
+    }
+    if (!localStorage.getItem("currency")) {
+      localStorage.setItem("currency", "eur");
+      settingsStore.currency = "eur";
+    }
+
+    const result = await createNewHDWallet(walletName.value);
+    if (result.success) {
+      store.changeView(1);
+    } else {
+      $q.notify({ message: result.message, icon: 'warning', color: result.isUserError ? "grey-7" : "red" });
+    }
+  }
+
+  const createInfoButtons: LightboxButton[] = [
+    {
+      label: "I'VE UNDERSTOOD!",
+      action: () => void createAndFinish()
+    }
+  ];
+
   function selectCreate() {
-    mode.value = "create";
-    step.value = 2;
+    showCreateInfoPopup.value = true;
   }
 
   function selectImport() {
@@ -46,6 +82,19 @@
   function goBack() {
     step.value = 1;
   }
+
+  onMounted(() => {
+    if (localStorage.getItem("darkMode") === null) {
+      localStorage.setItem("darkMode", "true");
+      settingsStore.darkMode = true;
+      document.body.classList.add("dark");
+    }
+    if (localStorage.getItem("confirmBeforeSending") === null) {
+      localStorage.setItem("confirmBeforeSending", "true");
+      settingsStore.confirmBeforeSending = true;
+      confirmBeforeSending.value = true;
+    }
+  });
 
   async function createNewWallet() {
     const createFn = walletType.value === 'hd' ? createNewHDWallet : createWallet;
@@ -86,6 +135,7 @@
     document.body.classList.toggle("dark", selectedDarkMode.value);
   }
 
+
   function savePreferencesAndFinish() {
     // Save currency
     Config.DefaultCurrency = selectedCurrency.value;
@@ -107,14 +157,30 @@
 </script>
 
 <template>
+  <LightboxPopup
+    v-model="showCreateInfoPopup"
+    icon="images/olando_small-Light.png"
+    title="THANK YOU! — for creating your new private OLANDO HD CRYPTO WALLET."
+    :buttons="createInfoButtons"
+  >
+    <p>For better privacy and wealth handling, a modern "HD wallet" generates new transfer-codes for EACH transaction — you find it as QR-Code and the RECEIVING-Code as text below the QR-Code image and under HISTORY.</p>
+    <br>
+    <p><strong style="font-weight: bold;">IMPORTANT:</strong><br>
+    For access you must note your SEED PHRASES under the GEAR icon, first!</p>
+    <p>The SEED PHRASES is your ACCESS KEY and the only way to your wallet.</p>
+  </LightboxPopup>
+
   <fieldset class="item">
     <!-- Step 1: Welcome & Choose Create or Import -->
     <div v-if="step === 1">
       <div style="margin-bottom: 25px;">
         <div class="welcome-header">
-          <h3 style="margin-bottom: 0;">{{ t('onboarding.welcome.title') }} {{ t('onboarding.welcome.subtitle') }}</h3>
+          <h3 style="margin-bottom: 0;">{{ t('onboarding.welcome.title') }}</h3>
 
           <!-- <LanguageSelector class="language-selector" style="width: 124px;" /> -->
+        </div>
+        <div class="welcome-subheader">
+          <h5>{{ t('onboarding.welcome.subtitle') }}</h5>
         </div>
         <!-- <p style="color: grey; margin-bottom: 20px;">
           {{ t('onboarding.welcome.description') }}
@@ -136,7 +202,7 @@
       </div>
       <hr style="margin: 25px 0;">
       <div style="margin: 20px 0;">
-        <h4 style="margin-bottom: calc(0.7em - 5px);"><img class="icon plusIcon" :src="settingsStore.darkMode ? 'images/plus-square-lightGrey.svg' : 'images/plus-square.svg'"> {{ t('onboarding.create.title') }}</h4>
+        <h4 style="margin-bottom: calc(0.7em - 5px);"><img class="icon plusIcon" :src="settingsStore.darkMode ? 'images/plus-square-lightGrey.svg' : 'images/plus-square.svg'"> {{ t('onboarding.create.button') }}</h4>
         <p style="color: grey; font-size: 14px; margin: 5px 0 10px 0;">{{ t('onboarding.create.description') }}</p>
         <input @click="selectCreate()" class="button primary" type="button" :value="t('onboarding.create.button')">
       </div>
@@ -150,13 +216,13 @@
 
     <!-- Step 2: Enter details and create/import -->
     <div v-else-if="step === 2">
-      <div style="margin-bottom: 15px; cursor: pointer;" @click="goBack()">
-        ← {{ t('common.actions.back') }}
+      <div style="margin-bottom: 15px;">
+        <input @click="goBack()" class="button" type="button" style="padding: 0rem; margin: 0rem; display: block; background-color: transparent; color: var(--color-primary); font-size: xx-large; font-weight: bolder;" value="←">
       </div>
 
       <!-- Create mode -->
       <div v-if="mode === 'create'">
-        <legend>{{ t('onboarding.create.title') }}</legend>
+        <legend style="margin: 1em 0 1em 0">{{ t('onboarding.create.title') }}</legend>
         <!-- <div style="margin: 20px 0;">
           <label for="walletName" style="display: block; margin-bottom: 8px;">{{ t('onboarding.walletName.label') }}</label>
           <input
@@ -178,7 +244,7 @@
           </div>
         </div> -->
 
-        <div style="margin: 15px 0;">
+        <div style="display: none; margin: 15px 0;">
           <!-- <label style="display: block; margin-bottom: 8px;">{{ t('onboarding.walletType.label') }}</label> -->
           <!-- <select v-model="walletType" style="padding: 8px; min-width: 200px;">
             <option value="single">{{ t('onboarding.walletType.single') }}</option>
@@ -194,7 +260,7 @@
           </div>
         </div>
 
-        <div style="font-size: smaller; color: grey; margin: 10px 0;">
+        <div style="display: none; font-size: smaller; color: grey; margin: 10px 0;">
           {{ t('onboarding.create.seedPhraseNote') }}
         </div>
         <input @click="createNewWallet()" class="button primary" type="button" :value="t('onboarding.create.submitButton')" style="margin-bottom: 15px;">
@@ -243,7 +309,7 @@
     <!-- Step 3: Preferences -->
     <div v-else-if="step === 3">
       <legend>{{ t('onboarding.preferences.title') }}</legend>
-      <p style="margin-top: 15px; margin-bottom: 20px;">{{ t('onboarding.preferences.description') }}</p>
+      <!-- <p style="margin-top: 15px; margin-bottom: 20px;">{{ t('onboarding.preferences.description') }}</p> -->
 
       <div style="margin-bottom: 20px;">
         <label for="selectCurrency" style="display: block; margin-bottom: 8px;">{{ t('onboarding.preferences.currency.label') }}</label>
@@ -257,11 +323,11 @@
         </select>
       </div>
 
-      <div style="margin-bottom: 20px;">
+      <div style="display: none; margin-bottom: 20px;">
         {{ t('onboarding.preferences.darkMode') }} <Toggle v-model="selectedDarkMode" @change="applyDarkMode" />
       </div>
 
-      <div style="margin-bottom: 25px;">
+      <div style="display: none; margin-bottom: 25px;">
         {{ t('onboarding.preferences.confirmPayments') }} <Toggle v-model="confirmBeforeSending" />
         <div style="font-size: smaller; color: grey;">
           {{ t('onboarding.preferences.confirmPaymentsHint') }}
@@ -284,8 +350,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  /* margin-bottom: 10px; */
 }
+
+.welcome-subheader {
+
+}
+
 .language-selector {
   padding: 4px 8px;
 }
