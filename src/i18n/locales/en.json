@@ -69,7 +69,8 @@
   },
   "onboarding": {
     "welcome": {
-      "title": "Welcome to Olando",
+      "title": "Welcome to OLANDO -",
+      "subtitle": "The club currency for freedom",
       "description": "An easy-to-use Bitcoin Cash wallet with a focus on CashTokens and BCH dApps.",
       "featureSendReceive": "Send & receive BCH and CashTokens",
       "featureWalletConnect": "Connect to dApps via WalletConnect",
