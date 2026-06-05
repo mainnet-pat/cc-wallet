@@ -69,15 +69,15 @@
   },
   "onboarding": {
     "welcome": {
-      "title": "Welcome to OLANDO -",
-      "subtitle": "The club currency for freedom",
+      "title": "Welcome to OLANDO",
+      "subtitle": "The club currency for freedom.",
       "description": "An easy-to-use Bitcoin Cash wallet with a focus on CashTokens and BCH dApps.",
       "featureSendReceive": "Send & receive BCH and CashTokens",
       "featureWalletConnect": "Connect to dApps via WalletConnect",
       "featureOpenSource": "Open-source and non-custodial"
     },
     "create": {
-      "title": "Create new wallet",
+      "title": "Create new HD-Wallet",
       "description": "Get started with a fresh wallet in seconds",
       "button": "Create new wallet",
       "seedPhraseNote": "A new seed phrase will be generated. Back it up to secure your wallet.",
@@ -110,7 +110,7 @@
       "title": "Set up your preferences",
       "description": "Almost done! Configure your preferences below.",
       "currency": {
-        "label": "Preferred currency:",
+        "label": "Preferred FIAT currency:",
         "usd": "USD - US Dollar (default)",
         "eur": "EUR - Euro",
         "gbp": "GBP - British Pound",
