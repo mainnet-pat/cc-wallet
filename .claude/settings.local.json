@@ -24,7 +24,9 @@
       "Bash(node_modules/.bin/vue-tsc --noEmit)",
       "Read(//home/michael/.var/app/com.vscodium.codium/data/node/**)",
       "Read(//usr/**)",
-      "Bash(/home/michael/.nvm/versions/node/v24.15.0/bin/node node_modules/.bin/vue-tsc --noEmit)"
+      "Bash(/home/michael/.nvm/versions/node/v24.15.0/bin/node node_modules/.bin/vue-tsc --noEmit)",
+      "Bash(nvm --version)",
+      "Read(//home/michael/.nvm/alias/**)"
     ],
     "additionalDirectories": [
       "/home/michael/.ssh"
