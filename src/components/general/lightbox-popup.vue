@@ -112,7 +112,7 @@
   padding: 0.85rem 1.2rem;
   border: none;
   border-radius: 5px;
-  font-size: 0.95rem;
+  font-size: 1rem;
   cursor: pointer;
   text-align: center;
   transition: opacity 0.15s;

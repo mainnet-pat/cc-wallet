@@ -32,7 +32,7 @@
   watch(() => settingsStore.settingsSection, newVal => settingsSection.value = newVal);
   const indexedDbCacheSizeMB = ref(undefined as undefined | number);
   const localStorageSizeMB = ref(undefined as undefined | number);
-  
+
   // basic settings
   const selectedCurrency = ref(settingsStore.currency);
   const selectedUnit = ref(settingsStore.bchUnit);
@@ -366,7 +366,7 @@
       <!-- <div style="margin-bottom:15px;">
         Enable WalletConnect <Toggle v-model="selectedWalletConnect" @change="changeWalletConnect()"/>
       </div> -->
-      
+
       <div style="margin-bottom: 15px;">
         <label for="dateFormat">{{ t('settings.localization.dateFormat') }}</label>
         <select v-model="dateFormat" @change="changeDateFormat()">
@@ -808,7 +808,7 @@
       </div> -->
 
       <div style="margin-bottom: 15px; cursor: pointer;" @click="() => settingsSection = 1">
-        ↳ {{ t('settings.menu.backupWallet') }} <span v-if="settingsStore.getBackupStatus(store.activeWalletName) === 'none'" style="color: var(--color-primary)">{{ t('settings.menu.important') }}</span>
+        ↳ {{ t('settings.menu.backupWallet') }} <span v-if="settingsStore.getBackupStatus(store.activeWalletName) === 'none'" style="color: var(--color-primary)">{{ t('settings.menu.important') }} <img src="images/olando/warning.svg" style="width: 25px; height: 25px; vertical-align: middle; margin-left: 2px;"></span>
       </div>
 
       <!-- <div style="margin-bottom: 15px; cursor: pointer;" @click="() => settingsSection = 4">

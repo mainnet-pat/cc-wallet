@@ -39,7 +39,7 @@
 </script>
 <template>
   <div v-if="offline" class="offline">Network offline</div>
-  <div v-else-if="electrumFailure" @click="() => { settingsStore.settingsSection = 5; store.changeView(5); }" class="offline" style="cursor: pointer;">Network providers do not respond. Go to <span style="text-decoration: underline; text-decoration-style: dashed;">settings.</span></div>
+  <div v-else-if="electrumFailure" @click="() => { settingsStore.settingsSection = 5; store.changeView(5); }" class="offline" style="cursor: pointer;">Network providers do not respond.</div>
 </template>
 
 <style scoped>

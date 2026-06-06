@@ -6,6 +6,8 @@
   import { copyToClipboard } from 'src/utils/utils'
   import { DERIVATION_PATHS } from 'src/utils/walletUtils'
   import { useI18n } from 'vue-i18n'
+  import LightboxPopup from 'src/components/general/lightbox-popup.vue'
+  import type { LightboxButton } from 'src/components/general/lightbox-popup.vue'
   const store = useStore()
   const settingsStore = useSettingsStore()
   const $q = useQuasar()
@@ -58,6 +60,11 @@
   // Computed property to check if current wallet's seed has been backed up
   const backupStatus = computed(() => settingsStore.getBackupStatus(store.activeWalletName));
   const hasSeedBackedUp = computed(() => backupStatus.value === 'verified' || backupStatus.value === 'imported');
+
+  const showSeedInfoPopup = ref(false);
+  const seedInfoButtons: LightboxButton[] = [
+    { label: "I'VE UNDERSTOOD!", action: () => { showSeedInfoPopup.value = false } }
+  ];
 
   // Seedphrase display state
   const displaySeedphrase = ref(false);
@@ -159,6 +166,20 @@
 </script>
 
 <template>
+  <LightboxPopup
+    v-model="showSeedInfoPopup"
+    icon="images/olando/warning-white.svg"
+    :buttons="seedInfoButtons"
+  >
+    <p><strong>IMPORTANT:</strong><br>
+    For access your wallet you must notice your SEED PHRASE. The SEED PHRASE is your ACCESS KEY and the only way to your wallet.</p>
+    <!-- <br> -->
+    <p>DO NOT use screenshots. BEST WAY: Write down the key words on paper or engrave it to metal plates, without mistakes in the right order!</p>
+    <!-- <br> -->
+    <p><strong>VERIFY SEED PHRASES</strong><br>
+    Make sure you have a backup of your seed phrase. In rare cases or with using "private windows" web browsers clear site data automatically. For your safety and persistent storage use the "Verify your backup-Button", please.</p>
+  </LightboxPopup>
+
   <div>
     <div style="margin-bottom: 15px;">
       {{ t('backupWallet.currentWallet') }} <span class="wallet-name-styled">{{ store.activeWalletName }}</span>
@@ -166,12 +187,14 @@
 
     <!-- Show/Hide Seed Phrase -->
     <div style="margin-top: 15px;">
-      <div style="margin-bottom: 8px;">{{ t('backupWallet.seedPhrase.title') }}</div>
+      <!-- <div style="margin-bottom: 8px;">{{ t('backupWallet.seedPhrase.title') }}</div> -->
       <div class="seedphrase-actions">
-        <input @click="toggleShowSeedphrase()" class="button primary" type="button"
-          :value="displaySeedphrase ? t('backupWallet.seedPhrase.hideButton') : t('backupWallet.seedPhrase.showButton')"
-        >
-        <input v-if="!hasSeedBackedUp" @click="toggleBackupVerification()" class="button" type="button" :value="t('backupWallet.seedPhrase.verifyButton')" style="color: black;">
+        <div class="seedphrase-action-row">
+          <input @click="toggleShowSeedphrase()" class="button primary" type="button"
+            :value="displaySeedphrase ? t('backupWallet.seedPhrase.hideButton') : t('backupWallet.seedPhrase.showButton')"
+          >
+          <img src="images/olando/warning.svg" class="action-icon" style="cursor:pointer;" @click="showSeedInfoPopup = true">
+        </div>
       </div>
     </div>
     <div v-if="displaySeedphrase" class="seedphrase-container">
@@ -180,11 +203,12 @@
       </span>
     </div>
     <button v-if="displaySeedphrase" @click="copySeedphrase" class="seedphrase-copy-btn">
-      {{ t('backupWallet.seedPhrase.copyButton') }}
+        <span>{{ t('backupWallet.seedPhrase.copyButton') }}</span>
+        <img src="images/olando/copy-white.svg" class="copy-icon" style="width: 14px; height: 14px" @click="showSeedInfoPopup = true">
     </button>
 
     <!-- Backup Status -->
-    <div v-if="!showBackupVerification" class="backup-status-section">
+    <!-- <div v-if="!showBackupVerification" class="backup-status-section">
       <div v-if="backupStatus === 'verified'" class="backup-status text-verified">
         <span class="status-icon">✓</span>
         <span>{{ t('backupWallet.backupStatus.verified') }}</span>
@@ -198,6 +222,15 @@
         <span class="status-icon">!</span>
         <span>{{ t('backupWallet.backupStatus.notBackedUp') }}</span>
         <span class="inline-hint">{{ t('backupWallet.backupStatus.notBackedUpHint') }}</span>
+      </div>
+    </div> -->
+
+    <div class="verify-title" style="margin-top: 15px">
+      <div class="seedphrase-action-row">
+        <input v-if="!hasSeedBackedUp" @click="toggleBackupVerification()" class="button" type="button" :value="t('backupWallet.seedPhrase.verifyButton')" style="color: black;">
+        <div v-if="backupStatus === 'verified'" class="backup-status">{{ t('backupWallet.backupStatus.verified') }}</div>
+        <div v-if="backupStatus !== 'verified'" class="backup-status">{{ t('backupWallet.backupStatus.notBackedUp') }}</div>
+        <img src="images/olando/info.svg" class="action-icon" style="cursor:pointer;" @click="showSeedInfoPopup = true">
       </div>
     </div>
 
@@ -234,7 +267,7 @@
     </div> -->
 
     <!-- Persistent Storage (browser only) -->
-    <div v-if="isBrowser && persistentStorageSupported" class="persistent-storage-section">
+    <div style="display: none" v-if="isBrowser && persistentStorageSupported" class="persistent-storage-section">
       <div class="persistent-storage-info">
         <span v-if="persistentStorageStatus === 'granted'" class="storage-status text-verified">
           <span class="status-icon">✓</span> {{ t('backupWallet.persistentStorage.granted') }}
@@ -269,16 +302,34 @@
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+  flex-direction: column;
+  align-items: stretch;
 }
-@media (max-width: 480px) {
+.seedphrase-action-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.seedphrase-action-row .button {
+  /* width: 250px; */
+}
+.action-icon {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+.seedphrase-actions .button {
+  margin-left: 0;
+}
+/* @media (max-width: 480px) {
   .seedphrase-actions .button + .button {
     margin-left: 0;
   }
-}
+} */
 .backup-status-section {
   margin-top: 20px;
 }
-.backup-status {
+/* .backup-status {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -286,7 +337,19 @@
 }
 .backup-status.not-verified {
   color: #e65100;
+} */
+ .backup-status {
+  color: var(--color-primary);
+  font-size: 0.9em;
+ }
+.verify-title {
+  display: flex;
+  flex-direction: row;
+  gap: 1em;
+  align-items: center;
+  padding-bottom: 0.5em;
 }
+
 body.dark .backup-status.not-verified {
   color: #ffcc80;
 }
@@ -312,7 +375,7 @@ body.dark .backup-status.not-verified {
   }
 }
 body.dark .seedphrase-container {
-  background-color: #1a1a2e;
+  background-color: var(--color-primary-box-background);
 }
 .seedphrase-word {
   font-family: monospace;
@@ -338,9 +401,12 @@ body.dark .seedphrase-word {
   border-radius: 4px;
   cursor: pointer;
   font-size: 13px;
+
+  display: flex;
+
 }
 body.dark .seedphrase-copy-btn {
-  background-color: #2a2a3e;
+  background-color: var(--color-primary);
   color: #f5f5f5;
 }
 .derivation-section {
