@@ -4,8 +4,9 @@
   import backupWallet from './settings/backupWallet.vue'
   import walletsOverview from './settings/walletsOverview.vue'
   import LanguageSelector from './general/LanguageSelector.vue'
+  import LightboxPopup from './general/lightbox-popup.vue'
+  import type { LightboxButton } from './general/lightbox-popup.vue'
   import { computed, onMounted, onUnmounted, ref } from 'vue'
-  import { useQuasar } from 'quasar'
   import { useI18n } from 'vue-i18n'
   import { Connection, type ElectrumNetworkProvider, Config } from "mainnet-js"
   import { useStore } from '../stores/store'
@@ -13,7 +14,6 @@
   import { getElectrumCacheSize, clearElectrumCache } from "src/utils/cacheUtils";
   const store = useStore()
   const settingsStore = useSettingsStore()
-  const $q = useQuasar()
   const { t } = useI18n()
   import { useWindowSize } from '@vueuse/core'
   import { watch } from 'vue'
@@ -101,6 +101,33 @@
 
   // dark developer dungeon cheat code keyboard input handling ("ddd")
   const showDarkDeveloperDungeon = ref(false)
+
+  const showInfoPopup = ref(false);
+  const infoPopupText = ref('');
+  const infoPopupButtons: LightboxButton[] = [
+    { label: "Understand", action: () => { showInfoPopup.value = false } }
+  ];
+  function openInfoPopup(text: string) {
+    infoPopupText.value = text;
+    showInfoPopup.value = true;
+  }
+
+  const showDeletePopup = ref(false);
+  const deletePopupButtons = computed<LightboxButton[]>(() => [
+    { label: t('common.actions.cancel'), action: () => { showDeletePopup.value = false } },
+    { label: 'DELETE ALL', variant: 'danger', action: () => {
+      showDeletePopup.value = false;
+      indexedDB.deleteDatabase("bitcoincash");
+      indexedDB.deleteDatabase("bchtest");
+      indexedDB.deleteDatabase("WALLET_CONNECT_V2_INDEXED_DB");
+      indexedDB.deleteDatabase("ElectrumNetworkProviderCache");
+      localStorage.clear();
+      location.reload();
+    }}
+  ]);
+  function confirmDeleteWallets() {
+    showDeletePopup.value = true;
+  }
   let count = 0;
   let timeoutId: ReturnType<typeof setTimeout>;
   function handleSecretTrigger(threshold: number) {
@@ -265,38 +292,6 @@
     localStorage.setItem("qrScan", enableQrScan.value? "true" : "false");
     settingsStore.qrScan = enableQrScan.value;
   }
-  async function confirmDeleteWallets(){
-    let text = t('settings.advanced.deleteAllWalletsConfirm', { platform: platformString });
-    if (isPwaMode) {
-      text = t('settings.advanced.deleteAllWalletsPwaWarning', { platform: platformString });
-    }
-    const confirmed = await new Promise<boolean>((resolve) => {
-      $q.dialog({
-        title: t('settings.advanced.deleteAllWalletsTitle'),
-        message: text,
-        html: true,
-        cancel: { flat: true, color: 'dark' },
-        ok: { label: t('settings.advanced.deleteAllButton'), color: 'red', textColor: 'white' },
-        persistent: true
-      }).onOk(() => resolve(true))
-        .onCancel(() => resolve(false))
-    })
-    if (confirmed) {
-      // TODO: see if we need 'resetWalletState' to cancel subscriptions, etc.
-      indexedDB.deleteDatabase("bitcoincash");
-      indexedDB.deleteDatabase("bchtest");
-      indexedDB.deleteDatabase("WALLET_CONNECT_V2_INDEXED_DB");
-      // TODO: should also clear CashConnect indexedDB
-      indexedDB.deleteDatabase("ElectrumNetworkProviderCache");
-
-      // Wipe all localStorage for privacy (includes preferences, dApp history, wallet names, etc.)
-      // Note: IndexedDB deletion above is not exhaustive yet
-      localStorage.clear();
-
-      // TODO: see if we can reset the state without force-reloading
-      location.reload();
-    }
-  }
   async function clearHistoryCache(){
     await clearElectrumCache();
     indexedDbCacheSizeMB.value = await calculateIndexedDBSizeMB();
@@ -337,6 +332,17 @@
 </script>
 
 <template>
+  <LightboxPopup v-model="showInfoPopup" icon="images/olando/info-white2.svg" :buttons="infoPopupButtons">
+    <p>{{ infoPopupText }}</p>
+  </LightboxPopup>
+
+  <LightboxPopup v-model="showDeletePopup" icon="images/olando/warning-white.svg" title="" :buttons="deletePopupButtons">
+    <p style="font-weight: bold;">Delete all OLANDO wallet data:</p>
+    <p>You are about to delete ALL wallet data from this web browser. All values are still available after using your SEED PHRASE.</p>
+    <p>Your values exist and are stored on the Crypto Blockchain, but can ONLY be accessed with your SEED PHRASE.</p>
+    <p><strong style="font-weight: bold;">WARNING:</strong><br>Check BACKUP YOUR SEED PHRASE correctly, <strong style="font-weight: bold;">without</strong> mistakes and in the right order 1-12 before delete.</p>
+  </LightboxPopup>
+
   <fieldset class="item">
     <legend>{{ settingsSection === 1 ? 'BACKUP WALLET' : settingsSection === 2 ? 'USER SETTINGS' : settingsSection === 3 ? 'ADVANCED SETTINGS' : t('settings.title') }}</legend>
     <div v-if="!isBrowser" style="margin-bottom: 15px;">
@@ -565,33 +571,26 @@
           → {{ t('settings.menu.hdAddresses') }}
         </div>
 
-        <div style="margin-bottom:15px;">
-          Enable WalletConnect <Toggle v-model="selectedWalletConnect" @change="changeWalletConnect()"/>
-          <span class="info-badge">?
-            <q-tooltip anchor="top middle" self="bottom middle" :offset="[0, 8]" style="font-size: large;">
-              WalletConnect allows you to connect your wallet to decentralized applications (dApps) by scanning a QR code or pasting a connection link.
-            </q-tooltip>
-          </span>
+        <div class="advanced-settings-switch-line" style="margin-bottom:15px;">
+          <span>WalletConnect (dApps)</span>
+          <Toggle v-model="selectedWalletConnect" @change="changeWalletConnect()"/>
+          <img src="images/olando/info.svg" class="info-icon-btn" @click="openInfoPopup('WalletConnect allows you to connect your wallet to decentralized applications (dApps) by scanning a QR code or pasting a connection link.')">
         </div>
 
-        <div style="margin-top:15px">
-          {{ t('settings.userOptions.showCauldronSwap') }} <Toggle v-model="selectedShowSwap" @change="toggleShowSwap"/>
-          <span class="info-badge">?
-            <q-tooltip anchor="top middle" self="bottom middle" :offset="[0, 8]" style="font-size: large;">
-              Shows swap button on wallet for quick swap between BCH and OLA
-            </q-tooltip>
-          </span>
+        <div class="advanced-settings-switch-line" style="margin-top:15px">
+          <span>{{ t('settings.userOptions.showCauldronSwap') }}</span>
+          <Toggle v-model="selectedShowSwap" @change="toggleShowSwap"/>
+          <img src="images/olando/info.svg" class="info-icon-btn" @click="openInfoPopup('Shows swap button on wallet for quick swap between BCH and OLA.')">
         </div>
       </fieldset>
 
       <fieldset class="item">
         <legend>Advanced Functions</legend>
-        <div style="margin-top:15px;">{{ t('settings.advanced.deleteAllWallets', { platform: platformString }) }}
-          <span class="info-badge">?
-            <q-tooltip anchor="top middle" self="bottom middle" :offset="[0, 8]" style="font-size: large;">
-              Wallet will only be removed from browser cache. The wallet and its values will remain to exist.
-            </q-tooltip>
-          </span>
+        <div class="advanced-functions-section">
+          <div class="wallet-remove-info">
+            <span>{{ t('settings.advanced.deleteAllWallets', { platform: platformString }) }}</span>
+            <img src="images/olando/info.svg" class="info-icon-btn" @click="openInfoPopup('Wallet will only be removed from browser cache. The wallet and its values will remain to exist.')">
+          </div>
           <div v-if="isPwaMode" style="color: red">
             {{ t('settings.advanced.pwaDeleteWarning') }}
           </div>
@@ -872,6 +871,12 @@
 .nowrap {
   white-space: nowrap;
 }
+.info-icon-btn {
+  width: 22px;
+  height: 22px;
+  vertical-align: middle;
+  cursor: pointer;
+}
 .info-badge {
   display: inline-flex;
   align-items: center;
@@ -889,4 +894,22 @@
 .hd-addresses-link {
   color: var(--color-primary);
 }
+.advanced-functions-section {
+  margin: 15px 0;
+}
+.advanced-settings-switch-line {
+  display: flex;
+  flex-direction: row;
+  gap: 0.8em;
+  align-items: center;
+}
+.wallet-remove-info {
+  padding-bottom: 1em;
+}
+.wallet-remove-info span {
+  margin-right: 1em;
+  vertical-align: middle;
+
+}
+
 </style>

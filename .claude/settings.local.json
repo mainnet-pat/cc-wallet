@@ -26,7 +26,9 @@
       "Read(//usr/**)",
       "Bash(/home/michael/.nvm/versions/node/v24.15.0/bin/node node_modules/.bin/vue-tsc --noEmit)",
       "Bash(nvm --version)",
-      "Read(//home/michael/.nvm/alias/**)"
+      "Read(//home/michael/.nvm/alias/**)",
+      "Bash(grep -n '$q\\\\.' src/components/settingsMenu.vue)",
+      "Bash(grep -n 'useQuasar\\\\|$q' src/components/settingsMenu.vue)"
     ],
     "additionalDirectories": [
       "/home/michael/.ssh"
