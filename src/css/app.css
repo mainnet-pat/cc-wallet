@@ -8,6 +8,8 @@
   --color-bch: #0ac18e;
   --color-red-text: rgb(255, 153, 0);
   --toggle-height: 1.7rem;
+  --toggle-bg-on: var(--color-primary);
+  --toggle-border-on: var(--color-primary);
   --color-primary-box-background: #2aa9e166;
 }
 
