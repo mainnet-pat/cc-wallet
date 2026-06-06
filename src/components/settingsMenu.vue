@@ -338,7 +338,7 @@
 
 <template>
   <fieldset class="item">
-    <legend>{{ settingsSection === 2 ? 'USER SETTINGS' : t('settings.title') }}</legend>
+    <legend>{{ settingsSection === 1 ? 'BACKUP WALLET' : settingsSection === 2 ? 'USER SETTINGS' : settingsSection === 3 ? 'ADVANCED SETTINGS' : t('settings.title') }}</legend>
     <div v-if="!isBrowser" style="margin-bottom: 15px;">
       {{ t('settings.version', { version: applicationVersion }) }}
       <span v-if="isDesktop && store.latestGithubRelease && store.latestGithubRelease == 'v'+applicationVersion">{{ t('settings.latest') }}</span>
@@ -561,7 +561,7 @@
       <fieldset class="item">
         <legend>Advanced Options</legend>
 
-        <div v-if="settingsStore.getWalletType(store.activeWalletName) === 'hd'" style="margin-bottom: 15px; cursor: pointer;" @click="() => settingsSection = 10">
+        <div v-if="settingsStore.getWalletType(store.activeWalletName) === 'hd'" class="hd-addresses-link" style="margin-bottom: 15px; cursor: pointer;" @click="() => settingsSection = 10">
           → {{ t('settings.menu.hdAddresses') }}
         </div>
 
@@ -885,5 +885,8 @@
   cursor: pointer;
   vertical-align: middle;
   margin-left: 8px;
+}
+.hd-addresses-link {
+  color: var(--color-primary);
 }
 </style>
