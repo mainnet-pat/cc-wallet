@@ -4,7 +4,8 @@
       "back": "Back",
       "send": "Send",
       "confirm": "Confirm",
-      "connect": "Connect"
+      "connect": "Connect",
+      "cancel": "Cancel"
     },
     "status": {
       "loading": "Loading...",
@@ -858,10 +859,10 @@
       "chaingraph": "Chaingraph server:",
       "exchangeRate": "Exchange rate provider:",
       "exchangeRateDefault": "Default (bitcoin.com for USD, BitPay for rest)",
-      "deleteAllWallets": "Remove all wallets and all data from {platform}",
+      "deleteAllWallets": "Remove all wallet data from your browser. All values are available after using your SEED PHRASE",
       "deleteAllWalletsButton": "Delete all wallets",
       "deleteAllWalletsTitle": "Delete All Wallets",
-      "deleteAllWalletsConfirm": "You are about to delete all your Olando wallets info from this {platform}.<br>The wallets will still exist on the blockchain, but can only be accessed using its corresponding seed phrase.<br>If you have not done so, please BACKUP YOUR SEED PHRASE!",
+      "deleteAllWalletsConfirm": "You are about to delete ALL your wallet data from this {platform}.All values are still available after using your SEED PHRASE.",
       "deleteAllWalletsPwaWarning": "You are about to delete all your Olando wallets info from this ${platform}.<br>The wallets will still exist on the blockchain, but can only be accessed using its corresponding seed phrase.<br>If you have not done so, please BACKUP YOUR SEED PHRASE!<br>This will also delete the wallet from your browser!<br>Are you sure you want to delete the wallet?",
       "deleteAllButton": "Delete All",
       "pwaDeleteWarning": "Deleting all wallets from the 'Installed web-app' will also delete them from your browser!",
