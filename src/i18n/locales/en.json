@@ -406,13 +406,13 @@
     "linkExplorer": "Link blockexplorer"
   },
   "backupWallet": {
-    "currentWallet": "Current wallet:",
+    "currentWallet": "Wallet Name:",
     "seedPhrase": {
       "title": "Wallet seed phrase",
-      "showButton": "Show seed phrase",
-      "hideButton": "Hide seed phrase",
+      "showButton": "Show wallet SEED PHRASE",
+      "hideButton": "Hide SEED PHRASE",
       "verifyButton": "Verify your backup",
-      "copyButton": "Copy Seed Phrase",
+      "copyButton": "Copy SEED PHRASE",
       "copyTitle": "Copy Seed Phrase",
       "copyMessage": "Copying your seed phrase to the clipboard is not recommended for security reasons, but allowed for convenience.<br>You can clear your clipboard afterwards by copying something else.",
       "copiedNotification": "Seed phrase copied to clipboard"
@@ -421,7 +421,7 @@
       "verified": "Backup verified",
       "imported": "Imported wallet",
       "importedHint": "— no extra backup verification needed",
-      "notBackedUp": "Not backed up yet",
+      "notBackedUp": "Not verified yet!",
       "notBackedUpHint": "— click \"Verify your backup\" to confirm"
     },
     "verification": {

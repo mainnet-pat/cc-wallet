@@ -8,6 +8,7 @@
   --color-bch: #0ac18e;
   --color-red-text: rgb(255, 153, 0);
   --toggle-height: 1.7rem;
+  --color-primary-box-background: #2aa9e166;
 }
 
 .toggle-container {
@@ -326,7 +327,7 @@ body.dark .text-verified {
   border-radius: 4px;
 }
 body.dark .wallet-name-styled {
-  background-color: #2a2a3e;
+  background-color: var(--color-primary-box-background);
 }
 
 @media (hover: hover) {

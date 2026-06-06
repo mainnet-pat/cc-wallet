@@ -160,9 +160,10 @@
   <LightboxPopup
     v-model="showCreateInfoPopup"
     icon="images/olando_small-Light.png"
-    title="THANK YOU! — for creating your new private OLANDO HD CRYPTO WALLET."
+    title=""
     :buttons="createInfoButtons"
   >
+    <p>THANK YOU! — for creating your new private OLANDO HD CRYPTO WALLET.</p>
     <p>For better privacy and wealth handling, a modern "HD wallet" generates new transfer-codes for EACH transaction — you find it as QR-Code and the RECEIVING-Code as text below the QR-Code image and under HISTORY.</p>
     <br>
     <p><strong style="font-weight: bold;">IMPORTANT:</strong><br>
