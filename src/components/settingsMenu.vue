@@ -338,7 +338,7 @@
 
 <template>
   <fieldset class="item">
-    <legend>{{ t('settings.title') }}</legend>
+    <legend>{{ settingsSection === 2 ? 'USER SETTINGS' : t('settings.title') }}</legend>
     <div v-if="!isBrowser" style="margin-bottom: 15px;">
       {{ t('settings.version', { version: applicationVersion }) }}
       <span v-if="isDesktop && store.latestGithubRelease && store.latestGithubRelease == 'v'+applicationVersion">{{ t('settings.latest') }}</span>
@@ -359,9 +359,9 @@
 
     <backupWallet v-if="settingsSection == 1" />
     <div v-else-if="settingsSection == 2">
-      <div style="margin-bottom:15px;">
+      <!-- <div style="margin-bottom:15px;">
         {{ t('settings.userOptions.darkMode') }} <Toggle v-model="selectedDarkMode" @change="changeDarkMode()"/>
-      </div>
+      </div> -->
 
       <!-- <div style="margin-bottom:15px;">
         Enable WalletConnect <Toggle v-model="selectedWalletConnect" @change="changeWalletConnect()"/>
@@ -378,7 +378,7 @@
       </div>
 
       <div style="margin-top:15px">
-        <label for="selectUnit">Select fiat currency:</label>
+        <label for="selectUnit">Select FIAT currency:</label>
         <select v-model="selectedCurrency" @change="changeCurrency()">
           <option value="usd">USD - US-Dollar</option>
           <option value="eur">EUR - Euro</option>
