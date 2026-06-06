@@ -332,11 +332,11 @@
 </script>
 
 <template>
-  <LightboxPopup v-model="showInfoPopup" icon="images/olando/info-white2.svg" :buttons="infoPopupButtons">
+  <LightboxPopup v-model="showInfoPopup" :blur="false" icon="images/olando/info-white2.svg" :buttons="infoPopupButtons">
     <p>{{ infoPopupText }}</p>
   </LightboxPopup>
 
-  <LightboxPopup v-model="showDeletePopup" icon="images/olando/warning-white.svg" title="" :buttons="deletePopupButtons">
+  <LightboxPopup v-model="showDeletePopup" :blur="true" icon="images/olando/warning-white.svg" title="" :buttons="deletePopupButtons">
     <p style="font-weight: bold;">Delete all OLANDO wallet data:</p>
     <p>You are about to delete ALL wallet data from this web browser. All values are still available after using your SEED PHRASE.</p>
     <p>Your values exist and are stored on the Crypto Blockchain, but can ONLY be accessed with your SEED PHRASE.</p>

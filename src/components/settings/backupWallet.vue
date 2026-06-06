@@ -174,6 +174,7 @@
   <LightboxPopup
     v-model="showSeedInfoPopup"
     icon="images/olando/warning-white.svg"
+    :blur="true"
     :buttons="seedInfoButtons"
   >
     <p><strong>IMPORTANT:</strong><br>
