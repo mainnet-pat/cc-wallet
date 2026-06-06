@@ -203,14 +203,14 @@
       </div>
       <hr style="margin: 25px 0;">
       <div style="margin: 20px 0;">
-        <h4 style="margin-bottom: calc(0.7em - 5px);"><img class="icon plusIcon" :src="settingsStore.darkMode ? 'images/plus-square-lightGrey.svg' : 'images/plus-square.svg'"> {{ t('onboarding.create.button') }}</h4>
-        <p style="color: grey; font-size: 14px; margin: 5px 0 10px 0;">{{ t('onboarding.create.description') }}</p>
+        <h4 style="margin-bottom: 0"><img class="icon plusIcon" :src="settingsStore.darkMode ? 'images/plus-square-lightGrey.svg' : 'images/plus-square.svg'"> {{ t('onboarding.create.button') }}</h4>
+        <p style="color: grey; font-size: 14px; margin: 2px 0 10px 0;">{{ t('onboarding.create.description') }}</p>
         <input @click="selectCreate()" class="button primary" type="button" :value="t('onboarding.create.button')">
       </div>
       <hr style="margin: 25px 0;">
       <div style="margin: 20px 0;">
-        <h4 style="margin-bottom: calc(0.7em - 5px);"><img class="icon importIcon" :src="settingsStore.darkMode ? 'images/import-lightGrey.svg' : 'images/import.svg'"> {{ t('onboarding.import.title') }}</h4>
-        <p style="color: grey; font-size: 14px; margin: 5px 0 10px 0;">{{ t('onboarding.import.description') }}</p>
+        <h4 style="margin-bottom: 0px"><img class="icon importIcon" :src="settingsStore.darkMode ? 'images/import-lightGrey.svg' : 'images/import.svg'"> {{ t('onboarding.import.title') }}</h4>
+        <p style="color: grey; font-size: 14px; margin: 2px 0 10px 0;">{{ t('onboarding.import.description') }}</p>
         <input @click="selectImport()" class="button primary" type="button" :value="t('onboarding.import.button')">
       </div>
     </div>
