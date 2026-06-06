@@ -405,7 +405,7 @@ body.dark .seedphrase-word {
   font-size: 13px;
 
   display: flex;
-
+  gap: 1em;
 }
 body.dark .seedphrase-copy-btn {
   background-color: var(--color-primary);
