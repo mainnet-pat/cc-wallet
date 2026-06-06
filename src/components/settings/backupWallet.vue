@@ -66,6 +66,11 @@
     { label: "I'VE UNDERSTOOD!", action: () => { showSeedInfoPopup.value = false } }
   ];
 
+  function handleSeedphraseCopy(event: ClipboardEvent) {
+    event.preventDefault();
+    event.clipboardData?.setData('text/plain', store.wallet.mnemonic);
+  }
+
   // Seedphrase display state
   const displaySeedphrase = ref(false);
   const showBackupVerification = ref(false);
@@ -197,7 +202,7 @@
         </div>
       </div>
     </div>
-    <div v-if="displaySeedphrase" class="seedphrase-container">
+    <div v-if="displaySeedphrase" class="seedphrase-container" @copy="handleSeedphraseCopy">
       <span v-for="(word, index) in store.wallet.mnemonic.split(' ')" :key="index" class="seedphrase-word">
         <span class="seedphrase-number">{{ index + 1 }}</span>{{ word }}
       </span>
