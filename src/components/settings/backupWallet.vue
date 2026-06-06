@@ -225,34 +225,36 @@
       </div>
     </div> -->
 
-    <div class="verify-title" style="margin-top: 15px">
-      <div class="seedphrase-action-row">
-        <input v-if="!hasSeedBackedUp" @click="toggleBackupVerification()" class="button" type="button" :value="t('backupWallet.seedPhrase.verifyButton')" style="color: black;">
-        <div v-if="backupStatus === 'verified'" class="backup-status">{{ t('backupWallet.backupStatus.verified') }}</div>
-        <div v-if="backupStatus !== 'verified'" class="backup-status">{{ t('backupWallet.backupStatus.notBackedUp') }}</div>
-        <img src="images/olando/info.svg" class="action-icon" style="cursor:pointer;" @click="showSeedInfoPopup = true">
-      </div>
-    </div>
-
-    <!-- Backup Verification UI -->
-    <div v-if="showBackupVerification" class="verification-container">
-      <div class="verification-title">{{ t('backupWallet.verification.title') }}</div>
-      <div class="verification-subtitle">{{ t('backupWallet.verification.subtitle') }}</div>
-      <div class="verification-grid">
-        <div v-for="(wordIndex, position) in verificationIndices" :key="position" class="verification-input-group">
-          <label class="verification-label">{{ t('backupWallet.verification.wordLabel', { index: wordIndex + 1 }) }}</label>
-          <input
-            v-model="verificationWords[position]"
-            :class="getVerificationWordClass(position)"
-            type="text"
-            autocomplete="off"
-            autocapitalize="none"
-            spellcheck="false"
-            class="verification-input"
-          >
+    <div class="verification-section">
+      <div class="verify-title" style="margin-top: 15px">
+        <div class="seedphrase-action-row">
+          <input v-if="!hasSeedBackedUp" @click="toggleBackupVerification()" class="button" type="button" :value="t('backupWallet.seedPhrase.verifyButton')" style="color: black;">
+          <div v-if="backupStatus === 'verified'" class="backup-status"><span class="status-icon">✓</span> {{ t('backupWallet.backupStatus.verified') }}</div>
+          <div v-if="backupStatus !== 'verified'" class="backup-status">{{ t('backupWallet.backupStatus.notBackedUp') }}</div>
+          <img src="images/olando/info.svg" class="action-icon" style="cursor:pointer;" @click="showSeedInfoPopup = true">
         </div>
       </div>
-      <button @click="verifyBackup" class="button primary" style="margin-top: 15px;">{{ t('backupWallet.verification.verifyButton') }}</button>
+
+      <!-- Backup Verification UI -->
+      <div v-if="showBackupVerification" class="verification-container">
+        <div class="verification-title">{{ t('backupWallet.verification.title') }}</div>
+        <div class="verification-subtitle">{{ t('backupWallet.verification.subtitle') }}</div>
+        <div class="verification-grid">
+          <div v-for="(wordIndex, position) in verificationIndices" :key="position" class="verification-input-group">
+            <label class="verification-label">{{ t('backupWallet.verification.wordLabel', { index: wordIndex + 1 }) }}</label>
+            <input
+              v-model="verificationWords[position]"
+              :class="getVerificationWordClass(position)"
+              type="text"
+              autocomplete="off"
+              autocapitalize="none"
+              spellcheck="false"
+              class="verification-input"
+            >
+          </div>
+        </div>
+        <button @click="verifyBackup" class="button primary" style="margin-top: 15px;">{{ t('backupWallet.verification.verifyButton') }}</button>
+      </div>
     </div>
 
     <!-- <div class="derivation-section">
@@ -347,7 +349,7 @@
   flex-direction: row;
   gap: 1em;
   align-items: center;
-  padding-bottom: 0.5em;
+  /* padding-bottom: 0.5em; */
 }
 
 body.dark .backup-status.not-verified {
@@ -439,6 +441,9 @@ body.dark .derivation-container {
   font-family: monospace;
   font-size: 14px;
 }
+.verification-section {
+  padding-bottom: 0.5em;
+}
 .verification-container {
   margin-top: 20px;
   padding: 16px;
@@ -446,7 +451,7 @@ body.dark .derivation-container {
   border-radius: 8px;
 }
 body.dark .verification-container {
-  background-color: #1a1a2e;
+  background-color: var(--color-primary-box-background);
 }
 .verification-title {
   font-weight: 500;
