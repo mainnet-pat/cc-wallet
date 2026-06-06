@@ -161,6 +161,7 @@
     v-model="showCreateInfoPopup"
     icon="images/olando_small-Light.png"
     title=""
+    :blur="true"
     :buttons="createInfoButtons"
   >
     <p>THANK YOU! — for creating your new private OLANDO HD CRYPTO WALLET.</p>

@@ -10,6 +10,7 @@
     icon?: string
     title?: string
     buttons?: LightboxButton[]
+    blur?: boolean
   }>()
 
   defineEmits<{
@@ -20,7 +21,7 @@
 <template>
   <Teleport to="body">
     <Transition name="lightbox-fade">
-      <div v-if="modelValue" class="lightbox-overlay">
+      <div v-if="modelValue" class="lightbox-overlay" :class="{ 'no-blur': blur === false }">
         <div class="lightbox-box">
           <div v-if="icon" class="lightbox-icon">
             <img :src="icon" alt="" />
@@ -59,6 +60,9 @@
   justify-content: center;
   backdrop-filter: blur(3px);
   background-color: rgba(0, 0, 0, 0.35);
+}
+.lightbox-overlay.no-blur {
+  backdrop-filter: none;
 }
 
 .lightbox-box {
