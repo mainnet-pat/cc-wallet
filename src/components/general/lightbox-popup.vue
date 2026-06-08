@@ -58,7 +58,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(5px);
   background-color: rgba(0, 0, 0, 0.35);
 }
 .lightbox-overlay.no-blur {
@@ -94,7 +94,7 @@
 }
 
 .lightbox-body {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   /* text-align: center; */
   line-height: 1.6;
   color: #fff;
