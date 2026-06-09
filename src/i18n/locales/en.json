@@ -823,6 +823,7 @@
       "advancedSettings": "Advanced settings",
       "developerSettings": "Developer settings",
       "hdAddresses": "HD Addresses",
+      "showHdAddresses": "Show HD Wallet Addresses",
       "utxoManagement": "UTXO Management",
       "sweepPrivateKey": "Sweep Private Key",
       "tokenCreationPage": "Token Creation Page"

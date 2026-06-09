@@ -290,7 +290,7 @@
     </span>
 
 
-    <span class="wallet-last-update" v-if="lastRateUpdate"> &nbsp;last update: {{ lastRateUpdate }}</span>
+    <span class="wallet-last-update footnote" v-if="lastRateUpdate"> &nbsp;last update: {{ lastRateUpdate }}</span>
 
   </div>
   <fieldset style="margin-top: 20px; padding-top: 1rem; padding-bottom: 1rem; max-width: 75rem; margin: auto 10px;">
@@ -315,7 +315,7 @@
     <div>
       {{ t('wallet.send', { network: bchDisplayNetwork }) }}
       <div class="inputGroup small-bottom-margin">
-        <div class="addressInputFtSend">
+        <div class="addressInputFtSend framed-input ">
           <span style="width: 100%; position: relative;">
             <input v-model="destinationAddr" @input="parseAddrParams()" placeholder="address" name="addressInput">
           </span>

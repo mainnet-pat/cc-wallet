@@ -820,6 +820,7 @@
       "advancedSettings": "Paramètres avancés",
       "developerSettings": "Paramètres développeur",
       "hdAddresses": "Adresses HD",
+      "showHdAddresses": "Show HD Wallet Addresses",
       "utxoManagement": "Gestion des UTXO",
       "sweepPrivateKey": "Balayer une clé privée",
       "tokenCreationPage": "Page de création de tokens"

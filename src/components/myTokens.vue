@@ -88,9 +88,9 @@
     Token receiving address:
   </div>
   <qr-code
-    @click="() => copyToClipboard(store.wallet?.getTokenDepositAddress())" 
-    id="qrCode" 
-    :contents="store.wallet?.getTokenDepositAddress()" 
+    @click="() => copyToClipboard(store.wallet?.getTokenDepositAddress())"
+    id="qrCode"
+    :contents="store.wallet?.getTokenDepositAddress()"
     style="cursor:pointer; display: block; width: 230px; height: 230px; margin: 5px auto 5px auto; background-color: #fff;"
   >
     <img src="images/olando-small.png" slot="icon" /> <!-- eslint-disable-line -->

@@ -332,7 +332,7 @@
 </script>
 
 <template>
-  <LightboxPopup v-model="showInfoPopup" :blur="false" icon="images/olando/info-white2.svg" :buttons="infoPopupButtons">
+  <LightboxPopup v-model="showInfoPopup" :blur="true" icon="images/olando/info-white.svg" :buttons="infoPopupButtons">
     <p>{{ infoPopupText }}</p>
   </LightboxPopup>
 
@@ -567,9 +567,11 @@
       <fieldset class="item">
         <legend>Advanced Options</legend>
 
-        <div v-if="settingsStore.getWalletType(store.activeWalletName) === 'hd'" class="hd-addresses-link" style="margin-bottom: 15px; cursor: pointer;" @click="() => settingsSection = 10">
+        <!-- <div v-if="settingsStore.getWalletType(store.activeWalletName) === 'hd'" class="hd-addresses-link" style="margin-bottom: 15px; cursor: pointer;" @click="() => settingsSection = 10">
           → {{ t('settings.menu.hdAddresses') }}
-        </div>
+        </div> -->
+        <!-- <input v-if="settingsStore.getWalletType(store.activeWalletName) === 'hd'" @click="() => settingsSection = 10" type="button" class="primaryButton" value="{{ t('settings.menu.hdAddresses') }}" style="background-color:var(--color-primary);"> -->
+        <button v-if="settingsStore.getWalletType(store.activeWalletName) === 'hd'" @click="() => settingsSection = 10" class="primaryButton hd-wallet-address-button">{{ t('settings.menu.hdAddresses') }}</button>
 
         <div class="advanced-settings-switch-line" style="margin-bottom:15px;">
           <span>WalletConnect (dApps)</span>
@@ -910,6 +912,9 @@
   margin-right: 1em;
   vertical-align: middle;
 
+}
+.hd-wallet-address-button {
+  margin: 0.5em 0px 1em 0px;
 }
 
 </style>
