@@ -104,7 +104,7 @@ import { olandoCategory } from 'src/olando';
       }
     }
   })
-  
+
   function checkValidTokenInput(numberInput: string, decimals: number){
     // Validate the input format (no separting commas allowed here)
     if (!/^\d*\.?\d*$/.test(numberInput)) throw (t('tokenItem.errors.invalidNumberFormat'));
@@ -124,7 +124,7 @@ import { olandoCategory } from 'src/olando';
     destinationAddr.value = content;
     parseAddrParams();
   }
-  
+
   function parseAddrParams(){
     if(!isBip21Uri(destinationAddr.value) || !destinationAddr.value.includes("?")) return;
 
@@ -455,7 +455,7 @@ import { olandoCategory } from 'src/olando';
       message: errorMessage,
       icon: 'warning',
       color: "red"
-    }) 
+    })
   }
 </script>
 
@@ -470,12 +470,14 @@ import { olandoCategory } from 'src/olando';
           :size="48"
         />
         <div class="tokenBaseInfo">
-          <div class="tokenAmount">{{ t('tokenItem.amount') }}
+          <div class="tokenAmount">
             {{ numberFormatter.format(toAmountDecimals(tokenData?.amount)) }} {{ tokenMetaData?.token?.symbol }}
-            <span v-if="holdingsFiatValue !== null" class="tokenAmount" style="white-space: nowrap;">
-              {{ CurrencySymbols[settingsStore.currency] }}{{ holdingsFiatValue.toFixed(2) }}<span v-if="lastRateUpdate" style="font-weight: normal; opacity: 70%;"> (Last Update: {{ lastRateUpdate }})</span>
-            </span>
+            <span v-if="holdingsFiatValue !== null" class="token-fiat-value">({{ CurrencySymbols[settingsStore.currency] }} {{ holdingsFiatValue.toFixed(2) }})</span>
+            <!-- <span v-if="holdingsFiatValue !== null" class="tokenAmount" style="white-space: nowrap;">
+              <span v-if="lastRateUpdate" style="font-weight: normal; opacity: 70%;">Last Update: {{ lastRateUpdate }}</span>
+            </span> -->
           </div>
+          <span v-if="lastRateUpdate" class="token-last-update footnote">Last Update: {{ lastRateUpdate }}</span>
         </div>
         <span v-if="settingsStore.showTokenVisibilityToggle" @click="store.toggleHidden(tokenData.category)" class="boxStarIcon" :title="settingsStore.hiddenTokens.includes(tokenData.category) ? t('tokenItem.visibility.unhideToken') : t('tokenItem.visibility.hideToken')">
           <img :src="settingsStore.hiddenTokens.includes(tokenData.category)
@@ -490,9 +492,9 @@ import { olandoCategory } from 'src/olando';
 
       <div class="tokenActions">
         <div class="actionBar">
-          <span @click="displaySendTokens = !displaySendTokens" style="margin-left: 10px;">
+          <span @click="displaySendTokens = !displaySendTokens" style="margin-left: 10px;" class="text-button">
             <img class="icon" :src="settingsStore.darkMode? 'images/sendLightGrey.svg' : 'images/send.svg'"> {{ t('tokenItem.actions.send') }} </span>
-          <span @click="displayTokenInfo = !displayTokenInfo">
+          <span @click="displayTokenInfo = !displayTokenInfo" class="text-button">
             <img class="icon" :src="settingsStore.darkMode? 'images/infoLightGrey.svg' : 'images/info.svg'"> {{ t('tokenItem.actions.info') }}
           </span>
           <span v-if="holdingsFiatValue && settingsStore.showCauldronSwap && store.wallet?.network == 'mainnet'" style="white-space: nowrap;" @click="showSwapDialog = true">
@@ -510,7 +512,7 @@ import { olandoCategory } from 'src/olando';
         <div v-if="displayTokenInfo" class="tokenAction">
           <div v-if="tokenName">Name: {{ tokenName }}</div>
           <div style="word-break: break-all;">
-            TokenId: 
+            TokenId:
             <span @click="copyToClipboard(tokenData.category)">
               <span class="tokenId" style="cursor: pointer;">
                 {{ !isMobile ? `${tokenData.category.slice(0, 8)}...${tokenData.category.slice(-8)}` :  `${tokenData.category.slice(0, 10)}...${tokenData.category.slice(-8)}`}}
@@ -588,7 +590,7 @@ import { olandoCategory } from 'src/olando';
               <i class="input-icon" style="color: black;">
                 {{"" + `${CurrencyShortNames[settingsStore.currency]}`}}
               </i>
-            </span> 
+            </span>
           </div>
           <div style="display:flex;">
             <input @click="sendTokens()" type="button" class="primaryButton" value="Send">

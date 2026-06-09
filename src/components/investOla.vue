@@ -58,7 +58,7 @@
   const provider = new ElectrumNetworkProvider(Network.MAINNET, {
     manualConnectionManagement: true,
   });
-  await provider.connect();
+  void provider.connect();
 
   const adminMultisigContract = getAdminMultisig2of3Contract(provider, [])
   const councilMultisigContract = getCouncilMultisig2of3Contract(provider, [])
@@ -577,7 +577,7 @@
 <template>
   <div>
     <!-- key display -->
-    <!-- 
+    <!--
       <div style="margin-bottom: 2rem;">Your public key: {{ binToHex(pubkey) }}</div>
       <div style="margin-bottom: 2rem;">Olando category: {{ olandoCategory }}</div>
     -->
@@ -585,19 +585,22 @@
       <!--<legend>Buy {{ olandoName }}</legend>-->
       <div v-if="contractDeployed === true" style="display: flex; flex-direction: column;">
         <div style="">
-          <h5>Buy {{ olandoSymbol }} with BCH.</h5>
+          <h5>Here you can buy {{ olandoSymbol }} with BCH with a solitary
+effect.</h5>
           <br/>
         </div>
 <!--        <div style="">Buying {{ olandoName }} is beneficial for the community. You buy {{ olandoSymbol }} tokens from Cauldron at a 5% premium and unlock the same amount to be sent to the Community Council Fund which distributes it to help various community projects.</div>-->
         <div style="display: flex; flex-direction: column; gap: 2rem;">
-          <div style="display: flex; flex-direction: row; gap: 2rem; margin-top: 8px;">
-            <!--<div>BCH to spend</div>-->
-            <input :disabled="disabled" v-model="investAmountBch" @input="(event: Event) => investAmountChange(event)" style="width: 100%;" placeholder="Amount BCH" type="number" />
-            <input :disabled="disabled" @click="() => investMaxClick()" type="button" class="primaryButton" value="max" style="padding:12px;">
-          </div>
-          <div v-if="exchangeRate" style="display: flex; flex-direction: row; align-items: center; gap: 2rem;">
-            <input :disabled="disabled" v-model="investAmountCurrency" @input="(event: Event) => investCurrencyAmountChange(event)" class="fiat-input" :placeholder="`Amount ${CurrencyShortNames[settingsStore.currency]}`" type="number" />
-            <span class="fiat-icon">{{ CurrencySymbols[settingsStore.currency] }}</span>
+          <div class="amount-input-grid">
+            <div class="framed-input">
+            <input class="framed-input" :disabled="disabled" v-model="investAmountBch" @input="(event: Event) => investAmountChange(event)" placeholder="Amount BCH" type="number" />
+            </div>
+
+            <input :disabled="disabled" @click="() => investMaxClick()" type="button" value="max">
+            <template v-if="exchangeRate">
+              <input :disabled="disabled" v-model="investAmountCurrency" @input="(event: Event) => investCurrencyAmountChange(event)" class="fiat-input" :placeholder="`Amount ${CurrencyShortNames[settingsStore.currency]}`" type="number" />
+              <span class="fiat-icon">{{ CurrencySymbols[settingsStore.currency] }}</span>
+            </template>
           </div>
           <div style="display: flex; flex-direction: column; align-items: center;">
             <span style="margin-bottom: 1rem;">{{ issuanceContractStats?.cauldronTradeAdjustedTokenAmount ?? 0n > 0n ? `You will receive ${(Number(issuanceContractStats!.cauldronTradeAdjustedTokenAmount) / 10**2).toLocaleString("en-US")} ${olandoSymbol} ` : '' }}</span>
@@ -610,14 +613,14 @@
         <!-- explanatory propaganda -->
 
         <div style="padding-top: 30px">
-          Every <b>payment</b> for goods and services with OLANDO increase <b>freedom</b> and promotes a free means of payment. 
+          Every <b>payment</b> for goods and services with OLANDO increase <b>freedom</b> and promotes a free means of payment.
           <br/><br/>
           OLANDO is a symbol for the real value of human life, not just the exchange rate.
           <br/><br/>
           The conversion rate with BCH is reduced by 5% as security fee to prevent abuse. A maximum of 8.888 billion OLANDO will be issued. The amount of OLANDO issued is dynamically limited to prevent excessive hoarding.
           <br/><br/>
-          More info: <a href="http://www.olando.club">www.olando.club</a> 
-        </div>       
+          More info: <a href="http://www.olando.club">www.olando.club</a>
+        </div>
         <!--
         <hr />
         <div>Already have {{ olandoSymbol }} and want to give it back to issuance fund? Want to help the community grow? Donate today!</div>
@@ -641,7 +644,7 @@
           AdminC pubkey: <b>{{ adminPubkeys[2] }}</b>
         </div>
         <div style="margin-bottom: 2rem;">issuanceFundContract.address: <b>{{ newIssuanceFundContractAddress }}</b></div>
-        <div style="margin-bottom: 2rem;">councilMultisigContract.address: <b>{{ councilMultisigContract.address }}</b></div>        
+        <div style="margin-bottom: 2rem;">councilMultisigContract.address: <b>{{ councilMultisigContract.address }}</b></div>
       </div>
       <div v-else style="text-align: center;">Loading...</div>
     </fieldset>
@@ -740,10 +743,22 @@
     align-items: center;
     justify-content: center;
     font-weight: bold;
+    font-size: 1.5em;
     border-radius: 50%;
-    border: 1px solid rgba(0, 0, 0, 0.3);
+    /* border: 1px solid rgba(0, 0, 0, 0.3); */
   }
   body.dark .fiat-icon {
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    /* border: 1px solid rgba(255, 255, 255, 0.3); */
+    color: grey;
+  }
+
+  .amount-input-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem 2rem;
+    align-items: center;
+  }
+  .framed-input {
+    margin-left: 0 !important;
   }
 </style>
