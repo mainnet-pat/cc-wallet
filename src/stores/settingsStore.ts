@@ -147,6 +147,10 @@ export const useSettingsStore = defineStore('settingsStore', () => {
   const readHideBalanceColumn = localStorage.getItem("hideBalanceColumn");
   if(readHideBalanceColumn) hideBalanceColumn.value = readHideBalanceColumn == "true";
 
+  const blurValues = ref(false);
+  const readBlurValues = localStorage.getItem("blurValues");
+  if(readBlurValues) blurValues.value = readBlurValues == "true";
+
   const readQrScan = localStorage.getItem("qrScan");
   if(!readQrScan && (isDesktop || !isMobileDevice)) qrScan.value = false;
   if(readQrScan) qrScan.value = readQrScan == "true";
@@ -492,6 +496,7 @@ export const useSettingsStore = defineStore('settingsStore', () => {
     walletConnect,
     showFiatValueHistory,
     hideBalanceColumn,
+    blurValues,
     tokenBurn,
     showCauldronSwap,
     showCauldronFTValue,

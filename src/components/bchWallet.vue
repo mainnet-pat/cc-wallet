@@ -275,23 +275,33 @@
   watch(() => settingsStore.qrAnimation, () => {
     if(!settingsStore.hasPlayedAnimation) animateQrCode()
   })
+
+  function toggleBlurValues() {
+    settingsStore.blurValues = !settingsStore.blurValues;
+    localStorage.setItem('blurValues', String(settingsStore.blurValues));
+  }
 </script>
 
 
 <template>
   <div class="bch-balance-section">
     {{ t('wallet.balance', { currency: bchDisplayNetwork }) }}
-    <span style="color: var(--color-primary); font-weight: bold;">
+    <span :class="{ 'blurred-value': settingsStore.blurValues }" style="color: var(--color-primary); font-weight: bold;">
       {{ balanceInBchUnit !== undefined ? numberFormatter.format(balanceInBchUnit) + displayUnitLong : "" }}
     </span>
 
-    <span class="wallet-balance-fiat" style="">
+    <span :class="{ 'blurred-value': settingsStore.blurValues }" class="wallet-balance-fiat">
       ({{ displayCurrencyBalance }})
     </span>
 
-
     <span class="wallet-last-update footnote" v-if="lastRateUpdate"> &nbsp;last update: {{ lastRateUpdate }}</span>
 
+    <img
+      class="blur-toggle-btn"
+      :src="settingsStore.blurValues ? 'images/olando/eye-off.svg' : 'images/olando/eye-on.svg'"
+      @click="toggleBlurValues"
+      title="Toggle balance visibility"
+    />
   </div>
   <fieldset style="margin-top: 20px; padding-top: 1rem; padding-bottom: 1rem; max-width: 75rem; margin: auto 10px;">
     <div style="text-align: center;">

@@ -11,6 +11,7 @@
 
   const store = useStore()
   const settingsStore = useSettingsStore()
+  const blurValues = ref(false)
   const { t } = useI18n()
   const $q = useQuasar()
 
@@ -81,6 +82,10 @@
       ]
     });
   }
+
+  function toggleBlurValues() {
+    blurValues.value = !blurValues.value;
+  }
 </script>
 
 <template>
@@ -115,6 +120,12 @@
         <span v-if="isSearchActive" class="search-match-suffix"> ({{ t('tokens.searchMatches', { count: searchFilteredTokenList?.length ?? 0 }) }})</span>
       </span>
       <span v-if="isSearchActive" class="search-match-mobile">{{ t('tokens.searchMatches', { count: searchFilteredTokenList?.length ?? 0 }) }}</span>
+      <img
+        class="blur-toggle-btn"
+        :src="blurValues ? 'images/olando/eye-off.svg' : 'images/olando/eye-on.svg'"
+        @click="toggleBlurValues"
+        title="Toggle value visibility"
+      />
       <input ref="searchInputRef" v-model="searchQuery" type="text" :placeholder="t('tokens.searchPlaceholder')" class="search-input">
     </div>
 
@@ -125,42 +136,44 @@
     <div v-else-if="searchFilteredTokenList?.length == 0" style="text-align: center;">
       {{ t('tokens.noMatch') }}
     </div>
-    <div v-for="tokenData in searchFilteredTokenList?.filter(token => settingsStore.featuredTokens.includes(token.category))" :key="tokenData.category">
-      <tokenItemFT v-if="'amount' in tokenData" :tokenData="tokenData"/>
-      <tokenItemNFT v-else :tokenData="tokenData"/>
-    </div>
+    <div :class="{ 'token-values-blur': blurValues }">
+      <div v-for="tokenData in searchFilteredTokenList?.filter(token => settingsStore.featuredTokens.includes(token.category))" :key="tokenData.category">
+        <tokenItemFT v-if="'amount' in tokenData" :tokenData="tokenData"/>
+        <tokenItemNFT v-else :tokenData="tokenData"/>
+      </div>
 
-    <div v-if="store.tokenList?.filter(token => !settingsStore.featuredTokens.includes(token.category)).length" style="margin: 10px; margin-top: 20px;">
-      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-        <span @click="showAllTokens = !showAllTokens" style="cursor: pointer;">{{showAllTokens ? "▲ Hide" : "▼ Show"}} other tokens</span><span style="margin-left: 1rem; color: var(--color-primary); font-weight: bold; cursor: pointer;" @click="showInfo">[info]</span>
-        <span class="options-toggle" @click="showOptions = !showOptions">
-          {{ t('tokens.options') }}
-          <img
-            class="icon"
-            :class="{ 'expanded': showOptions }"
-            :src="settingsStore.darkMode ? 'images/chevron-square-down-lightGrey.svg' : 'images/chevron-square-down.svg'"
-          >
-        </span>
-      </div>
-      <!-- Options panel -->
-      <div v-if="showOptions" class="options-panel" :class="{ dark: settingsStore.darkMode }">
-        <div class="option-item">
-          <label for="filterTokens">{{ t('tokens.filter.label') }}</label>
-          <select v-model="settingsStore.tokenDisplayFilter" @change="setFilter(($event.target as HTMLSelectElement).value)" name="filterTokens">
-            <option value="default">{{ t('tokens.filter.default') }}</option>
-            <option value="favoritesOnly">{{ t('tokens.filter.favoritesOnly') }}</option>
-            <option value="all">{{ t('tokens.filter.all') }}</option>
-            <option value="hiddenOnly">{{ t('tokens.filter.hiddenOnly') }}</option>
-          </select>
+      <div v-if="store.tokenList?.filter(token => !settingsStore.featuredTokens.includes(token.category)).length" style="margin: 10px; margin-top: 20px;">
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+          <span @click="showAllTokens = !showAllTokens" style="cursor: pointer;">{{showAllTokens ? "▲ Hide" : "▼ Show"}} other tokens</span><span style="margin-left: 1rem; color: var(--color-primary); font-weight: bold; cursor: pointer;" @click="showInfo">[info]</span>
+          <span class="options-toggle" @click="showOptions = !showOptions">
+            {{ t('tokens.options') }}
+            <img
+              class="icon"
+              :class="{ 'expanded': showOptions }"
+              :src="settingsStore.darkMode ? 'images/chevron-square-down-lightGrey.svg' : 'images/chevron-square-down.svg'"
+            >
+          </span>
         </div>
-        <div class="option-item">
-          {{ t('tokens.editVisibility') }} <Toggle v-model="settingsStore.showTokenVisibilityToggle"/>
+        <!-- Options panel -->
+        <div v-if="showOptions" class="options-panel" :class="{ dark: settingsStore.darkMode }">
+          <div class="option-item">
+            <label for="filterTokens">{{ t('tokens.filter.label') }}</label>
+            <select v-model="settingsStore.tokenDisplayFilter" @change="setFilter(($event.target as HTMLSelectElement).value)" name="filterTokens">
+              <option value="default">{{ t('tokens.filter.default') }}</option>
+              <option value="favoritesOnly">{{ t('tokens.filter.favoritesOnly') }}</option>
+              <option value="all">{{ t('tokens.filter.all') }}</option>
+              <option value="hiddenOnly">{{ t('tokens.filter.hiddenOnly') }}</option>
+            </select>
+          </div>
+          <div class="option-item">
+            {{ t('tokens.editVisibility') }} <Toggle v-model="settingsStore.showTokenVisibilityToggle"/>
+          </div>
         </div>
-      </div>
-      <div v-if="showAllTokens">
-        <div v-for="tokenData in searchFilteredTokenList?.filter(token => !settingsStore.featuredTokens.includes(token.category))" :key="tokenData.category.slice(0,6)">
-          <tokenItemFT v-if="'amount' in tokenData" :tokenData="tokenData"/>
-          <tokenItemNFT v-else :tokenData="tokenData"/>
+        <div v-if="showAllTokens">
+          <div v-for="tokenData in searchFilteredTokenList?.filter(token => !settingsStore.featuredTokens.includes(token.category))" :key="tokenData.category.slice(0,6)">
+            <tokenItemFT v-if="'amount' in tokenData" :tokenData="tokenData"/>
+            <tokenItemNFT v-else :tokenData="tokenData"/>
+          </div>
         </div>
       </div>
     </div>
@@ -170,10 +183,11 @@
 <style scoped>
 .filter-row {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 20px;
   margin: 10px;
 }
+
 
 .options-toggle {
   cursor: pointer;
