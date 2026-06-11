@@ -681,7 +681,7 @@
           </div>
           <div v-if="(tokenData.nfts?.length ?? 0) > 1" class="showChildNfts">
             <div @click="showChildNfts()" class="showChildNftsToggle">
-              <span class="nrChildNfts">{{ t('tokenItem.info.numberNfts') }} {{ tokenData.nfts?.length }}</span>
+              <span class="nrChildNfts" :class="{ 'blurred-value': settingsStore.blurValues }">{{ t('tokenItem.info.numberNfts') }} {{ tokenData.nfts?.length }}</span>
               <span class="hide" style="margin-left: 10px;">
                 <img class="icon" :src="settingsStore.darkMode? (displayChildNfts? 'images/chevron-square-up-lightGrey.svg':'images/chevron-square-down-lightGrey.svg') :
                   (displayChildNfts? 'images/chevron-square-up.svg':'images/chevron-square-down.svg')">

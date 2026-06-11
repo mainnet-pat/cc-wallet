@@ -148,6 +148,27 @@ img {
   opacity: 70%;
   font-weight: normal;
 }
+.blurred-value {
+  filter: blur(6px);
+  user-select: none;
+  transition: filter 0.2s;
+}
+.token-values-blur .tokenAmount {
+  filter: blur(6px) !important;
+  user-select: none;
+  transition: filter 0.2s;
+}
+.blur-toggle-btn {
+  cursor: pointer;
+  vertical-align: middle;
+  margin-left: 6px;
+  opacity: 0.7;
+  width: 24px;
+  height: 24px;
+}
+.blur-toggle-btn:hover {
+  opacity: 1;
+}
 .wallet-receive-title {
   display: flex;
 }
