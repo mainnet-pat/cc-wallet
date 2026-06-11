@@ -378,4 +378,7 @@
   cursor: pointer;
   user-select: none;
 }
+.blur-toggle-btn {
+  margin-left: 2.5em;
+}
 </style>
