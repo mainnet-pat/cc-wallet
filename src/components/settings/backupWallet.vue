@@ -319,7 +319,7 @@
   gap: 10px;
 }
 .seedphrase-action-row .button {
-  width: 225px;
+  width: 248px;
   height: 38px;
   box-sizing: border-box;
   flex-shrink: 0;
@@ -416,7 +416,7 @@ body.dark .seedphrase-word {
   align-items: center;
   justify-content: center;
   gap: 1em;
-  width: 225px;
+  width: 248px;
   height: 38px;
   box-sizing: border-box;
   white-space: nowrap;
