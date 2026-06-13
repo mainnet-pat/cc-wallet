@@ -59,7 +59,7 @@
 
   // Computed property to check if current wallet's seed has been backed up
   const backupStatus = computed(() => settingsStore.getBackupStatus(store.activeWalletName));
-  const hasSeedBackedUp = computed(() => backupStatus.value === 'verified' || backupStatus.value === 'imported');
+  const hasSeedBackedUp = computed(() => backupStatus.value === 'verified');
 
   const showSeedInfoPopup = ref(false);
   const seedInfoButtons: LightboxButton[] = [
