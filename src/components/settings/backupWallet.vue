@@ -183,7 +183,7 @@
     <p>DO NOT use screenshots. BEST WAY: Write down the key words on paper or engrave it to metal plates, without mistakes in the right order!</p>
     <!-- <br> -->
     <p><strong>VERIFY SEED PHRASES</strong><br>
-    Make sure you have a backup of your seed phrase. In rare cases or with using "private windows" web browsers clear site data automatically. For your safety and persistent storage use the "Verify your backup-Button", please.</p>
+    Make sure you have backup your SEED PHRASES on paper. In rare cases or with using "private windows" web browsers clear site data automatically. For your safety double check your SEED PHRASES by using our option: "Verify your backup-Button</p>
   </LightboxPopup>
 
   <div>
