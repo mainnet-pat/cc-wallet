@@ -59,7 +59,7 @@
 
   // Computed property to check if current wallet's seed has been backed up
   const backupStatus = computed(() => settingsStore.getBackupStatus(store.activeWalletName));
-  const hasSeedBackedUp = computed(() => backupStatus.value === 'verified');
+  const hasSeedBackedUp = computed(() => backupStatus.value === 'verified' || backupStatus.value === 'imported');
 
   const showSeedInfoPopup = ref(false);
   const seedInfoButtons: LightboxButton[] = [
@@ -236,8 +236,8 @@
         <div class="seedphrase-action-row">
           <input v-if="!hasSeedBackedUp" @click="toggleBackupVerification()" class="button" type="button" :value="t('backupWallet.seedPhrase.verifyButton')" style="color: black;">
           <div v-if="backupStatus === 'verified'" class="backup-status"><span class="status-icon">✓</span> {{ t('backupWallet.backupStatus.verified') }}</div>
-          <div v-if="backupStatus !== 'verified'" class="backup-status">{{ t('backupWallet.backupStatus.notBackedUp') }}</div>
-          <img src="images/olando/info.svg" class="action-icon" style="cursor:pointer;" @click="showSeedInfoPopup = true">
+          <div v-if="!hasSeedBackedUp" class="backup-status">{{ t('backupWallet.backupStatus.notBackedUp') }}</div>
+          <img v-if="!hasSeedBackedUp" src="images/olando/info.svg" class="action-icon" style="cursor:pointer;" @click="showSeedInfoPopup = true">
         </div>
       </div>
 
