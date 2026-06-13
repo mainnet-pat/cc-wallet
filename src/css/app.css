@@ -190,6 +190,9 @@ img {
   width: 50%;
   /* margin-left: 5px; */
 }
+.sendCurrencyInput input {
+  background-color: rgba(255, 255, 255, 0.5);
+}
 .fillInMaxBch {
   margin-left: 5px;
 }

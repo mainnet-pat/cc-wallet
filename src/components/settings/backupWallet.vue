@@ -187,9 +187,9 @@
   </LightboxPopup>
 
   <div>
-    <div style="margin-bottom: 15px;">
+    <!-- <div style="margin-bottom: 15px;">
       {{ t('backupWallet.currentWallet') }} <span class="wallet-name-styled">{{ store.activeWalletName }}</span>
-    </div>
+    </div> -->
 
     <!-- Show/Hide Seed Phrase -->
     <div style="margin-top: 15px;">
@@ -208,7 +208,7 @@
         <span class="seedphrase-number">{{ index + 1 }}</span>{{ word }}
       </span>
     </div>
-    <button v-if="displaySeedphrase" @click="copySeedphrase" class="seedphrase-copy-btn">
+    <button v-if="displaySeedphrase" @click="copySeedphrase" class="seedphrase-copy-btn button">
         <span>{{ t('backupWallet.seedPhrase.copyButton') }}</span>
         <img src="images/olando/copy-white.svg" class="copy-icon" style="width: 14px; height: 14px" @click="showSeedInfoPopup = true">
     </button>
@@ -319,7 +319,11 @@
   gap: 10px;
 }
 .seedphrase-action-row .button {
-  /* width: 250px; */
+  width: 225px;
+  height: 38px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 .action-icon {
   width: 28px;
@@ -408,10 +412,14 @@ body.dark .seedphrase-word {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 13px;
-
   display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 1em;
+  width: 225px;
+  height: 38px;
+  box-sizing: border-box;
+  white-space: nowrap;
 }
 body.dark .seedphrase-copy-btn {
   background-color: var(--color-primary);
