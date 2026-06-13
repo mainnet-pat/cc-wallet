@@ -809,7 +809,7 @@
       </div> -->
 
       <div style="margin-bottom: 15px; cursor: pointer;" @click="() => settingsSection = 1">
-        ↳ {{ t('settings.menu.backupWallet') }} <span v-if="settingsStore.getBackupStatus(store.activeWalletName) !== 'verified'" style="color: var(--color-primary)">{{ t('settings.menu.important') }} <img src="images/olando/warning.svg" style="width: 25px; height: 25px; vertical-align: middle; margin-left: 2px;"></span>
+        ↳ {{ t('settings.menu.backupWallet') }} <span v-if="settingsStore.getBackupStatus(store.activeWalletName) === 'none'" style="color: var(--color-primary)">{{ t('settings.menu.important') }} <img src="images/olando/warning.svg" style="width: 25px; height: 25px; vertical-align: middle; margin-left: 2px;"></span>
       </div>
 
       <!-- <div style="margin-bottom: 15px; cursor: pointer;" @click="() => settingsSection = 4">
