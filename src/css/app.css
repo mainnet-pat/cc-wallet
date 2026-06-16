@@ -153,7 +153,8 @@ img {
   user-select: none;
   transition: filter 0.2s;
 }
-.token-values-blur .tokenAmount {
+.token-values-blur .tokenAmountValue,
+.token-values-blur .token-fiat-value {
   filter: blur(6px) !important;
   user-select: none;
   transition: filter 0.2s;

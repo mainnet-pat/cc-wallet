@@ -471,7 +471,7 @@ import { olandoCategory } from 'src/olando';
         />
         <div class="tokenBaseInfo">
           <div class="tokenAmount">
-            {{ numberFormatter.format(toAmountDecimals(tokenData?.amount)) }} {{ tokenMetaData?.token?.symbol }}
+            <span class="tokenAmountValue">{{ numberFormatter.format(toAmountDecimals(tokenData?.amount)) }}</span> {{ tokenMetaData?.token?.symbol }}
             <span v-if="holdingsFiatValue !== null" class="token-fiat-value">({{ CurrencySymbols[settingsStore.currency] }} {{ holdingsFiatValue.toFixed(2) }})</span>
             <!-- <span v-if="holdingsFiatValue !== null" class="tokenAmount" style="white-space: nowrap;">
               <span v-if="lastRateUpdate" style="font-weight: normal; opacity: 70%;">Last Update: {{ lastRateUpdate }}</span>

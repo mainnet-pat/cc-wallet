@@ -25,24 +25,25 @@
     }
   })
 
-  async function requestPersistentStorage() {
-    if (!persistentStorageSupported) return
-    const granted = await navigator.storage.persist()
-    persistentStorageStatus.value = granted ? 'granted' : 'denied'
-    if (granted) {
-      $q.notify({
-        message: t('backupWallet.persistentStorage.grantedNotification'),
-        icon: 'check_circle',
-        color: "green"
-      })
-    } else {
-      $q.notify({
-        message: t('backupWallet.persistentStorage.deniedNotification'),
-        icon: 'warning',
-        color: "grey-7"
-      })
-    }
-  }
+  // Persistent storage is now requested automatically on app launch (see src/boot/persistentStorage.ts)
+  // async function requestPersistentStorage() {
+  //   if (!persistentStorageSupported) return
+  //   const granted = await navigator.storage.persist()
+  //   persistentStorageStatus.value = granted ? 'granted' : 'denied'
+  //   if (granted) {
+  //     $q.notify({
+  //       message: t('backupWallet.persistentStorage.grantedNotification'),
+  //       icon: 'check_circle',
+  //       color: "green"
+  //     })
+  //   } else {
+  //     $q.notify({
+  //       message: t('backupWallet.persistentStorage.deniedNotification'),
+  //       icon: 'warning',
+  //       color: "grey-7"
+  //     })
+  //   }
+  // }
 
   const walletDerivationPath = computed(() => {
     const w = store.wallet;
@@ -293,14 +294,15 @@
       <div v-if="persistentStorageStatus !== 'granted'" class="persistent-storage-hint">
         {{ t('backupWallet.persistentStorage.hint') }}
       </div>
-      <input
+      <!-- Persistent storage is now requested automatically on app launch (see src/boot/persistentStorage.ts) -->
+      <!-- <input
         v-if="persistentStorageStatus !== 'granted'"
         @click="requestPersistentStorage()"
         class="button"
         type="button"
         :value="t('backupWallet.persistentStorage.requestButton')"
         style="margin-top: 10px; margin-bottom: 15px; color: black;"
-      >
+      > -->
     </div>
   </div>
 </template>
