@@ -8,7 +8,7 @@
   import QrCodeDialog from '../qr/qrCodeScanDialog.vue';
   import type { TokenDataNFT, BcmrTokenMetadata } from "src/interfaces/interfaces"
   import { querySupplyNFTs, queryActiveMinting } from "src/queryChainGraph"
-  import { copyToClipboard } from 'src/utils/utils';
+  import { copyToClipboard, getRecipientTopupOutputs } from 'src/utils/utils';
   import { parseBip21Uri, isBip21Uri, getBip21ValidationError } from 'src/utils/bip21';
   import { useStore } from 'src/stores/store'
   import { useSettingsStore } from 'src/stores/settingsStore'
@@ -286,7 +286,7 @@
         selectedNfts.value.has(getNftKey(nft.txid, nft.vout))
       ) ?? [];
 
-      const outputArray:TokenSendRequest[] = [];
+      const outputArray:(TokenSendRequest|SendRequest)[] = [];
       selectedNftsList.forEach(nftItem => {
         outputArray.push(
           new TokenSendRequest({
@@ -304,6 +304,7 @@
         color: 'grey-5',
         timeout: 1000
       })
+      outputArray.push(...await getRecipientTopupOutputs(store.wallet, destinationAddr.value))
       const { txId } = await store.wallet.send(outputArray);
       const displayId = `${category.slice(0, 20)}...${category.slice(-8)}`;
       let alertMessage = t('tokenItem.alerts.sentNfts', { count: nftCount, category: displayId, address: destinationAddr.value });
@@ -377,6 +378,7 @@
         color: 'grey-5',
         timeout: 1000
       })
+      const topupOutputs = await getRecipientTopupOutputs(store.wallet, destinationAddr.value);
       const { txId } = await store.wallet.send([
         new TokenSendRequest({
           cashaddr: destinationAddr.value,
@@ -386,6 +388,7 @@
             capability: nftInfo.nft!.capability,
           },
         }),
+        ...topupOutputs,
       ]);
       const displayId = `${category.slice(0, 20)}...${category.slice(-8)}`;
       const alertMessage = t('tokenItem.alerts.sentNft', { category: displayId, address: destinationAddr.value });

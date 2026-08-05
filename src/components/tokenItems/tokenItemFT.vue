@@ -8,7 +8,7 @@
   import TokenIcon from '../general/TokenIcon.vue';
   import type { TokenDataFT, BcmrTokenMetadata } from "src/interfaces/interfaces"
   import { queryTotalSupplyFT, queryReservedSupply } from "src/queryChainGraph"
-  import { copyToClipboard } from 'src/utils/utils';
+  import { copyToClipboard, getRecipientTopupOutputs } from 'src/utils/utils';
   import { parseBip21Uri, isBip21Uri, getBip21ValidationError } from 'src/utils/bip21';
   import { useStore } from 'src/stores/store'
   import { useSettingsStore } from 'src/stores/settingsStore'
@@ -277,12 +277,14 @@ import { olandoCategory } from 'src/olando';
         color: 'grey-5',
         timeout: 1000
       })
+      const topupOutputs = await getRecipientTopupOutputs(store.wallet, destinationAddr.value);
       const { txId } = await store.wallet.send([
         new TokenSendRequest({
           cashaddr: destinationAddr.value,
           amount: amountTokensInt,
           category: category,
         }),
+        ...topupOutputs,
       ]);
       const displayId = `${category.slice(0, 20)}...${category.slice(-8)}`;
       let alertMessage = t('tokenItem.alerts.sentTokensNoSymbol', { amount: amountSentFormatted, category: displayId, address: destinationAddr.value });
@@ -413,6 +415,10 @@ import { olandoCategory } from 'src/olando';
           amount: changeAmount
         });
         outputs.push(changeOutput)
+      }
+      // without a reserved supply the destination already receives 1000 sats above
+      if(reservedSupply){
+        outputs.push(...await getRecipientTopupOutputs(store.wallet, destinationAddr.value))
       }
       $q.notify({
         spinner: true,

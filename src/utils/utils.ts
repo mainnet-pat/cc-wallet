@@ -1,8 +1,8 @@
 import { hexToBin } from "@bitauth/libauth"
 import { Notify } from "quasar";
-import type { Utxo } from "mainnet-js"
-import type { ElectrumTokenData, TokenDataFT, TokenDataNFT, CurrencyShortNames, DateFormat } from "../interfaces/interfaces"
-import { type Ref, watch, type WatchStopHandle } from "vue";
+import { SendRequest, toCashaddr, type Utxo } from "mainnet-js"
+import type { ElectrumTokenData, TokenDataFT, TokenDataNFT, CurrencyShortNames, DateFormat, WalletType } from "../interfaces/interfaces"
+import { type Ref, watch, type WatchStopHandle, type UnwrapRef } from "vue";
 import { i18n } from 'src/boot/i18n'
 const { t } = i18n.global
 
@@ -129,6 +129,27 @@ export function getBalanceFromUtxos(utxos: Utxo[]) {
   const bchUtxos = utxos.filter((utxo) => utxo.token === undefined);
   const balanceSats = bchUtxos.reduce((currentBalance: bigint, utxo: Utxo) => currentBalance + utxo.satoshis, 0n);
   return balanceSats
+}
+
+// Amount sent alongside tokens to a destination without any pure-BCH utxos
+export const recipientTopupSats = 5000n; // ~$0.01, should be enough to do a cauldron swap
+
+// A destination holding only token utxos has no spendable BCH to pay a mining fee with,
+// so it cannot move the tokens it receives. Returns a small BCH output to include in the
+// token transaction in that case, an empty array when the destination has BCH already.
+// Takes UnwrapRef<WalletType> so both a wallet and the store's reactive wallet are accepted.
+export async function getRecipientTopupOutputs(wallet: UnwrapRef<WalletType>, destinationAddr: string): Promise<SendRequest[]> {
+  try {
+    // query the non-token address form, this returns both token and non-token utxos
+    const destinationUtxos = await wallet.provider.getUtxos(toCashaddr(destinationAddr));
+    const bchBalance = destinationUtxos.reduce((total, utxo) => utxo.token ? total : total + utxo.satoshis, 0n);
+    if (bchBalance > 0n) return [];
+    return [new SendRequest({ cashaddr: destinationAddr, value: recipientTopupSats })];
+  } catch (error) {
+    // the token send itself is what the user asked for, so never block it on this lookup
+    console.warn("Failed to check the BCH balance of the destination, sending tokens without topup", error);
+    return [];
+  }
 }
 
 export function parseExtendedJson(jsonString: string){

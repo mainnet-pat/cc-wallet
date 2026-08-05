@@ -12,6 +12,7 @@
   import type { ParseResult } from 'src/parsing/nftParsing'
   import { caughtErrorToString } from 'src/utils/errorHandling'
   import { appendBlockieIcon } from 'src/utils/blockieIcon'
+  import { getRecipientTopupOutputs } from 'src/utils/utils'
   import { parseBip21Uri, isBip21Uri, getBip21ValidationError } from 'src/utils/bip21';
   import { useQuasar } from 'quasar'
   import { useI18n } from 'vue-i18n'
@@ -215,6 +216,7 @@
         timeout: 1000
       })
 
+      const topupOutputs = await getRecipientTopupOutputs(store.wallet, destinationAddr.value);
       const { txId } = await store.wallet.send([
         new TokenSendRequest({
           cashaddr: destinationAddr.value,
@@ -224,6 +226,7 @@
             capability: nftInfo.nft!.capability,
           },
         }),
+        ...topupOutputs,
       ]);
       const displayId = `${nftInfo.category.slice(0, 20)}...${nftInfo.category.slice(-8)}`;
       const alertMessage = t('tokenItem.alerts.sentNft', { category: displayId, address: destinationAddr.value });
